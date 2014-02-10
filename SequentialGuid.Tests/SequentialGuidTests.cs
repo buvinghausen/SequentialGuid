@@ -147,11 +147,23 @@ namespace Buvinghausen.SequentialGuid.Tests
 		}
 
 		[TestMethod]
-		public void TestBigDateRange()
+		public void TestGuidBigDateRange()
 		{
 			//Arrange
 			var items = new List<Guid>();
 			for (var i = 1970; i < 2015; i++) items.Add(SequentialGuid.NewGuid(DateTime.Parse(String.Format("{0}-01-01", i))));
+			//Act
+			var sortedItems = items.OrderBy(x => x).ToList();
+			//Assert
+			for (var i = 0; i < sortedItems.Count; i++) Assert.AreEqual(items[i], sortedItems[i]);
+		}
+
+		[TestMethod]
+		public void TestSqlGuidBigDateRange()
+		{
+			//Arrange
+			var items = new List<SqlGuid>();
+			for (var i = 1970; i < 2015; i++) items.Add(SequentialGuid.NewSqlGuid(DateTime.Parse(String.Format("{0}-01-01", i))));
 			//Act
 			var sortedItems = items.OrderBy(x => x).ToList();
 			//Assert
