@@ -49,15 +49,16 @@ namespace Buvinghausen.SequentialGuid
 					(bytes[4] << 16) +
 					(bytes[7] << 8) +
 					bytes[6]);
-				return timestamp <= DateTime.UtcNow && timestamp >= UnixEpoch ?
-					timestamp : //timestamp in bounds so return
-					new SqlGuid(guid).ToGuid().ToDateTime(); //timestamp out of bounds try as Sql
+				if (timestamp <= DateTime.UtcNow && timestamp >= UnixEpoch)
+					return timestamp; //timestamp in bounds so return
 			}
 			catch (ArgumentOutOfRangeException)
 			{
-				//Parse as SqlGuid remap then retry
-				return new SqlGuid(guid).ToGuid().ToDateTime();
+
+
 			}
+			//Parse as SqlGuid remap then retry
+			return new SqlGuid(guid).ToDateTime();
 		}
 
 		/// <summary>
