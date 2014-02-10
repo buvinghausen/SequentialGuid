@@ -38,14 +38,14 @@ namespace Buvinghausen.SequentialGuid
 		{
 			var bytes = guid.ToByteArray();
 			return new DateTime(
-				((long)bytes[0] << 56) +
-				((long)bytes[1] << 48) +
-				((long)bytes[2] << 40) +
-				((long)bytes[3] << 32) +
-				((long)bytes[4] << 24) +
-				(bytes[5] << 16) +
-				(bytes[6] << 8) +
-				bytes[7]);
+				((long)bytes[3] << 56) +
+				((long)bytes[2] << 48) +
+				((long)bytes[1] << 40) +
+				((long)bytes[0] << 32) +
+				((long)bytes[5] << 24) +
+				(bytes[4] << 16) +
+				(bytes[7] << 8) +
+				bytes[6]);
 		}
 
 		/// <summary>

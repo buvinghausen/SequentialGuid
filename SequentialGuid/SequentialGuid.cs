@@ -66,16 +66,10 @@ namespace Buvinghausen.SequentialGuid
 		public static Guid NewGuid(long timestamp)
 		{
 			var increment = Interlocked.Increment(ref _staticIncrement) & 0x00ffffff; // only use low order 3 bytes
-
-			return new Guid(new[]{
-				(byte)(timestamp >> 56),
-				(byte)(timestamp >> 48),
-				(byte)(timestamp >> 40),
-				(byte)(timestamp >> 32),
-				(byte)(timestamp >> 24),
-				(byte)(timestamp >> 16),
-				(byte)(timestamp >> 8),
-				(byte)timestamp,
+			return new Guid(
+				(int)(timestamp >> 32),
+				(short)(timestamp >> 16),
+				(short)timestamp,
 				(byte)(StaticMachine >> 16),
 				(byte)(StaticMachine >> 8),
 				(byte)(StaticMachine),
@@ -84,7 +78,7 @@ namespace Buvinghausen.SequentialGuid
 				(byte)(increment >> 16),
 				(byte)(increment >> 8),
 				(byte)increment
-			});
+			);
 		}
 
 		/// <summary>

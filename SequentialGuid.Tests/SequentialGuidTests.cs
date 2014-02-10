@@ -145,5 +145,17 @@ namespace Buvinghausen.SequentialGuid.Tests
 			//Assert
 			Assert.AreEqual(expectedTicks, actualTicks);
 		}
+
+		[TestMethod]
+		public void TestBigDateRange()
+		{
+			//Arrange
+			var items = new List<Guid>();
+			for (var i = 1970; i < 2015; i++) items.Add(SequentialGuid.NewGuid(DateTime.Parse(String.Format("{0}-01-01", i))));
+			//Act
+			var sortedItems = items.OrderBy(x => x).ToList();
+			//Assert
+			for (var i = 0; i < sortedItems.Count; i++) Assert.AreEqual(items[i], sortedItems[i]);
+		}
 	}
 }
