@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data.SqlTypes;
 using System.Diagnostics;
+using System.Linq;
 using System.Security;
 using System.Security.Cryptography;
 using System.Text;
@@ -14,8 +15,7 @@ namespace Buvinghausen.SequentialGuid
 	/// </summary>
 	public static class SequentialGuid
 	{
-		private static readonly int StaticMachine;
-		private static readonly short StaticPid;
+		private static readonly byte[] StaticMachinePid;
 		private static int _staticIncrement;
 
 		/// <summary>
@@ -24,18 +24,23 @@ namespace Buvinghausen.SequentialGuid
 		static SequentialGuid()
 		{
 			_staticIncrement = new Random().Next();
+			StaticMachinePid = new byte[5];
 			using (var algorithm = MD5.Create())
 			{
 				var hash = algorithm.ComputeHash(Encoding.UTF8.GetBytes(Environment.MachineName));
-				StaticMachine = (hash[0] << 16) + (hash[1] << 8) + hash[2]; // use first 3 bytes of hash
+				// use first 3 bytes of hash
+				for (var i = 0; i < 3; i++) StaticMachinePid[i] = hash[i];
 			}
 			try
 			{
-				StaticPid = (short)Process.GetCurrentProcess().Id; // use low order two bytes only
+				var pid = Process.GetCurrentProcess().Id;
+				// use low order two bytes only
+				StaticMachinePid[3] = (byte)(pid >> 8);
+				StaticMachinePid[4] = (byte)pid;
 			}
 			catch (SecurityException)
 			{
-				StaticPid = 0;
+				//bytes default to 0 already
 			}
 		}
 
@@ -70,14 +75,13 @@ namespace Buvinghausen.SequentialGuid
 				(int)(timestamp >> 32),
 				(short)(timestamp >> 16),
 				(short)timestamp,
-				(byte)(StaticMachine >> 16),
-				(byte)(StaticMachine >> 8),
-				(byte)(StaticMachine),
-				(byte)(StaticPid >> 8),
-				(byte)StaticPid,
-				(byte)(increment >> 16),
-				(byte)(increment >> 8),
-				(byte)increment
+				StaticMachinePid.Concat(
+				new[]
+				{
+					(byte)(increment >> 16),
+					(byte)(increment >> 8),
+					(byte)increment}
+				).ToArray()
 			);
 		}
 
