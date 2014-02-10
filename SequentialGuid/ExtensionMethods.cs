@@ -9,6 +9,7 @@ namespace Buvinghausen.SequentialGuid
 	{
 		private static readonly Dictionary<short, short> ToSqlGuidMap;
 		private static readonly Dictionary<short, short> ToGuidMap;
+		private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
 		/// <summary>
 		/// Constructor initializes the guid seqeuence mappings
@@ -39,7 +40,7 @@ namespace Buvinghausen.SequentialGuid
 			try
 			{
 				var bytes = guid.ToByteArray();
-				return new DateTime(
+				var timestamp = new DateTime(
 					((long)bytes[3] << 56) +
 					((long)bytes[2] << 48) +
 					((long)bytes[1] << 40) +
@@ -48,6 +49,9 @@ namespace Buvinghausen.SequentialGuid
 					(bytes[4] << 16) +
 					(bytes[7] << 8) +
 					bytes[6]);
+				return timestamp <= DateTime.UtcNow && timestamp >= UnixEpoch ?
+					timestamp : //timestamp in bounds so return
+					new SqlGuid(guid).ToGuid().ToDateTime(); //timestamp out of bounds try as Sql
 			}
 			catch (ArgumentOutOfRangeException)
 			{

@@ -167,7 +167,7 @@ namespace Buvinghausen.SequentialGuid.Tests
 		public void TestSqlGuidBigDateRange()
 		{
 			//Arrange
-			var generator = SequentialGuidGenerator.Instance;
+			var generator = SequentialSqlGuidGenerator.Instance;
 			var items = new List<SqlGuid>();
 			for (var i = 1970; i < 2015; i++) items.Add(generator.NewGuid(DateTime.Parse(String.Format("{0}-01-01", i))));
 			//Act
