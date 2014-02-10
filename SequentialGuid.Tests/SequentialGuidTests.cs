@@ -80,7 +80,8 @@ namespace Buvinghausen.SequentialGuid.Tests
 		public void TestSequentialGuidNewGuid()
 		{
 			//Arrange
-			var items = Enumerable.Range(0, 25).Select(i => new { Id = SequentialGuid.NewGuid(), Sort = i });
+			var generator = SequentialGuidGenerator.Instance;
+			var items = Enumerable.Range(0, 25).Select(i => new { Id = generator.NewGuid(), Sort = i });
 			//Act
 			var sortedItems = items.OrderBy(x => x.Id).ToList();
 			//Assert
@@ -94,7 +95,8 @@ namespace Buvinghausen.SequentialGuid.Tests
 		public void TestSequentialGuidNewSqlGuid()
 		{
 			//Arrange
-			var items = Enumerable.Range(0, 25).Select(i => new { Id = SequentialGuid.NewSqlGuid(), Sort = i });
+			var generator = SequentialSqlGuidGenerator.Instance;
+			var items = Enumerable.Range(0, 25).Select(i => new { Id = new SqlGuid(generator.NewGuid()), Sort = i });
 			//Act
 			var sortedItems = items.OrderBy(x => x.Id).ToList();
 			//Assert
@@ -123,8 +125,9 @@ namespace Buvinghausen.SequentialGuid.Tests
 		public void TestGuidToDateTime()
 		{
 			//Arrange
+			var generator = SequentialGuidGenerator.Instance;
 			var expectedTicks = DateTime.UtcNow.Ticks;
-			var id = SequentialGuid.NewGuid(expectedTicks); //Instantiate it with a Ticks value
+			var id = generator.NewGuid(expectedTicks); //Instantiate it with a Ticks value
 			//Act
 			var actualTicks = id.ToDateTime().Ticks;
 			//Assert
@@ -138,8 +141,9 @@ namespace Buvinghausen.SequentialGuid.Tests
 		public void TestSqlGuidToDateTime()
 		{
 			//Arrange
+			var generator = SequentialSqlGuidGenerator.Instance;
 			var expectedTicks = DateTime.UtcNow.Ticks;
-			var id = SequentialGuid.NewSqlGuid(expectedTicks); //Instantiate it with a Ticks value
+			var id = generator.NewGuid(expectedTicks); //Instantiate it with a Ticks value
 			//Act
 			var actualTicks = id.ToDateTime().Ticks;
 			//Assert
@@ -150,8 +154,9 @@ namespace Buvinghausen.SequentialGuid.Tests
 		public void TestGuidBigDateRange()
 		{
 			//Arrange
+			var generator = SequentialGuidGenerator.Instance;
 			var items = new List<Guid>();
-			for (var i = 1970; i < 2015; i++) items.Add(SequentialGuid.NewGuid(DateTime.Parse(String.Format("{0}-01-01", i))));
+			for (var i = 1970; i < 2015; i++) items.Add(generator.NewGuid(DateTime.Parse(String.Format("{0}-01-01", i))));
 			//Act
 			var sortedItems = items.OrderBy(x => x).ToList();
 			//Assert
@@ -162,8 +167,9 @@ namespace Buvinghausen.SequentialGuid.Tests
 		public void TestSqlGuidBigDateRange()
 		{
 			//Arrange
+			var generator = SequentialGuidGenerator.Instance;
 			var items = new List<SqlGuid>();
-			for (var i = 1970; i < 2015; i++) items.Add(SequentialGuid.NewSqlGuid(DateTime.Parse(String.Format("{0}-01-01", i))));
+			for (var i = 1970; i < 2015; i++) items.Add(generator.NewGuid(DateTime.Parse(String.Format("{0}-01-01", i))));
 			//Act
 			var sortedItems = items.OrderBy(x => x).ToList();
 			//Assert

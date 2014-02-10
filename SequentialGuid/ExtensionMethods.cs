@@ -36,16 +36,24 @@ namespace Buvinghausen.SequentialGuid
 		/// <returns>DateTime</returns>
 		public static DateTime ToDateTime(this Guid guid)
 		{
-			var bytes = guid.ToByteArray();
-			return new DateTime(
-				((long)bytes[3] << 56) +
-				((long)bytes[2] << 48) +
-				((long)bytes[1] << 40) +
-				((long)bytes[0] << 32) +
-				((long)bytes[5] << 24) +
-				(bytes[4] << 16) +
-				(bytes[7] << 8) +
-				bytes[6]);
+			try
+			{
+				var bytes = guid.ToByteArray();
+				return new DateTime(
+					((long)bytes[3] << 56) +
+					((long)bytes[2] << 48) +
+					((long)bytes[1] << 40) +
+					((long)bytes[0] << 32) +
+					((long)bytes[5] << 24) +
+					(bytes[4] << 16) +
+					(bytes[7] << 8) +
+					bytes[6]);
+			}
+			catch (ArgumentOutOfRangeException)
+			{
+				//Parse as SqlGuid remap then retry
+				return new SqlGuid(guid).ToGuid().ToDateTime();
+			}
 		}
 
 		/// <summary>
