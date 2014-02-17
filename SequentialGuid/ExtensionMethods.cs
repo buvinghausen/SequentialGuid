@@ -52,11 +52,7 @@ namespace Buvinghausen.SequentialGuid
 				if (timestamp <= DateTime.UtcNow && timestamp >= UnixEpoch)
 					return timestamp; //timestamp in bounds so return
 			}
-			catch (ArgumentOutOfRangeException)
-			{
-
-
-			}
+			catch (ArgumentOutOfRangeException) { }
 			//Parse as SqlGuid remap then retry
 			return new SqlGuid(guid).ToDateTime();
 		}

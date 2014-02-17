@@ -37,10 +37,7 @@ namespace Buvinghausen.SequentialGuid
 				StaticMachinePid[3] = (byte)(pid >> 8);
 				StaticMachinePid[4] = (byte)pid;
 			}
-			catch (SecurityException)
-			{
-				//bytes default to 0 already
-			}
+			catch (SecurityException) { }
 		}
 
 		/// <summary>

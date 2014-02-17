@@ -15,10 +15,7 @@ namespace Buvinghausen.SequentialGuid
 		/// <summary>
 		/// 
 		/// </summary>
-		private SequentialSqlGuidGenerator()
-		{
-
-		}
+		private SequentialSqlGuidGenerator() { }
 
 		/// <summary>
 		/// 

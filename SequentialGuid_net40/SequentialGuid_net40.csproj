@@ -4,14 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{EEEAB15B-B8B3-4994-9040-2E37354FDE57}</ProjectGuid>
+    <ProjectGuid>{810F8808-7B26-472A-938D-BCF5F19ED8A1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Buvinghausen.SequentialGuid</RootNamespace>
     <AssemblyName>Buvinghausen.SequentialGuid</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -37,12 +37,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ExtensionMethods.cs" />
-    <Compile Include="ISequentialGuidGenerator.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SequentialGuid.cs" />
-    <Compile Include="SequentialGuidGenerator.cs" />
-    <Compile Include="SequentialSqlGuidGenerator.cs" />
+    <Compile Include="..\SequentialGuid\Properties\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\SequentialGuid\ExtensionMethods.cs">
+      <Link>ExtensionMethods.cs</Link>
+    </Compile>
+    <Compile Include="..\SequentialGuid\ISequentialGuidGenerator.cs">
+      <Link>ISequentialGuidGenerator.cs</Link>
+    </Compile>
+    <Compile Include="..\SequentialGuid\SequentialGuid.cs">
+      <Link>SequentialGuid.cs</Link>
+    </Compile>
+    <Compile Include="..\SequentialGuid\SequentialGuidGenerator.cs">
+      <Link>SequentialGuidGenerator.cs</Link>
+    </Compile>
+    <Compile Include="..\SequentialGuid\SequentialSqlGuidGenerator.cs">
+      <Link>SequentialSqlGuidGenerator.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -15,10 +15,7 @@ namespace Buvinghausen.SequentialGuid
 		/// <summary>
 		/// 
 		/// </summary>
-		private SequentialGuidGenerator()
-		{
-
-		}
+		private SequentialGuidGenerator() { }
 
 		/// <summary>
 		/// 

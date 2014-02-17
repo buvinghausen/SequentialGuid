@@ -127,9 +127,8 @@ namespace Buvinghausen.SequentialGuid.Tests
 			//Arrange
 			var generator = SequentialGuidGenerator.Instance;
 			var expectedTicks = DateTime.UtcNow.Ticks;
-			var id = generator.NewGuid(expectedTicks); //Instantiate it with a Ticks value
 			//Act
-			var actualTicks = id.ToDateTime().Ticks;
+			var actualTicks = generator.NewGuid(expectedTicks).ToDateTime().Ticks;
 			//Assert
 			Assert.AreEqual(expectedTicks, actualTicks);
 		}
@@ -143,9 +142,8 @@ namespace Buvinghausen.SequentialGuid.Tests
 			//Arrange
 			var generator = SequentialSqlGuidGenerator.Instance;
 			var expectedTicks = DateTime.UtcNow.Ticks;
-			var id = generator.NewGuid(expectedTicks); //Instantiate it with a Ticks value
 			//Act
-			var actualTicks = id.ToDateTime().Ticks;
+			var actualTicks = generator.NewGuid(expectedTicks).ToDateTime().Ticks;
 			//Assert
 			Assert.AreEqual(expectedTicks, actualTicks);
 		}
@@ -156,8 +154,8 @@ namespace Buvinghausen.SequentialGuid.Tests
 			//Arrange
 			var generator = SequentialGuidGenerator.Instance;
 			var items = new List<Guid>();
-			for (var i = 1970; i < 2015; i++) items.Add(generator.NewGuid(DateTime.Parse(String.Format("{0}-01-01", i))));
 			//Act
+			for (var i = 1970; i < 2015; i++) items.Add(generator.NewGuid(DateTime.Parse(String.Format("{0}-01-01", i))));
 			var sortedItems = items.OrderBy(x => x).ToList();
 			//Assert
 			for (var i = 0; i < sortedItems.Count; i++) Assert.AreEqual(items[i], sortedItems[i]);
@@ -169,8 +167,8 @@ namespace Buvinghausen.SequentialGuid.Tests
 			//Arrange
 			var generator = SequentialSqlGuidGenerator.Instance;
 			var items = new List<SqlGuid>();
-			for (var i = 1970; i < 2015; i++) items.Add(generator.NewGuid(DateTime.Parse(String.Format("{0}-01-01", i))));
 			//Act
+			for (var i = 1970; i < 2015; i++) items.Add(generator.NewGuid(DateTime.Parse(String.Format("{0}-01-01", i))));
 			var sortedItems = items.OrderBy(x => x).ToList();
 			//Assert
 			for (var i = 0; i < sortedItems.Count; i++) Assert.AreEqual(items[i], sortedItems[i]);

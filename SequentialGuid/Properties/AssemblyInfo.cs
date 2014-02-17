@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
-
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
@@ -19,7 +18,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("f78c329f-d853-4e56-838d-c228878947e0")]
+[assembly: Guid("9e5b6dec-bcd3-459a-955f-71035583c8f9")]
 
 // Version information for an assembly consists of the following four values:
 //
