@@ -133,6 +133,43 @@ namespace Buvinghausen.SequentialGuid.Tests
 			Assert.AreEqual(expectedTicks, actualTicks);
 		}
 
+        [TestMethod]
+        public void TestGuidToDateTimeForNonSequentialGuidReturnsMinUnixDateTime()
+        {
+            //Arrange
+            var guid = Guid.NewGuid();
+            //Act
+            var actual = guid.ToDateTime();
+            //Assert
+            Assert.AreEqual(actual, ExtensionMethods.UnixEpoch);
+        }
+
+        [TestMethod]
+        public void TestGuidIsSequentialGuidFailsForNormalGuid()
+        {
+            //Arrange
+            var guid = Guid.NewGuid();
+            //Act
+            var actual = guid.IsSequentialGuid();
+            //Assert
+            Assert.IsFalse(actual);
+        }
+
+
+        [TestMethod] public void TestNowIsSequentialGuid() { TestIsSequentialGuid(DateTime.UtcNow, true); }
+        [TestMethod] public void TestUnixEpochIsSequentialGuid() { TestIsSequentialGuid(ExtensionMethods.UnixEpoch, true); }
+        [TestMethod] public void TestBetweenUnixEpochAndNowIsSequentialGuid() { TestIsSequentialGuid(new DateTime(2000,01,01), true); }
+        [TestMethod] public void TestAfterNowIsNotSequentialGuid() { TestIsSequentialGuid(DateTime.Now.AddDays(3), false); }
+        [TestMethod] public void TestBeforeUnixEpochIsSequentialGuid() { TestIsSequentialGuid(ExtensionMethods.UnixEpoch.AddDays(-3), false); }
+
+        private static void TestIsSequentialGuid(DateTime d, bool expected)
+        {
+            var generator = SequentialGuidGenerator.Instance;
+            var actual = generator.NewGuid(d).IsSequentialGuid();
+            Assert.AreEqual(actual, expected);
+        }
+
+
 		/// <summary>
 		/// This test ensures we get the exact ticks value out of SqlGuid.ToDateTime method
 		/// </summary>
