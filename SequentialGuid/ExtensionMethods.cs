@@ -37,16 +37,16 @@ namespace Buvinghausen.SequentialGuid
 		/// <returns>DateTime</returns>
 		public static DateTime ToDateTime(this Guid guid)
 		{
-		    var ticks = guid.ToTicks();
-		    if(ticks.IsValidSequentialGuidDateTime())
-                return new DateTime(ticks);
+			var ticks = guid.ToTicks();
+			if (ticks.IsValidSequentialGuidDateTime())
+				return new DateTime(ticks, DateTimeKind.Utc);
 
-            //Try conversion through sql guid
-		    ticks = (new SqlGuid(guid)).ToGuid().ToTicks();
-            //TODO: Buvy, do you want an exception instead of a min value return?
-            return ticks.IsValidSequentialGuidDateTime() 
-                ? new DateTime(ticks) 
-                : UnixEpoch;
+			//Try conversion through sql guid
+			ticks = new SqlGuid(guid).ToGuid().ToTicks();
+			//TODO: Buvy, do you want an exception instead of a min value return?
+			return ticks.IsValidSequentialGuidDateTime()
+				? new DateTime(ticks, DateTimeKind.Utc)
+				: UnixEpoch;
 		}
 
 		/// <summary>
@@ -121,33 +121,33 @@ namespace Buvinghausen.SequentialGuid
 			);
 		}
 
-	    public static bool IsSequentialGuid(this SqlGuid sqlGuid)
-	    {
-	        return sqlGuid.ToGuid().IsSequentialGuid();
-	    }
+		public static bool IsSequentialGuid(this SqlGuid sqlGuid)
+		{
+			return sqlGuid.ToGuid().IsSequentialGuid();
+		}
 
-	    public static bool IsSequentialGuid(this Guid guid)
-	    {
-	        return guid.ToTicks().IsValidSequentialGuidDateTime();
-	    }
+		public static bool IsSequentialGuid(this Guid guid)
+		{
+			return guid.ToTicks().IsValidSequentialGuidDateTime();
+		}
 
-	    private static bool IsValidSequentialGuidDateTime(this long ticks)
-	    {
-            return ticks <= DateTime.UtcNow.Ticks && ticks >= UnixEpoch.Ticks;
-	    }
+		private static bool IsValidSequentialGuidDateTime(this long ticks)
+		{
+			return ticks <= DateTime.UtcNow.Ticks && ticks >= UnixEpoch.Ticks;
+		}
 
-	    private static long ToTicks(this Guid guid)
-	    {
-            var bytes = guid.ToByteArray();
-            var ticks = ((long)bytes[3] << 56) +
-                        ((long)bytes[2] << 48) +
-                        ((long)bytes[1] << 40) +
-                        ((long)bytes[0] << 32) +
-                        ((long)bytes[5] << 24) +
-                        (bytes[4] << 16) +
-                        (bytes[7] << 8) +
-                        bytes[6];
-	        return ticks;
-	    }
+		private static long ToTicks(this Guid guid)
+		{
+			var bytes = guid.ToByteArray();
+			var ticks = ((long)bytes[3] << 56) +
+						((long)bytes[2] << 48) +
+						((long)bytes[1] << 40) +
+						((long)bytes[0] << 32) +
+						((long)bytes[5] << 24) +
+						(bytes[4] << 16) +
+						(bytes[7] << 8) +
+						bytes[6];
+			return ticks;
+		}
 	}
 }

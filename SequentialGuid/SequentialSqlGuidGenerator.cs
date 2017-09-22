@@ -2,8 +2,8 @@
 
 namespace Buvinghausen.SequentialGuid
 {
+	/// <inheritdoc />
 	/// <summary>
-	/// 
 	/// </summary>
 	public sealed class SequentialSqlGuidGenerator : ISequentialGuidGenerator
 	{
@@ -20,16 +20,10 @@ namespace Buvinghausen.SequentialGuid
 		/// <summary>
 		/// 
 		/// </summary>
-		public static ISequentialGuidGenerator Instance
-		{
-			get
-			{
-				return Lazy.Value;
-			}
-		}
+		public static ISequentialGuidGenerator Instance => Lazy.Value;
 
+		/// <inheritdoc />
 		/// <summary>
-		/// 
 		/// </summary>
 		/// <returns></returns>
 		public Guid NewGuid()
@@ -37,8 +31,8 @@ namespace Buvinghausen.SequentialGuid
 			return NewGuid(DateTime.UtcNow);
 		}
 
+		/// <inheritdoc />
 		/// <summary>
-		/// 
 		/// </summary>
 		/// <param name="timestamp"></param>
 		/// <returns></returns>
@@ -47,8 +41,8 @@ namespace Buvinghausen.SequentialGuid
 			return NewGuid(timestamp.Ticks);
 		}
 
+		/// <inheritdoc />
 		/// <summary>
-		/// 
 		/// </summary>
 		/// <param name="timestamp"></param>
 		/// <returns></returns>
