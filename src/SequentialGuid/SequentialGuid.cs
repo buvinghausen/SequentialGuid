@@ -12,7 +12,7 @@ namespace Buvinghausen.SequentialGuid
 	/// Generates sequential Guids based on the MongoDB ObjectId specification only uses a 16 byte value in order to be Guid compatible.
 	/// The additional bytes are taken up by using a 64 bit time value rather than the 32 bit Unix epoch
 	/// </summary>
-	static class SequentialGuid
+	internal static class SequentialGuid
 	{
 		private static readonly byte[] StaticMachinePid;
 		private static int _staticIncrement;

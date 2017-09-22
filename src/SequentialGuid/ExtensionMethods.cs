@@ -7,8 +7,8 @@ namespace Buvinghausen.SequentialGuid
 {
 	public static class ExtensionMethods
 	{
-		private static readonly Dictionary<short, short> ToSqlGuidMap;
-		private static readonly Dictionary<short, short> ToGuidMap;
+		private static readonly IReadOnlyDictionary<short, short> ToSqlGuidMap;
+		private static readonly IReadOnlyDictionary<short, short> ToGuidMap;
 		internal static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
 		/// <summary>
