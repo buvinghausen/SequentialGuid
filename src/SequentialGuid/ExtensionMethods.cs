@@ -35,7 +35,7 @@ namespace Buvinghausen.SequentialGuid
 		/// </summary>
 		/// <param name="guid">A sequential Guid with the first 8 bytes containing the system ticks at time of generation</param>
 		/// <returns>DateTime</returns>
-		public static DateTime ToDateTime(this Guid guid)
+		public static DateTime? ToDateTime(this Guid guid)
 		{
 			var ticks = guid.ToTicks();
 			if (ticks.IsValidSequentialGuidDateTime())
@@ -43,10 +43,9 @@ namespace Buvinghausen.SequentialGuid
 
 			//Try conversion through sql guid
 			ticks = new SqlGuid(guid).ToGuid().ToTicks();
-			//TODO: Buvy, do you want an exception instead of a min value return?
 			return ticks.IsValidSequentialGuidDateTime()
 				? new DateTime(ticks, DateTimeKind.Utc)
-				: UnixEpoch;
+				: default(DateTime?);
 		}
 
 		/// <summary>
@@ -54,7 +53,7 @@ namespace Buvinghausen.SequentialGuid
 		/// </summary>
 		/// <param name="sqlGuid">A sequential SqlGuid with the first sorted 8 bytes containing the system ticks at time of generation</param>
 		/// <returns>DateTime</returns>
-		public static DateTime ToDateTime(this SqlGuid sqlGuid)
+		public static DateTime? ToDateTime(this SqlGuid sqlGuid)
 		{
 			return sqlGuid.ToGuid().ToDateTime();
 		}

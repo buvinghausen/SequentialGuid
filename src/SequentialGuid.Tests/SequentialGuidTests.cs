@@ -1,18 +1,17 @@
-﻿using Xunit;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Linq;
+using Xunit;
 
 namespace Buvinghausen.SequentialGuid.Tests
 {
 	public class SequentialGuidTests
 	{
-		//Arrange
 		/// <summary>
 		/// Properly sequenced Guid array
 		/// </summary>
-		private readonly IList<Guid> _guids = new List<Guid>
+		private IReadOnlyList<Guid> SortedGuids { get; } = new List<Guid>
 		{
 			new Guid("00000000-0000-0000-0000-000000000001"),
 			new Guid("00000000-0000-0000-0000-000000000100"),
@@ -35,7 +34,7 @@ namespace Buvinghausen.SequentialGuid.Tests
 		/// <summary>
 		/// Properly sequenced SqlGuid array
 		/// </summary>
-		private readonly IList<SqlGuid> _sqlGuids = new List<SqlGuid>
+		private IReadOnlyList<SqlGuid> SortedSqlGuids { get; } = new List<SqlGuid>
 		{
 			new SqlGuid("01000000-0000-0000-0000-000000000000"),
 			new SqlGuid("00010000-0000-0000-0000-000000000000"),
@@ -59,22 +58,22 @@ namespace Buvinghausen.SequentialGuid.Tests
 		public void TestGuidSorting()
 		{
 			//Act
-			var sortedList = _guids.OrderBy(x => x).ToList();
+			var sortedList = SortedGuids.OrderBy(x => x).ToList();
 			//Assert
-			Assert.Equal(16, _guids.Count);
-			for (var i = 0; i < _guids.Count; i++)
-				Assert.Equal(_guids[i], sortedList[i]);
+			Assert.Equal(16, SortedGuids.Count);
+			for (var i = 0; i < SortedGuids.Count; i++)
+				Assert.Equal(SortedGuids[i], sortedList[i]);
 		}
 
 		[Fact]
 		public void TestSqlGuidSorting()
 		{
 			//Act
-			var sortedList = _sqlGuids.OrderBy(x => x).ToList();
+			var sortedList = SortedSqlGuids.OrderBy(x => x).ToList();
 			//Assert
-			Assert.Equal(16, _sqlGuids.Count);
-			for (var i = 0; i < _sqlGuids.Count; i++)
-				Assert.Equal(_sqlGuids[i], sortedList[i]);
+			Assert.Equal(16, SortedSqlGuids.Count);
+			for (var i = 0; i < SortedSqlGuids.Count; i++)
+				Assert.Equal(SortedSqlGuids[i], sortedList[i]);
 		}
 
 		[Fact]
@@ -111,16 +110,16 @@ namespace Buvinghausen.SequentialGuid.Tests
 		public void TestSqlGuidToGuid()
 		{
 			//Act & Assert
-			for (var i = 0; i < _sqlGuids.Count; i++)
-				Assert.Equal(_guids[i], _sqlGuids[i].ToGuid());
+			for (var i = 0; i < 16; i++)
+				Assert.Equal(SortedGuids[i], SortedSqlGuids[i].ToGuid());
 		}
 
 		[Fact]
 		public void TestGuidToSqlGuid()
 		{
 			//Act & Assert
-			for (var i = 0; i < _guids.Count; i++)
-				Assert.Equal(_sqlGuids[i], _guids[i].ToSqlGuid());
+			for (var i = 0; i < 16; i++)
+				Assert.Equal(SortedSqlGuids[i], SortedGuids[i].ToSqlGuid());
 		}
 
 		/// <summary>
@@ -133,21 +132,21 @@ namespace Buvinghausen.SequentialGuid.Tests
 			var generator = SequentialGuidGenerator.Instance;
 			var expectedTicks = DateTime.UtcNow.Ticks;
 			//Act
-			var dateTime = generator.NewGuid(expectedTicks).ToDateTime();
+			var dateTime = generator.NewGuid(expectedTicks).ToDateTime().GetValueOrDefault();
 			//Assert
 			Assert.Equal(expectedTicks, dateTime.Ticks);
 			Assert.Equal(DateTimeKind.Utc, dateTime.Kind);
 		}
 
 		[Fact]
-		public void TestGuidToDateTimeForNonSequentialGuidReturnsMinUnixDateTime()
+		public void TestGuidToDateTimeForNonSequentialGuidReturnsNull()
 		{
 			//Arrange
 			var guid = Guid.NewGuid();
 			//Act
 			var actual = guid.ToDateTime();
 			//Assert
-			Assert.Equal(ExtensionMethods.UnixEpoch, actual);
+			Assert.Null(actual);
 		}
 
 		[Fact]
@@ -160,37 +159,28 @@ namespace Buvinghausen.SequentialGuid.Tests
 			//Assert
 			Assert.False(actual);
 		}
-		
+
 		[Fact]
-		public void TestNowIsSequentialGuid()
-		{
+		public void TestNowIsSequentialGuid() =>
 			TestIsSequentialGuid(true, DateTime.UtcNow);
-		}
 
 		[Fact]
-		public void TestUnixEpochIsSequentialGuid()
-		{
+		public void TestUnixEpochIsSequentialGuid() =>
 			TestIsSequentialGuid(true, ExtensionMethods.UnixEpoch);
-		}
 
 		[Fact]
-		public void TestBetweenUnixEpochAndNowIsSequentialGuid()
-		{
+		public void TestBetweenUnixEpochAndNowIsSequentialGuid() =>
 			TestIsSequentialGuid(true, new DateTime(2000, 01, 01));
-		}
 
 		[Fact]
-		public void TestAfterNowIsNotSequentialGuid()
-		{
-			TestIsSequentialGuid(false, DateTime.UtcNow.AddDays(3));
-		}
+		public void TestAfterNowIsNotSequentialGuid() =>
+			TestIsSequentialGuid(false, DateTime.UtcNow.AddMilliseconds(1));
 
 		[Fact]
-		public void TestBeforeUnixEpochIsSequentialGuid()
-		{
-			TestIsSequentialGuid(false, ExtensionMethods.UnixEpoch.AddDays(-3));
-		}
+		public void TestBeforeUnixEpochIsSequentialGuid() =>
+			TestIsSequentialGuid(false, ExtensionMethods.UnixEpoch.AddMilliseconds(-1));
 
+		// ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
 		private static void TestIsSequentialGuid(bool expected, DateTime d)
 		{
 			var generator = SequentialGuidGenerator.Instance;
@@ -208,9 +198,9 @@ namespace Buvinghausen.SequentialGuid.Tests
 			var generator = SequentialSqlGuidGenerator.Instance;
 			var expectedTicks = DateTime.UtcNow.Ticks;
 			//Act
-			var actualTicks = generator.NewGuid(expectedTicks).ToDateTime().Ticks;
+			var dateTime = generator.NewGuid(expectedTicks).ToDateTime().GetValueOrDefault();
 			//Assert
-			Assert.Equal(expectedTicks, actualTicks);
+			Assert.Equal(expectedTicks, dateTime.Ticks);
 		}
 
 		[Fact]
@@ -220,7 +210,7 @@ namespace Buvinghausen.SequentialGuid.Tests
 			var generator = SequentialGuidGenerator.Instance;
 			var items = new List<Guid>();
 			//Act
-			for (var i = 1970; i < 2015; i++)
+			for (var i = 1970; i < DateTime.Today.Year; i++)
 				items.Add(generator.NewGuid(DateTime.Parse($"{i}-01-01")));
 			var sortedItems = items.OrderBy(x => x).ToList();
 			//Assert
@@ -235,7 +225,7 @@ namespace Buvinghausen.SequentialGuid.Tests
 			var generator = SequentialSqlGuidGenerator.Instance;
 			var items = new List<SqlGuid>();
 			//Act
-			for (var i = 1970; i < 2015; i++)
+			for (var i = 1970; i < DateTime.Today.Year; i++)
 				items.Add(generator.NewGuid(DateTime.Parse($"{i}-01-01")));
 			var sortedItems = items.OrderBy(x => x).ToList();
 			//Assert
