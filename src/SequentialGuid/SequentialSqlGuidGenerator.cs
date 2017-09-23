@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Buvinghausen.SequentialGuid
 {
@@ -26,29 +26,20 @@ namespace Buvinghausen.SequentialGuid
 		/// <summary>
 		/// </summary>
 		/// <returns></returns>
-		public Guid NewGuid()
-		{
-			return NewGuid(DateTime.UtcNow);
-		}
+		public Guid NewGuid() => NewGuid(DateTime.UtcNow);
 
 		/// <inheritdoc />
 		/// <summary>
 		/// </summary>
 		/// <param name="timestamp"></param>
 		/// <returns></returns>
-		public Guid NewGuid(DateTime timestamp)
-		{
-			return NewGuid(timestamp.Ticks);
-		}
+		public Guid NewGuid(DateTime timestamp) => NewGuid(timestamp.Ticks);
 
 		/// <inheritdoc />
 		/// <summary>
 		/// </summary>
 		/// <param name="timestamp"></param>
 		/// <returns></returns>
-		public Guid NewGuid(long timestamp)
-		{
-			return SequentialGuid.NewGuid(timestamp).ToSqlGuid().Value;
-		}
+		public Guid NewGuid(long timestamp) => SequentialGuid.NewGuid(timestamp).ToSqlGuid().Value;
 	}
 }
