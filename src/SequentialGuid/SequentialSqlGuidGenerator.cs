@@ -1,6 +1,6 @@
 using System;
 
-namespace Buvinghausen.SequentialGuid
+namespace SequentialGuid
 {
 	/// <inheritdoc />
 	/// <summary>

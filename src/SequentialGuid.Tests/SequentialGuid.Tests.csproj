@@ -5,9 +5,9 @@
 
     <IsPackable>false</IsPackable>
 
-    <AssemblyName>Buvinghausen.SequentialGuid.Tests</AssemblyName>
+    <AssemblyName>SequentialGuid.Tests</AssemblyName>
 
-    <RootNamespace>Buvinghausen.SequentialGuid.Tests</RootNamespace>
+    <RootNamespace>SequentialGuid.Tests</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

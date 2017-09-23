@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 
-namespace Buvinghausen.SequentialGuid
+namespace SequentialGuid
 {
 	/// <summary>
 	/// 

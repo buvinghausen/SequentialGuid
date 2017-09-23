@@ -1,3 +1,3 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Buvinghausen.SequentialGuid.Tests")]
+[assembly: InternalsVisibleTo("SequentialGuid.Tests")]

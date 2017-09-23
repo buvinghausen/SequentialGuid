@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Linq;
 using Xunit;
 
-namespace Buvinghausen.SequentialGuid.Tests
+namespace SequentialGuid.Tests
 {
 	public class SequentialGuidTests
 	{
