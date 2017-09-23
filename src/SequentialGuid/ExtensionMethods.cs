@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Linq;
@@ -30,6 +30,9 @@ namespace Buvinghausen.SequentialGuid
 			ToSqlGuidMap = ToGuidMap.ToDictionary(d => d.Value, d => d.Key);
 		}
 
+		public static DateTime ToDateTime(this long ticks) =>
+			new DateTime(ticks, DateTimeKind.Utc);
+
 		/// <summary>
 		/// Will return the value of DateTime.UtcNow at the time of the generation of the Guid will keep you from storing separate audit fields
 		/// </summary>
@@ -38,13 +41,13 @@ namespace Buvinghausen.SequentialGuid
 		public static DateTime? ToDateTime(this Guid guid)
 		{
 			var ticks = guid.ToTicks();
-			if (ticks.IsValidSequentialGuidDateTime())
-				return new DateTime(ticks, DateTimeKind.Utc);
+			if (ticks.IsDateTime())
+				return ticks.ToDateTime();
 
 			//Try conversion through sql guid
 			ticks = new SqlGuid(guid).ToGuid().ToTicks();
-			return ticks.IsValidSequentialGuidDateTime()
-				? new DateTime(ticks, DateTimeKind.Utc)
+			return ticks.IsDateTime()
+				? ticks.ToDateTime()
 				: default(DateTime?);
 		}
 
@@ -53,10 +56,8 @@ namespace Buvinghausen.SequentialGuid
 		/// </summary>
 		/// <param name="sqlGuid">A sequential SqlGuid with the first sorted 8 bytes containing the system ticks at time of generation</param>
 		/// <returns>DateTime</returns>
-		public static DateTime? ToDateTime(this SqlGuid sqlGuid)
-		{
-			return sqlGuid.ToGuid().ToDateTime();
-		}
+		public static DateTime? ToDateTime(this SqlGuid sqlGuid) =>
+			sqlGuid.ToGuid().ToDateTime();
 
 		/// <summary>
 		/// Will take a SqlGuid and reseqeuence to a Guid that will sort in the same order
@@ -120,20 +121,14 @@ namespace Buvinghausen.SequentialGuid
 			);
 		}
 
-		public static bool IsSequentialGuid(this SqlGuid sqlGuid)
-		{
-			return sqlGuid.ToGuid().IsSequentialGuid();
-		}
+		public static bool IsSequentialGuid(this SqlGuid sqlGuid) =>
+			sqlGuid.ToGuid().IsSequentialGuid();
 
-		public static bool IsSequentialGuid(this Guid guid)
-		{
-			return guid.ToTicks().IsValidSequentialGuidDateTime();
-		}
+		public static bool IsSequentialGuid(this Guid guid) =>
+			guid.ToTicks().IsDateTime();
 
-		private static bool IsValidSequentialGuidDateTime(this long ticks)
-		{
-			return ticks <= DateTime.UtcNow.Ticks && ticks >= UnixEpoch.Ticks;
-		}
+		private static bool IsDateTime(this long ticks) =>
+			ticks <= DateTime.UtcNow.Ticks && ticks >= UnixEpoch.Ticks;
 
 		private static long ToTicks(this Guid guid)
 		{
