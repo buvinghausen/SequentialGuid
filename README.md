@@ -1,7 +1,7 @@
 SequentialGuid
 ==============
 
-Will generate Sequential Guids based on MongoDB's ObjectId specification. Date &amp; time are encoded into the value so you do not need to store them separately in your database
+Will generate Sequential Guids based on [MongoDB's ObjectId specification](https://www.tutorialspoint.com/mongodb/mongodb_objectid.htm). Date &amp; time are encoded into the value so you do not need to store them separately in your database
 
 Define an interface to the signature you like
 ```csharp
