@@ -19,12 +19,5 @@ namespace SequentialGuid
 		/// <param name="timestamp"></param>
 		/// <returns></returns>
 		Guid NewGuid(DateTime timestamp);
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="timestamp"></param>
-		/// <returns></returns>
-		Guid NewGuid(long timestamp);
 	}
 }

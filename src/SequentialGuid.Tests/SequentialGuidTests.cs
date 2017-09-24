@@ -81,7 +81,11 @@ namespace SequentialGuid.Tests
 		{
 			//Arrange
 			var generator = SequentialGuidGenerator.Instance;
-			var items = Enumerable.Range(0, 25).Select(i => new { Id = generator.NewGuid(), Sort = i });
+			var items = Enumerable.Range(0, 25).Select(i => new
+			{
+				Id = generator.NewGuid(),
+				Sort = i
+			});
 			//Act
 			var sortedItems = items.OrderBy(x => x.Id).ToList();
 			//Assert
@@ -97,12 +101,34 @@ namespace SequentialGuid.Tests
 		{
 			//Arrange
 			var generator = SequentialSqlGuidGenerator.Instance;
-			var items = Enumerable.Range(0, 25).Select(i => new { Id = new SqlGuid(generator.NewGuid()), Sort = i });
+			var items = Enumerable.Range(0, 25).Select(i => new
+			{
+				Id = new SqlGuid(generator.NewGuid()),
+				Sort = i
+			});
 			//Act
 			var sortedItems = items.OrderBy(x => x.Id).ToList();
 			//Assert
 			for (var i = 0; i < sortedItems.Count; i++)
 				Assert.Equal(i, sortedItems[i].Sort);
+		}
+
+		[Fact]
+		public void TestLocalDateIsUtcInGuid() =>
+			TestLocalDateIsUtcInGuid(SequentialGuidGenerator.Instance);
+
+		[Fact]
+		public void TestLocalDateIsUtcInSqlGuid() =>
+			TestLocalDateIsUtcInGuid(SequentialSqlGuidGenerator.Instance);
+
+		private static void TestLocalDateIsUtcInGuid(ISequentialGuidGenerator generator)
+		{
+			//Act
+			var localNow = DateTime.Now;
+			var utcDate = generator.NewGuid(localNow).ToDateTime().GetValueOrDefault();
+			//Assert
+			Assert.Equal(DateTimeKind.Utc, utcDate.Kind);
+			Assert.Equal(localNow, utcDate.ToLocalTime());
 		}
 
 
@@ -130,11 +156,12 @@ namespace SequentialGuid.Tests
 		{
 			//Arrange
 			var generator = SequentialGuidGenerator.Instance;
-			var expectedTicks = DateTime.UtcNow.Ticks;
+			var expectedDateTime = DateTime.UtcNow;
 			//Act
-			var dateTime = generator.NewGuid(expectedTicks).ToDateTime().GetValueOrDefault();
+			var dateTime = generator.NewGuid(expectedDateTime).ToDateTime()
+				.GetValueOrDefault();
 			//Assert
-			Assert.Equal(expectedTicks, dateTime.Ticks);
+			Assert.Equal(expectedDateTime.Ticks, dateTime.Ticks);
 			Assert.Equal(DateTimeKind.Utc, dateTime.Kind);
 		}
 
@@ -196,11 +223,12 @@ namespace SequentialGuid.Tests
 		{
 			//Arrange
 			var generator = SequentialSqlGuidGenerator.Instance;
-			var expectedTicks = DateTime.UtcNow.Ticks;
+			var expectedDateTime = DateTime.UtcNow;
 			//Act
-			var dateTime = generator.NewGuid(expectedTicks).ToDateTime().GetValueOrDefault();
+			var dateTime = generator.NewGuid(expectedDateTime).ToDateTime()
+				.GetValueOrDefault();
 			//Assert
-			Assert.Equal(expectedTicks, dateTime.Ticks);
+			Assert.Equal(expectedDateTime.Ticks, dateTime.Ticks);
 		}
 
 		[Fact]
