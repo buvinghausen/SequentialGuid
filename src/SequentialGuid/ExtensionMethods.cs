@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data.SqlTypes;
 using System.Linq;
 
@@ -16,17 +17,29 @@ namespace SequentialGuid
 		static ExtensionMethods()
 		{
 			//See: http://sqlblog.com/blogs/alberto_ferrari/archive/2007/08/31/how-are-guids-sorted-by-sql-server.aspx
-			ToGuidMap = new Dictionary<byte, byte>
+			ToGuidMap = new ReadOnlyDictionary<byte, byte>(new Dictionary<byte, byte>
 			{
-				{0, 13}, {1, 12}, {2, 11}, {3, 10},
-				{4, 15}, {5, 14},
-				{6, 9}, {7, 8},
-				{8, 6}, {9, 7},
-				{10, 4}, {11, 5},
-				{12, 0}, {13, 1}, {14, 2}, {15, 3}
-			};
+				{0, 13},
+				{1, 12},
+				{2, 11},
+				{3, 10},
+				{4, 15},
+				{5, 14},
+				{6, 9},
+				{7, 8},
+				{8, 6},
+				{9, 7},
+				{10, 4},
+				{11, 5},
+				{12, 0},
+				{13, 1},
+				{14, 2},
+				{15, 3}
+			});
 			//Invert map
-			ToSqlGuidMap = ToGuidMap.ToDictionary(d => d.Value, d => d.Key);
+			ToSqlGuidMap =
+				new ReadOnlyDictionary<byte, byte>(
+					ToGuidMap.ToDictionary(d => d.Value, d => d.Key));
 		}
 
 		public static DateTime ToDateTime(this long ticks) =>
