@@ -5,26 +5,26 @@ Will generate Sequential Guids based on MongoDB's ObjectId specification. Date &
 
 Define an interface to the signature you like
 ```csharp
-	public interface IIdGenerator
-	{
-		Guid NewId();
-	}
+public interface IIdGenerator
+{
+	Guid NewId();
+}
 ```
 
 Then define your implementing class which can be transient since the singleton is implemented by the framework
 
 ```csharp
-	public class SequentialIdGenerator : IIdGenerator
-	{
-		public Guid NewId() => SequentialGuidGenerator.Instance.NewGuid();
-	}
+public class SequentialIdGenerator : IIdGenerator
+{
+	public Guid NewId() => SequentialGuidGenerator.Instance.NewGuid();
+}
 ```
 
 Then wire it up in the ConfigureServices method during application startup
 
 ```csharp
-	public void ConfigureServices(IServiceCollection services)
-	{
-		services.AddSingleton<IIdGenerator, SequentialIdGenerator>();
-	}
+public void ConfigureServices(IServiceCollection services)
+{
+	services.AddTransient<IIdGenerator, SequentialIdGenerator>();
+}
 ```
