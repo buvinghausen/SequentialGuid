@@ -7,8 +7,8 @@ namespace SequentialGuid
 {
 	public static class ExtensionMethods
 	{
-		private static readonly IReadOnlyDictionary<short, short> ToSqlGuidMap;
-		private static readonly IReadOnlyDictionary<short, short> ToGuidMap;
+		private static readonly IReadOnlyDictionary<byte, byte> ToSqlGuidMap;
+		private static readonly IReadOnlyDictionary<byte, byte> ToGuidMap;
 		internal static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
 		/// <summary>
@@ -17,7 +17,7 @@ namespace SequentialGuid
 		static ExtensionMethods()
 		{
 			//See: http://sqlblog.com/blogs/alberto_ferrari/archive/2007/08/31/how-are-guids-sorted-by-sql-server.aspx
-			ToGuidMap = new Dictionary<short, short>
+			ToGuidMap = new Dictionary<byte, byte>
 			{
 				{0, 13}, {1, 12}, {2, 11}, {3, 10},
 				{4, 15}, {5, 14},
@@ -67,27 +67,9 @@ namespace SequentialGuid
 		public static Guid ToGuid(this SqlGuid sqlGuid)
 		{
 			var bytes = sqlGuid.ToByteArray();
-			return new Guid(
-				new[]
-				{
-					bytes[ToGuidMap[0]],
-					bytes[ToGuidMap[1]],
-					bytes[ToGuidMap[2]],
-					bytes[ToGuidMap[3]],
-					bytes[ToGuidMap[4]],
-					bytes[ToGuidMap[5]],
-					bytes[ToGuidMap[6]],
-					bytes[ToGuidMap[7]],
-					bytes[ToGuidMap[8]],
-					bytes[ToGuidMap[9]],
-					bytes[ToGuidMap[10]],
-					bytes[ToGuidMap[11]],
-					bytes[ToGuidMap[12]],
-					bytes[ToGuidMap[13]],
-					bytes[ToGuidMap[14]],
-					bytes[ToGuidMap[15]]
-				}
-			);
+			return new Guid(Enumerable.Range(0, 16)
+				.Select(e => bytes[ToGuidMap[(byte)e]])
+				.ToArray());
 		}
 
 		/// <summary>
@@ -98,27 +80,9 @@ namespace SequentialGuid
 		public static SqlGuid ToSqlGuid(this Guid guid)
 		{
 			var bytes = guid.ToByteArray();
-			return new SqlGuid(
-				new[]
-				{
-					bytes[ToSqlGuidMap[0]],
-					bytes[ToSqlGuidMap[1]],
-					bytes[ToSqlGuidMap[2]],
-					bytes[ToSqlGuidMap[3]],
-					bytes[ToSqlGuidMap[4]],
-					bytes[ToSqlGuidMap[5]],
-					bytes[ToSqlGuidMap[6]],
-					bytes[ToSqlGuidMap[7]],
-					bytes[ToSqlGuidMap[8]],
-					bytes[ToSqlGuidMap[9]],
-					bytes[ToSqlGuidMap[10]],
-					bytes[ToSqlGuidMap[11]],
-					bytes[ToSqlGuidMap[12]],
-					bytes[ToSqlGuidMap[13]],
-					bytes[ToSqlGuidMap[14]],
-					bytes[ToSqlGuidMap[15]]
-				}
-			);
+			return new SqlGuid(Enumerable.Range(0, 16)
+				.Select(e => bytes[ToSqlGuidMap[(byte)e]])
+				.ToArray());
 		}
 
 		public static bool IsSequentialGuid(this SqlGuid sqlGuid) =>
@@ -133,15 +97,14 @@ namespace SequentialGuid
 		private static long ToTicks(this Guid guid)
 		{
 			var bytes = guid.ToByteArray();
-			var ticks = ((long)bytes[3] << 56) +
-						((long)bytes[2] << 48) +
-						((long)bytes[1] << 40) +
-						((long)bytes[0] << 32) +
-						((long)bytes[5] << 24) +
-						(bytes[4] << 16) +
-						(bytes[7] << 8) +
-						bytes[6];
-			return ticks;
+			return ((long)bytes[3] << 56) +
+				((long)bytes[2] << 48) +
+				((long)bytes[1] << 40) +
+				((long)bytes[0] << 32) +
+				((long)bytes[5] << 24) +
+				(bytes[4] << 16) +
+				(bytes[7] << 8) +
+				bytes[6];
 		}
 	}
 }
