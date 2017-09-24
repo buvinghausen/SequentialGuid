@@ -7,6 +7,8 @@ namespace SequentialGuid
 	/// </summary>
 	public sealed class SequentialGuidGenerator : BaseSequentialGuidGenerator<SequentialGuidGenerator>
 	{
+		private SequentialGuidGenerator() { }
+
 		/// <summary>
 		/// </summary>
 		/// <param name="timestamp"></param>

@@ -1,12 +1,14 @@
 using System;
+using System.Threading;
 
 namespace SequentialGuid
 {
-	public abstract class BaseSequentialGuidGenerator<T> : ISequentialGuidGenerator
-		where T : BaseSequentialGuidGenerator<T>, new()
+	public abstract class BaseSequentialGuidGenerator<T> : ISequentialGuidGenerator where T :
+		BaseSequentialGuidGenerator<T>
 	{
-		private static readonly Lazy<ISequentialGuidGenerator> Lazy =
-			new Lazy<ISequentialGuidGenerator>(() => new T());
+		private static readonly ThreadLocal<ISequentialGuidGenerator> Lazy =
+			new ThreadLocal<ISequentialGuidGenerator>(() =>
+				Activator.CreateInstance(typeof(T), true) as T);
 
 		/// <summary>
 		/// 
