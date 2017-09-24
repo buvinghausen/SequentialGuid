@@ -117,7 +117,8 @@ namespace SequentialGuid.Tests
 		public void TestLocalDateIsUtcInGuid()
 		{
 			var localNow = DateTime.Now;
-			TestLocalDateIsUtcInGuid(localNow, SequentialGuidGenerator.Instance.NewGuid(localNow));
+			TestLocalDateIsUtcInGuid(localNow,
+				SequentialGuidGenerator.Instance.NewGuid(localNow));
 		}
 			
 
@@ -125,7 +126,8 @@ namespace SequentialGuid.Tests
 		public void TestLocalDateIsUtcInSqlGuid()
 		{
 			var localNow = DateTime.Now;
-			TestLocalDateIsUtcInGuid(localNow, SequentialSqlGuidGenerator.Instance.NewGuid(localNow));
+			TestLocalDateIsUtcInGuid(localNow,
+				SequentialSqlGuidGenerator.Instance.NewGuid(localNow));
 		}
 
 		// ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
@@ -200,7 +202,7 @@ namespace SequentialGuid.Tests
 
 		[Fact]
 		public void TestUnixEpochIsSequentialGuid() =>
-			TestIsSequentialGuid(true, ExtensionMethods.UnixEpoch);
+			TestIsSequentialGuid(true, SequentialGuid.UnixEpoch);
 
 		[Fact]
 		public void TestBetweenUnixEpochAndNowIsSequentialGuid() =>
@@ -212,7 +214,7 @@ namespace SequentialGuid.Tests
 
 		[Fact]
 		public void TestBeforeUnixEpochIsSequentialGuid() =>
-			TestIsSequentialGuid(false, ExtensionMethods.UnixEpoch.AddMilliseconds(-1));
+			TestIsSequentialGuid(false, SequentialGuid.UnixEpoch.AddMilliseconds(-1));
 
 		// ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
 		private static void TestIsSequentialGuid(bool expected, DateTime d)

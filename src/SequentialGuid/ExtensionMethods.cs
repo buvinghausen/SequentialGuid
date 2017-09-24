@@ -9,7 +9,6 @@ namespace SequentialGuid
 	{
 		private static readonly IReadOnlyDictionary<byte, byte> ToSqlGuidMap;
 		private static readonly IReadOnlyDictionary<byte, byte> ToGuidMap;
-		internal static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
 		/// <summary>
 		/// Constructor initializes the guid seqeuence mappings
@@ -92,7 +91,7 @@ namespace SequentialGuid
 			guid.ToTicks().IsDateTime();
 
 		private static bool IsDateTime(this long ticks) =>
-			ticks <= DateTime.UtcNow.Ticks && ticks >= UnixEpoch.Ticks;
+			ticks <= DateTime.UtcNow.Ticks && ticks >= SequentialGuid.UnixEpoch.Ticks;
 
 		private static long ToTicks(this Guid guid)
 		{

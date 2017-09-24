@@ -14,6 +14,8 @@ namespace SequentialGuid
 	/// </summary>
 	internal static class SequentialGuid
 	{
+		internal static readonly DateTime UnixEpoch =
+			new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 		private static readonly byte[] StaticMachinePid;
 		private static int _staticIncrement;
 
