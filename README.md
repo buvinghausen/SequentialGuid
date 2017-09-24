@@ -11,7 +11,7 @@ public interface IIdGenerator
 }
 ```
 
-Then define your implementing class which can be transient since the singleton is implemented by the framework
+Define your implementing class which can be transient since the singleton is implemented by the framework
 
 ```csharp
 public class SequentialIdGenerator : IIdGenerator
@@ -20,11 +20,20 @@ public class SequentialIdGenerator : IIdGenerator
 }
 ```
 
-Then wire it up in the ConfigureServices method during application startup
+Wire it up to .NET Core dependency injection in the ConfigureServices method during application startup
 
 ```csharp
 public void ConfigureServices(IServiceCollection services)
 {
     services.AddTransient<IIdGenerator, SequentialIdGenerator>();
+}
+```
+Finally define a base entity for your application which will contain an id and a timestamp as soon as you initialize it
+
+```csharp
+public abstract class BaseEntity
+{
+    public Guid Id { get; set; } = SequentialGuidGenerator.Instance.NewGuid();
+    public DateTime? Timestamp => Id.ToDateTime();
 }
 ```
