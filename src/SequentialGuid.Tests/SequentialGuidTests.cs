@@ -123,7 +123,7 @@ namespace SequentialGuid.Tests
 			TestLocalDateIsUtcInGuid(localNow,
 				SequentialGuidGenerator.Instance.NewGuid(localNow));
 		}
-			
+
 
 		[Fact]
 		public void TestLocalDateIsUtcInSqlGuid()
@@ -142,7 +142,6 @@ namespace SequentialGuid.Tests
 			Assert.Equal(DateTimeKind.Utc, utcDate.Kind);
 			Assert.Equal(localNow, utcDate.ToLocalTime());
 		}
-
 
 		[Fact]
 		public void TestSqlGuidToGuid()
@@ -164,7 +163,7 @@ namespace SequentialGuid.Tests
 		/// This test ensures we get the exact ticks value out of Guid.ToDateTime method & the date time is in UTC
 		/// </summary>
 		[Fact]
-		public void TestGuidToDateTime()
+		public void TestGuidToDateTimeIsUtc()
 		{
 			//Arrange
 			var generator = SequentialGuidGenerator.Instance;
@@ -189,43 +188,32 @@ namespace SequentialGuid.Tests
 		}
 
 		[Fact]
-		public void TestGuidIsSequentialGuidFailsForNormalGuid()
-		{
-			//Arrange
-			var guid = Guid.NewGuid();
-			//Act
-			var actual = guid.IsSequentialGuid();
-			//Assert
-			Assert.False(actual);
-		}
+		public void TestNowDoesntThrowException() =>
+			SequentialGuidGenerator.Instance.NewGuid(DateTime.UtcNow);
 
 		[Fact]
-		public void TestNowIsSequentialGuid() =>
-			TestIsSequentialGuid(true, DateTime.UtcNow);
+		public void TestUnixEpochDoesntThrowException() =>
+			SequentialGuidGenerator.Instance.NewGuid(SequentialGuid.UnixEpoch);
 
 		[Fact]
-		public void TestUnixEpochIsSequentialGuid() =>
-			TestIsSequentialGuid(true, SequentialGuid.UnixEpoch);
+		public void TestBetweenUnixEpochAndNowDoesntThrowException() =>
+			SequentialGuidGenerator.Instance.NewGuid(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc));
 
 		[Fact]
-		public void TestBetweenUnixEpochAndNowIsSequentialGuid() =>
-			TestIsSequentialGuid(true, new DateTime(2000, 01, 01));
+		public void TestDateTimeKindUnspecifiedThrowsArgumentException() =>
+			TestThrowsArgumentException(new DateTime(2000, 1, 1));
 
 		[Fact]
-		public void TestAfterNowIsNotSequentialGuid() =>
-			TestIsSequentialGuid(false, DateTime.UtcNow.AddMilliseconds(1));
+		public void TestAfterNowThrowsArgumentException() =>
+			TestThrowsArgumentException(DateTime.UtcNow.AddMilliseconds(10));
 
 		[Fact]
-		public void TestBeforeUnixEpochIsSequentialGuid() =>
-			TestIsSequentialGuid(false, SequentialGuid.UnixEpoch.AddMilliseconds(-1));
+		public void TestBeforeUnixEpochThrowsArgumentException() =>
+			TestThrowsArgumentException(SequentialGuid.UnixEpoch.AddMilliseconds(-1));
 
-		// ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
-		private static void TestIsSequentialGuid(bool expected, DateTime d)
-		{
-			var generator = SequentialGuidGenerator.Instance;
-			var actual = generator.NewGuid(d).IsSequentialGuid();
-			Assert.Equal(expected, actual);
-		}
+		private static void TestThrowsArgumentException(DateTime timestamp) =>
+			Assert.Throws<ArgumentException>(() =>
+				SequentialGuidGenerator.Instance.NewGuid(timestamp));
 
 		/// <summary>
 		/// This test ensures we get the exact ticks value out of SqlGuid.ToDateTime method
@@ -251,7 +239,7 @@ namespace SequentialGuid.Tests
 			var items = new List<Guid>();
 			//Act
 			for (var i = 1970; i < DateTime.Today.Year; i++)
-				items.Add(generator.NewGuid(DateTime.Parse($"{i}-01-01")));
+				items.Add(generator.NewGuid(new DateTime(i, 1, 1, 0, 0, 0, DateTimeKind.Utc)));
 			var sortedItems = items.OrderBy(x => x).ToList();
 			//Assert
 			for (var i = 0; i < sortedItems.Count; i++)
@@ -266,7 +254,7 @@ namespace SequentialGuid.Tests
 			var items = new List<SqlGuid>();
 			//Act
 			for (var i = 1970; i < DateTime.Today.Year; i++)
-				items.Add(generator.NewGuid(DateTime.Parse($"{i}-01-01")));
+				items.Add(generator.NewGuid(new DateTime(i, 1, 1, 0, 0, 0, DateTimeKind.Utc)));
 			var sortedItems = items.OrderBy(x => x).ToList();
 			//Assert
 			for (var i = 0; i < sortedItems.Count; i++)

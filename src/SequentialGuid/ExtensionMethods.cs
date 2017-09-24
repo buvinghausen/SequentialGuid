@@ -42,7 +42,7 @@ namespace SequentialGuid
 					ToGuidMap.ToDictionary(d => d.Value, d => d.Key));
 		}
 
-		public static DateTime ToDateTime(this long ticks) =>
+		private static DateTime ToDateTime(this long ticks) =>
 			new DateTime(ticks, DateTimeKind.Utc);
 
 		/// <summary>
@@ -97,13 +97,7 @@ namespace SequentialGuid
 				.ToArray());
 		}
 
-		public static bool IsSequentialGuid(this SqlGuid sqlGuid) =>
-			sqlGuid.ToGuid().IsSequentialGuid();
-
-		public static bool IsSequentialGuid(this Guid guid) =>
-			guid.ToTicks().IsDateTime();
-
-		private static bool IsDateTime(this long ticks) =>
+		internal static bool IsDateTime(this long ticks) =>
 			ticks <= DateTime.UtcNow.Ticks && ticks >= SequentialGuid.UnixEpoch.Ticks;
 
 		private static long ToTicks(this Guid guid)
