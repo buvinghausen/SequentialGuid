@@ -114,18 +114,25 @@ namespace SequentialGuid.Tests
 		}
 
 		[Fact]
-		public void TestLocalDateIsUtcInGuid() =>
-			TestLocalDateIsUtcInGuid(SequentialGuidGenerator.Instance);
+		public void TestLocalDateIsUtcInGuid()
+		{
+			var localNow = DateTime.Now;
+			TestLocalDateIsUtcInGuid(localNow, SequentialGuidGenerator.Instance.NewGuid(localNow));
+		}
+			
 
 		[Fact]
-		public void TestLocalDateIsUtcInSqlGuid() =>
-			TestLocalDateIsUtcInGuid(SequentialSqlGuidGenerator.Instance);
+		public void TestLocalDateIsUtcInSqlGuid()
+		{
+			var localNow = DateTime.Now;
+			TestLocalDateIsUtcInGuid(localNow, SequentialSqlGuidGenerator.Instance.NewGuid(localNow));
+		}
 
-		private static void TestLocalDateIsUtcInGuid(ISequentialGuidGenerator generator)
+		// ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
+		private static void TestLocalDateIsUtcInGuid(DateTime localNow, Guid id)
 		{
 			//Act
-			var localNow = DateTime.Now;
-			var utcDate = generator.NewGuid(localNow).ToDateTime().GetValueOrDefault();
+			var utcDate = id.ToDateTime().GetValueOrDefault();
 			//Assert
 			Assert.Equal(DateTimeKind.Utc, utcDate.Kind);
 			Assert.Equal(localNow, utcDate.ToLocalTime());

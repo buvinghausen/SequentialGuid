@@ -3,25 +3,23 @@ using System.Threading;
 
 namespace SequentialGuid
 {
-	public abstract class BaseSequentialGuidGenerator<T> : ISequentialGuidGenerator where T :
+	public abstract class BaseSequentialGuidGenerator<T> where T :
 		BaseSequentialGuidGenerator<T>
 	{
-		private static readonly ThreadLocal<ISequentialGuidGenerator> Lazy =
-			new ThreadLocal<ISequentialGuidGenerator>(() =>
+		private static readonly ThreadLocal<T> Lazy =
+			new ThreadLocal<T>(() =>
 				Activator.CreateInstance(typeof(T), true) as T);
 
 		/// <summary>
 		/// 
 		/// </summary>
-		public static ISequentialGuidGenerator Instance => Lazy.Value;
+		public static T Instance => Lazy.Value;
 
-		/// <inheritdoc />
 		/// <summary>
 		/// </summary>
 		/// <returns></returns>
 		public Guid NewGuid() => NewGuid(DateTime.UtcNow);
 
-		/// <inheritdoc />
 		/// <summary>
 		/// </summary>
 		/// <param name="timestamp"></param>
