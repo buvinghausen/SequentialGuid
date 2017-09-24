@@ -5,8 +5,8 @@
     <AssemblyName>SequentialGuid</AssemblyName>
     <RootNamespace>SequentialGuid</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>2.1.0.0</AssemblyVersion>
-    <Version>2.1.0</Version>
+    <AssemblyVersion>2.2.0.0</AssemblyVersion>
+    <Version>2.2.0</Version>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/buvinghausen/SequentialGuid</RepositoryUrl>
     <PackageTags />
@@ -16,7 +16,7 @@
     <Company>Buvinghausen Solutions</Company>
     <Product>SequentialGuid</Product>
     <PackageLicenseUrl>https://github.com/buvinghausen/SequentialGuid/blob/master/LICENSE</PackageLicenseUrl>
-    <Copyright>2017</Copyright>
+    <Copyright>Copyright © 2017</Copyright>
     <PackageId>SequentialGuid</PackageId>
   </PropertyGroup>
 

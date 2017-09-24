@@ -205,11 +205,30 @@ namespace SequentialGuid.Tests
 
 		[Fact]
 		public void TestAfterNowThrowsArgumentException() =>
-			TestThrowsArgumentException(DateTime.UtcNow.AddMilliseconds(10));
+			TestThrowsArgumentException(DateTime.UtcNow.AddSeconds(1));
+
+		[Fact]
+		public void TestAfterNowReturnsNullDateTime() =>
+			TestReturnsNullDateTime(DateTime.UtcNow.AddSeconds(1).Ticks);
 
 		[Fact]
 		public void TestBeforeUnixEpochThrowsArgumentException() =>
 			TestThrowsArgumentException(SequentialGuid.UnixEpoch.AddMilliseconds(-1));
+
+		[Fact]
+		public void TestBeforeUnixEpochReturnsNullDateTime() =>
+			TestReturnsNullDateTime(SequentialGuid.UnixEpoch.AddMilliseconds(-1).Ticks);
+
+		// Test the internal mechanism that bypasses date validation
+		private static void TestReturnsNullDateTime(long ticks)
+		{
+			//Arrange
+			var guid = SequentialGuidGenerator.Instance.NewGuid(ticks);
+			var sqlGuid = SequentialSqlGuidGenerator.Instance.NewGuid(ticks);
+			//Act & Assert
+			Assert.Null(guid.ToDateTime());
+			Assert.Null(sqlGuid.ToDateTime());
+		}
 
 		private static void TestThrowsArgumentException(DateTime timestamp) =>
 			Assert.Throws<ArgumentException>(() =>

@@ -45,6 +45,7 @@ namespace SequentialGuid
 			// perform computation on abstract method in child class
 			return NewGuid(ticks);
 		}
-		protected abstract Guid NewGuid(long timestamp);
+
+		internal abstract Guid NewGuid(long timestamp);
 	}
 }

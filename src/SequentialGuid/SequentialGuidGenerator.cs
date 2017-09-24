@@ -13,7 +13,7 @@ namespace SequentialGuid
 		/// </summary>
 		/// <param name="timestamp"></param>
 		/// <returns></returns>
-		protected override Guid NewGuid(long timestamp) =>
+		internal override Guid NewGuid(long timestamp) =>
 			SequentialGuid.NewGuid(timestamp);
 	}
 }
