@@ -7,7 +7,7 @@ Define an interface to the signature you like
 ```csharp
 public interface IIdGenerator
 {
-	Guid NewId();
+    Guid NewId();
 }
 ```
 
@@ -16,7 +16,7 @@ Then define your implementing class which can be transient since the singleton i
 ```csharp
 public class SequentialIdGenerator : IIdGenerator
 {
-	public Guid NewId() => SequentialGuidGenerator.Instance.NewGuid();
+    public Guid NewId() => SequentialGuidGenerator.Instance.NewGuid();
 }
 ```
 
@@ -25,6 +25,6 @@ Then wire it up in the ConfigureServices method during application startup
 ```csharp
 public void ConfigureServices(IServiceCollection services)
 {
-	services.AddTransient<IIdGenerator, SequentialIdGenerator>();
+    services.AddTransient<IIdGenerator, SequentialIdGenerator>();
 }
 ```
