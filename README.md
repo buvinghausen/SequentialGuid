@@ -35,7 +35,7 @@ public abstract class BaseEntity
 {
     public Guid Id { get; set; } = SequentialGuidGenerator.Instance.NewGuid();
     public DateTime? Timestamp => Id.ToDateTime();
-    //If you really must have non-UTC time
+    // If you really must have non-UTC time
     public DateTime? LocalTime => Id.ToDateTime()?.ToLocalTime();
 }
 ```
