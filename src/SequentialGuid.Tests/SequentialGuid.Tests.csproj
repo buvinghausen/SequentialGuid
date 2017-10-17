@@ -1,33 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+	<PropertyGroup>
+		<TargetFramework>netcoreapp2.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<WarningsAsErrors />
+		<IsPackable>false</IsPackable>
+		<AssemblyName>SequentialGuid.Tests</AssemblyName>
+		<RootNamespace>SequentialGuid.Tests</RootNamespace>
+	</PropertyGroup>
 
-    <IsPackable>false</IsPackable>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
+		<PackageReference Include="xunit" Version="2.3.0" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="2.3.0" />
+	</ItemGroup>
 
-    <AssemblyName>SequentialGuid.Tests</AssemblyName>
-
-    <RootNamespace>SequentialGuid.Tests</RootNamespace>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningsAsErrors />
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningsAsErrors />
-  </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
-    <PackageReference Include="xunit" Version="2.2.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\SequentialGuid\SequentialGuid.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\SequentialGuid\SequentialGuid.csproj" />
+	</ItemGroup>
 
 </Project>

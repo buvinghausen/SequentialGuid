@@ -28,7 +28,8 @@ public void ConfigureServices(IServiceCollection services)
     services.AddTransient<IIdGenerator, SequentialIdGenerator>();
 }
 ```
-Finally define a base entity for your application which will contain an id and a timestamp as soon as you initialize it
+
+Finally define a base entity for your application which will contain an id and a timestamp as soon as you initialize it. Note I do not advocate setting a default Id getter this way just illustrating it can be done
 
 ```csharp
 public abstract class BaseEntity
