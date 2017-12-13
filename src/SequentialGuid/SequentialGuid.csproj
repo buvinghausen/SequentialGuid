@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFrameworks>netstandard1.3;netstandard1.4;netstandard1.5;netstandard1.6;netstandard2.0</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<WarningsAsErrors />
@@ -22,5 +22,8 @@
 		<PackageId>SequentialGuid</PackageId>
 		<FileVersion>2.2.1.0</FileVersion>
 	</PropertyGroup>
-
+	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.3' OR '$(TargetFramework)' == 'netstandard1.4' OR '$(TargetFramework)' == 'netstandard1.5' OR '$(TargetFramework)' == 'netstandard1.6'">
+		<PackageReference Include="System.Data.SqlClient" Version="4.4.2" />
+		<PackageReference Include="System.Diagnostics.Process" Version="4.3.0" />
+	</ItemGroup>
 </Project>
