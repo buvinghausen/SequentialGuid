@@ -6,8 +6,6 @@
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<WarningsAsErrors />
 		<IsPackable>false</IsPackable>
-		<AssemblyName>SequentialGuid.Tests</AssemblyName>
-		<RootNamespace>SequentialGuid.Tests</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>

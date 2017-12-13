@@ -5,28 +5,26 @@
 		<LangVersion>latest</LangVersion>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<WarningsAsErrors />
-		<AssemblyName>SequentialGuid</AssemblyName>
-		<RootNamespace>SequentialGuid</RootNamespace>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<AssemblyVersion>2.4.0.0</AssemblyVersion>
-		<Version>2.4.0</Version>
-		<RepositoryType>git</RepositoryType>
-		<RepositoryUrl>https://github.com/buvinghausen/SequentialGuid</RepositoryUrl>
-		<PackageReleaseNotes>Support .NET Framework 4.5 as well as .NET Core App 1.0</PackageReleaseNotes>
 		<Title>SequentialGuid</Title>
-		<Description>Will generate Sequential Guids based on MongoDB's ObjectId specification. Date &amp; time are encoded into the value so you do not need to store them separately in your database.  Supports standard Guids as well as SQL Server guids.</Description>
 		<Authors>Brian Buvinghausen</Authors>
 		<Company>Buvinghausen Solutions</Company>
-		<Product>SequentialGuid</Product>
-		<PackageLicenseUrl>https://github.com/buvinghausen/SequentialGuid/blob/master/LICENSE</PackageLicenseUrl>
-		<Copyright>Copyright © 2017 Brian Buvinghausen</Copyright>
-		<PackageId>SequentialGuid</PackageId>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<AssemblyVersion>2.4.0.0</AssemblyVersion>
 		<FileVersion>2.4.0.0</FileVersion>
+		<Version>2.4.0</Version>
+		<Description>Will generate Sequential Guids based on MongoDB's ObjectId specification. Date &amp; time are encoded into the value so you do not need to store them separately in your database.  Supports standard Guids as well as SQL Server guids.</Description>
+		<Copyright>Copyright © 2017 Brian Buvinghausen</Copyright>
+		<PackageLicenseUrl>https://github.com/buvinghausen/SequentialGuid/blob/master/LICENSE</PackageLicenseUrl>
+		<PackageReleaseNotes>Support .NET Framework 4.5 as well as .NET Core App 1.0</PackageReleaseNotes>
 		<PackageProjectUrl>https://github.com/buvinghausen/SequentialGuid/blob/master/README.md</PackageProjectUrl>
 		<PackageTags>Sequential UUID;MongoDB ObjectId</PackageTags>
+		<RepositoryUrl>https://github.com/buvinghausen/SequentialGuid</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
 	</PropertyGroup>
+
 	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.5'">
 		<PackageReference Include="System.Data.SqlClient" Version="4.1.0" />
 		<PackageReference Include="System.Diagnostics.Process" Version="4.1.0" />
 	</ItemGroup>
+
 </Project>
