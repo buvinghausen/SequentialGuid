@@ -24,18 +24,11 @@ namespace SequentialGuid
 		/// </summary>
 		static SequentialGuid()
 		{
-			// https://stackoverflow.com/questions/43961715/environment-machinename-equivalent-for-net-standard-1-4
-#if NETSTANDARD1_3 || NETSTANDARD1_4
-			var machineName = Environment.GetEnvironmentVariable("CUMPUTERNAME") ??
-			                  Environment.GetEnvironmentVariable("HOSTNAME");
-#else
-			var machineName = Environment.MachineName;
-#endif
 			_staticIncrement = new Random().Next();
 			StaticMachinePid = new byte[5];
 			using (var algorithm = MD5.Create())
 			{
-				var hash = algorithm.ComputeHash(Encoding.UTF8.GetBytes(machineName));
+				var hash = algorithm.ComputeHash(Encoding.UTF8.GetBytes(Environment.MachineName));
 				// use first 3 bytes of hash
 				for (var i = 0; i < 3; i++) StaticMachinePid[i] = hash[i];
 			}
