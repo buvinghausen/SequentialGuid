@@ -8,11 +8,11 @@
 		<AssemblyName>SequentialGuid</AssemblyName>
 		<RootNamespace>SequentialGuid</RootNamespace>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<AssemblyVersion>2.2.1.0</AssemblyVersion>
-		<Version>2.2.1</Version>
+		<AssemblyVersion>2.3.0.0</AssemblyVersion>
+		<Version>2.3.0</Version>
 		<RepositoryType>git</RepositoryType>
 		<RepositoryUrl>https://github.com/buvinghausen/SequentialGuid</RepositoryUrl>
-		<PackageReleaseNotes>Moved to .netstandard2.0 so it can be used with .NET Core on Linux &amp; OSX</PackageReleaseNotes>
+		<PackageReleaseNotes>Support .NET Framework 4.5 as well as .NET Core App 1.0</PackageReleaseNotes>
 		<Description>Will generate Sequential Guids based on MongoDB's ObjectId specification. Date &amp; time are encoded into the value so you do not need to store them separately in your database.  Supports standard Guids as well as SQL Server guids.</Description>
 		<Authors>Brian Buvinghausen</Authors>
 		<Company>Buvinghausen Solutions</Company>
@@ -20,7 +20,7 @@
 		<PackageLicenseUrl>https://github.com/buvinghausen/SequentialGuid/blob/master/LICENSE</PackageLicenseUrl>
 		<Copyright>Copyright © 2017 Brian Buvinghausen</Copyright>
 		<PackageId>SequentialGuid</PackageId>
-		<FileVersion>2.2.1.0</FileVersion>
+		<FileVersion>2.3.0.0</FileVersion>
 	</PropertyGroup>
 	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.5'">
 		<PackageReference Include="System.Data.SqlClient" Version="4.4.2" />
