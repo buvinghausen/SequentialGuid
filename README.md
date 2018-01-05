@@ -40,3 +40,5 @@ public abstract class BaseEntity
     public DateTime? LocalTime => Id.ToDateTime()?.ToLocalTime();
 }
 ```
+
+[![NuGet](https://img.shields.io/nuget/v/SequentialGuid.svg)](https://www.nuget.org/packages/SequentialGuid/)
