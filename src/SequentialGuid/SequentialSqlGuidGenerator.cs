@@ -5,9 +5,12 @@ namespace SequentialGuid
 	/// <inheritdoc />
 	/// <summary>
 	/// </summary>
-	public sealed class SequentialSqlGuidGenerator : BaseSequentialGuidGenerator<SequentialSqlGuidGenerator>
+	public sealed class SequentialSqlGuidGenerator : BaseSequentialGuidGenerator
+		<SequentialSqlGuidGenerator>
 	{
-		private SequentialSqlGuidGenerator() { }
+		private SequentialSqlGuidGenerator()
+		{
+		}
 
 		/// <summary>
 		/// </summary>

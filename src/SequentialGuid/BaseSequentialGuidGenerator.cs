@@ -36,11 +36,16 @@ namespace SequentialGuid
 					ticks = timestamp.ToUniversalTime().Ticks;
 					break;
 				default: // unspecified time throw exception
-					throw new ArgumentException("DateTimeKind.Unspecified not supported", nameof(timestamp));
+					throw new ArgumentException(
+						"DateTimeKind.Unspecified not supported",
+						nameof(timestamp));
 			}
+
 			// run validation after tick conversion
 			if (!ticks.IsDateTime())
-				throw new ArgumentException("Timestamp must be betwen January 1st, 1970 UTC and now", nameof(timestamp));
+				throw new ArgumentException(
+					"Timestamp must be between January 1st, 1970 UTC and now",
+					nameof(timestamp));
 
 			// perform computation on abstract method in child class
 			return NewGuid(ticks);

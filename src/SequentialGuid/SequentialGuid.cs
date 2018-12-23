@@ -16,6 +16,7 @@ namespace SequentialGuid
 	{
 		internal static readonly DateTime UnixEpoch =
 			new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
 		private static readonly byte[] StaticMachinePid;
 		private static int _staticIncrement;
 
@@ -28,10 +29,13 @@ namespace SequentialGuid
 			StaticMachinePid = new byte[5];
 			using (var algorithm = MD5.Create())
 			{
-				var hash = algorithm.ComputeHash(Encoding.UTF8.GetBytes(Environment.MachineName));
+				var hash =
+					algorithm.ComputeHash(
+						Encoding.UTF8.GetBytes(Environment.MachineName));
 				// use first 3 bytes of hash
 				for (var i = 0; i < 3; i++) StaticMachinePid[i] = hash[i];
 			}
+
 			try
 			{
 				var pid = Process.GetCurrentProcess().Id;
@@ -39,7 +43,9 @@ namespace SequentialGuid
 				StaticMachinePid[3] = (byte)(pid >> 8);
 				StaticMachinePid[4] = (byte)pid;
 			}
-			catch (SecurityException) { }
+			catch (SecurityException)
+			{
+			}
 		}
 
 		/// <summary>
@@ -49,17 +55,19 @@ namespace SequentialGuid
 		/// <returns>Guid</returns>
 		internal static Guid NewGuid(long timestamp)
 		{
-			var increment = Interlocked.Increment(ref _staticIncrement) & 0x00ffffff; // only use low order 3 bytes
+			var increment = Interlocked.Increment(ref _staticIncrement) &
+							0x00ffffff; // only use low order 3 bytes
 			return new Guid(
 				(int)(timestamp >> 32),
 				(short)(timestamp >> 16),
 				(short)timestamp,
 				StaticMachinePid.Concat(
-				new[] {
-					(byte)(increment >> 16),
-					(byte)(increment >> 8),
-					(byte)increment
-				}).ToArray()
+					new[]
+					{
+						(byte) (increment >> 16),
+						(byte) (increment >> 8),
+						(byte) increment
+					}).ToArray()
 			);
 		}
 	}
