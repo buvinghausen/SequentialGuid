@@ -1,12 +1,14 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.SqlTypes;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Xunit;
 
 namespace SequentialGuid.Tests
 {
+	[SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "xUnit discovers private tests too")]
 	public class SequentialGuidTests
 	{
 		/// <summary>
@@ -84,11 +86,7 @@ namespace SequentialGuid.Tests
 		{
 			//Arrange
 			var generator = SequentialGuidGenerator.Instance;
-			var items = Enumerable.Range(0, 25).Select(i => new
-			{
-				Id = generator.NewGuid(),
-				Sort = i
-			});
+			var items = Enumerable.Range(0, 25).Select(i => new { Id = generator.NewGuid(), Sort = i });
 			//Act
 			var sortedItems = items.OrderBy(x => x.Id).ToList();
 			//Assert
@@ -101,11 +99,7 @@ namespace SequentialGuid.Tests
 		{
 			//Arrange
 			var generator = SequentialSqlGuidGenerator.Instance;
-			var items = Enumerable.Range(0, 25).Select(i => new
-			{
-				Id = new SqlGuid(generator.NewGuid()),
-				Sort = i
-			});
+			var items = Enumerable.Range(0, 25).Select(i => new { Id = new SqlGuid(generator.NewGuid()), Sort = i });
 			//Act
 			var sortedItems = items.OrderBy(x => x.Id).ToList();
 			//Assert

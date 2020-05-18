@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Security;
@@ -29,11 +29,10 @@ namespace SequentialGuid
 			StaticMachinePid = new byte[5];
 			using (var algorithm = MD5.Create())
 			{
-				var hash =
-					algorithm.ComputeHash(
-						Encoding.UTF8.GetBytes(Environment.MachineName));
+				var hash = algorithm.ComputeHash(Encoding.UTF8.GetBytes(Environment.MachineName));
 				// use first 3 bytes of hash
-				for (var i = 0; i < 3; i++) StaticMachinePid[i] = hash[i];
+				for (var i = 0; i < 3; i++)
+					StaticMachinePid[i] = hash[i];
 			}
 
 			try
@@ -55,19 +54,14 @@ namespace SequentialGuid
 		/// <returns>Guid</returns>
 		internal static Guid NewGuid(long timestamp)
 		{
-			var increment = Interlocked.Increment(ref _staticIncrement) &
-							0x00ffffff; // only use low order 3 bytes
+			// only use low order 3 bytes
+			var increment = Interlocked.Increment(ref _staticIncrement) & 0x00ffffff;
 			return new Guid(
 				(int)(timestamp >> 32),
 				(short)(timestamp >> 16),
 				(short)timestamp,
 				StaticMachinePid.Concat(
-					new[]
-					{
-						(byte) (increment >> 16),
-						(byte) (increment >> 8),
-						(byte) increment
-					}).ToArray()
+					new[] {(byte)(increment >> 16), (byte)(increment >> 8), (byte)increment}).ToArray()
 			);
 		}
 	}

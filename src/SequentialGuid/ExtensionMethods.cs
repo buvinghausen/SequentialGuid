@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.SqlTypes;
@@ -20,9 +20,22 @@ namespace SequentialGuid
 			ToGuidMap = new ReadOnlyDictionary<byte, byte>(
 				new Dictionary<byte, byte>
 				{
-					{0, 13}, {1, 12}, {2, 11}, {3, 10}, {4, 15}, {5, 14},
-					{6, 9}, {7, 8}, {8, 6}, {9, 7}, {10, 4}, {11, 5}, {12, 0},
-					{13, 1}, {14, 2}, {15, 3}
+					{0, 13},
+					{1, 12},
+					{2, 11},
+					{3, 10},
+					{4, 15},
+					{5, 14},
+					{6, 9},
+					{7, 8},
+					{8, 6},
+					{9, 7},
+					{10, 4},
+					{11, 5},
+					{12, 0},
+					{13, 1},
+					{14, 2},
+					{15, 3}
 				});
 			//Invert map
 			ToSqlGuidMap =
@@ -92,14 +105,15 @@ namespace SequentialGuid
 		private static long ToTicks(this Guid guid)
 		{
 			var bytes = guid.ToByteArray();
-			return ((long)bytes[3] << 56) +
-				   ((long)bytes[2] << 48) +
-				   ((long)bytes[1] << 40) +
-				   ((long)bytes[0] << 32) +
-				   ((long)bytes[5] << 24) +
-				   (bytes[4] << 16) +
-				   (bytes[7] << 8) +
-				   bytes[6];
+			return
+				((long)bytes[3] << 56) +
+				((long)bytes[2] << 48) +
+				((long)bytes[1] << 40) +
+				((long)bytes[0] << 32) +
+				((long)bytes[5] << 24) +
+				(bytes[4] << 16) +
+				(bytes[7] << 8) +
+				bytes[6];
 		}
 	}
 }

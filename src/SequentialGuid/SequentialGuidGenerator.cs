@@ -1,17 +1,13 @@
-using System;
+﻿using System;
 
 namespace SequentialGuid
 {
 	/// <inheritdoc />
 	/// <summary>
 	/// </summary>
-	public sealed class
-		SequentialGuidGenerator : BaseSequentialGuidGenerator<
-			SequentialGuidGenerator>
+	public sealed class SequentialGuidGenerator : BaseSequentialGuidGenerator<SequentialGuidGenerator>
 	{
-		private SequentialGuidGenerator()
-		{
-		}
+		private SequentialGuidGenerator() { }
 
 		/// <summary>
 		/// </summary>
