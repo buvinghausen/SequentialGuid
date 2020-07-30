@@ -14,14 +14,6 @@ jobs:
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET Core 1.1
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 1.1.*
-    - name: Setup .NET Core 2.2
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 2.2.*
     - name: Setup .NET Core 3.1
       uses: actions/setup-dotnet@v1
       with:
