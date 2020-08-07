@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Title>SequentialGuid.NodaTime</Title>
+    <Description>Provide extension methods to return back NodaTime instants</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NodaTime" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SequentialGuid\SequentialGuid.csproj" />
+  </ItemGroup>
+
+</Project>

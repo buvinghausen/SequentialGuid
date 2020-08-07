@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Title>SequentialGuid.MongoDB</Title>
+    <Description>Implement MongoDB's IIdGenerator interface and configure server to use it when a guid id is on an object</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MongoDB.Bson" Version="2.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SequentialGuid\SequentialGuid.csproj" />
+  </ItemGroup>
+
+</Project>
