@@ -1,33 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard1.5;net45</TargetFrameworks>
     <Title>SequentialGuid</Title>
-    <Authors>Brian Buvinghausen</Authors>
-    <Company>Buvinghausen Solutions</Company>
     <Description>Will generate Sequential Guids based on MongoDB's ObjectId specification. Date &amp; time are encoded into the value so you do not need to store them separately in your database.  Supports standard Guids as well as SQL Server guids.</Description>
-    <Copyright>Copyright © 2020 Brian Buvinghausen</Copyright>
-    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <PackageProjectUrl>https://github.com/buvinghausen/SequentialGuid/blob/master/README.md</PackageProjectUrl>
-    <PackageTags>Sequential UUID;MongoDB ObjectId</PackageTags>
-    <RepositoryUrl>https://github.com/buvinghausen/SequentialGuid</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
-  
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.5'">
-    <PackageReference Include="System.Data.SqlClient" Version="4.1.0" />
-    <PackageReference Include="System.Diagnostics.Process" Version="4.1.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="../../LICENSE.txt" Pack="true" PackagePath="$(PackageLicenseFile)" />
-  </ItemGroup>
 
 </Project>
