@@ -19,6 +19,6 @@ jobs:
     - name: Install dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore -c Release
+      run: dotnet build --no-restore
     - name: Test
-      run: dotnet test --no-build -c Release -v n
+      run: dotnet test --no-build -v n /p:CollectCoverage=true /p:CoverletOutput='../../' /p:CoverletOutputFormat=opencover /p:Threshold=94 /p:SkipAutoProps=true /p:UseSourceLink=true
