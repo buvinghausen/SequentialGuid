@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Title>SequentialGuid.NodaTime</Title>
-    <Description>Provide extension methods to return back NodaTime instants</Description>
+    <Description>Provide extension methods to return back NodaTime instants from a sequential guid</Description>
   </PropertyGroup>
 
   <ItemGroup>

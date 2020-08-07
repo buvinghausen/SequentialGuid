@@ -5,7 +5,7 @@ namespace SequentialGuid.MongoDB
 {
 	public static class ExtensionMethods
 	{
-		public static void RegisterGlobally(this SequentialGuidGenerator generator) =>
+		public static void Register(this SequentialGuidGenerator generator) =>
 			BsonSerializer.RegisterIdGenerator(typeof(Guid), generator);
 	}
 }

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Title>SequentialGuid.MongoDB</Title>
-    <Description>Implement MongoDB's IIdGenerator interface and configure server to use it when a guid id is on an object</Description>
+    <Description>Implement MongoDB's IIdGenerator interface and add registration BsonSerializer helper method</Description>
   </PropertyGroup>
 
   <ItemGroup>
