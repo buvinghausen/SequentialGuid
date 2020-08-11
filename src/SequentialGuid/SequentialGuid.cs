@@ -61,7 +61,7 @@ namespace SequentialGuid
 				(short)(timestamp >> 16),
 				(short)timestamp,
 				StaticMachinePid.Concat(
-					new[] {(byte)(increment >> 16), (byte)(increment >> 8), (byte)increment}).ToArray()
+					new[] { (byte)(increment >> 16), (byte)(increment >> 8), (byte)increment }).ToArray()
 			);
 		}
 	}

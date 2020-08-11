@@ -8,14 +8,14 @@ namespace SequentialGuid
 			new Lazy<T>(() => Activator.CreateInstance(typeof(T), true) as T);
 
 		/// <summary>
-		/// 
+		/// Singleton instance of the generator
 		/// </summary>
 		public static T Instance =>
 			Lazy.Value;
 
 		/// <summary>
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>Guid</returns>
 		public Guid NewGuid() =>
 			NewGuid(DateTime.UtcNow.Ticks);
 

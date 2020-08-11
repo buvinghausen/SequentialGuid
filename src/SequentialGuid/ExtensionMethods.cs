@@ -50,7 +50,7 @@ namespace SequentialGuid
 		/// Will return the value of DateTime.UtcNow at the time of the generation of the Guid will keep you from storing separate audit fields
 		/// </summary>
 		/// <param name="guid">A sequential Guid with the first 8 bytes containing the system ticks at time of generation</param>
-		/// <returns>DateTime</returns>
+		/// <returns>DateTime?</returns>
 		public static DateTime? ToDateTime(this Guid guid)
 		{
 			var ticks = guid.ToTicks();
@@ -68,7 +68,7 @@ namespace SequentialGuid
 		/// Will return the value of DateTime.UtcNow at the time of the generation of the Guid will keep you from storing separate audit fields
 		/// </summary>
 		/// <param name="sqlGuid">A sequential SqlGuid with the first sorted 8 bytes containing the system ticks at time of generation</param>
-		/// <returns>DateTime</returns>
+		/// <returns>DateTime?</returns>
 		public static DateTime? ToDateTime(this SqlGuid sqlGuid) =>
 			sqlGuid.ToGuid().ToDateTime();
 
