@@ -17,8 +17,7 @@ namespace SequentialGuid.NodaTime
 		/// <returns>Instant?</returns>
 		public static Instant? ToInstant(this Guid guid)
 		{
-			var val = guid.ToDateTime();
-			return val.HasValue ? Instant.FromDateTimeUtc(val.Value) : default(Instant?);
+			return guid.ToDateTime().ToInstant();
 		}
 
 		/// <summary>
@@ -32,8 +31,12 @@ namespace SequentialGuid.NodaTime
 		/// <returns>Instant?</returns>
 		public static Instant? ToInstant(this SqlGuid sqlGuid)
 		{
-			var val = sqlGuid.ToGuid().ToDateTime();
-			return val.HasValue ? Instant.FromDateTimeUtc(val.Value) : default(Instant?);
+			return sqlGuid.ToDateTime().ToInstant();
+		}
+
+		private static Instant? ToInstant(this DateTime? value)
+		{
+			return value.HasValue ? Instant.FromDateTimeUtc(value.Value) : default(Instant?);
 		}
 	}
 }
