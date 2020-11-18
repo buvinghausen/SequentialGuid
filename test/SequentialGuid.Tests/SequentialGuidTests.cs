@@ -8,55 +8,56 @@ using Xunit;
 
 namespace SequentialGuid.Tests
 {
-	[SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "xUnit discovers private tests too")]
+	[SuppressMessage("CodeQuality", "IDE0051:Remove unused private members",
+		Justification = "xUnit discovers private tests too")]
 	public class SequentialGuidTests
 	{
 		/// <summary>
-		/// Properly sequenced Guid array
+		///     Properly sequenced Guid array
 		/// </summary>
 		private IReadOnlyList<Guid> SortedGuidList { get; } =
 			new ReadOnlyCollection<Guid>(new List<Guid>
 			{
-				new Guid("00000000-0000-0000-0000-000000000001"),
-				new Guid("00000000-0000-0000-0000-000000000100"),
-				new Guid("00000000-0000-0000-0000-000000010000"),
-				new Guid("00000000-0000-0000-0000-000001000000"),
-				new Guid("00000000-0000-0000-0000-000100000000"),
-				new Guid("00000000-0000-0000-0000-010000000000"),
-				new Guid("00000000-0000-0000-0001-000000000000"),
-				new Guid("00000000-0000-0000-0100-000000000000"),
-				new Guid("00000000-0000-0001-0000-000000000000"),
-				new Guid("00000000-0000-0100-0000-000000000000"),
-				new Guid("00000000-0001-0000-0000-000000000000"),
-				new Guid("00000000-0100-0000-0000-000000000000"),
-				new Guid("00000001-0000-0000-0000-000000000000"),
-				new Guid("00000100-0000-0000-0000-000000000000"),
-				new Guid("00010000-0000-0000-0000-000000000000"),
-				new Guid("01000000-0000-0000-0000-000000000000")
+				new("00000000-0000-0000-0000-000000000001"),
+				new("00000000-0000-0000-0000-000000000100"),
+				new("00000000-0000-0000-0000-000000010000"),
+				new("00000000-0000-0000-0000-000001000000"),
+				new("00000000-0000-0000-0000-000100000000"),
+				new("00000000-0000-0000-0000-010000000000"),
+				new("00000000-0000-0000-0001-000000000000"),
+				new("00000000-0000-0000-0100-000000000000"),
+				new("00000000-0000-0001-0000-000000000000"),
+				new("00000000-0000-0100-0000-000000000000"),
+				new("00000000-0001-0000-0000-000000000000"),
+				new("00000000-0100-0000-0000-000000000000"),
+				new("00000001-0000-0000-0000-000000000000"),
+				new("00000100-0000-0000-0000-000000000000"),
+				new("00010000-0000-0000-0000-000000000000"),
+				new("01000000-0000-0000-0000-000000000000")
 			});
 
 		/// <summary>
-		/// Properly sequenced SqlGuid array
+		///     Properly sequenced SqlGuid array
 		/// </summary>
 		private IReadOnlyList<SqlGuid> SortedSqlGuidList { get; } =
 			new ReadOnlyCollection<SqlGuid>(new List<SqlGuid>
 			{
-				new SqlGuid("01000000-0000-0000-0000-000000000000"),
-				new SqlGuid("00010000-0000-0000-0000-000000000000"),
-				new SqlGuid("00000100-0000-0000-0000-000000000000"),
-				new SqlGuid("00000001-0000-0000-0000-000000000000"),
-				new SqlGuid("00000000-0100-0000-0000-000000000000"),
-				new SqlGuid("00000000-0001-0000-0000-000000000000"),
-				new SqlGuid("00000000-0000-0100-0000-000000000000"),
-				new SqlGuid("00000000-0000-0001-0000-000000000000"),
-				new SqlGuid("00000000-0000-0000-0001-000000000000"),
-				new SqlGuid("00000000-0000-0000-0100-000000000000"),
-				new SqlGuid("00000000-0000-0000-0000-000000000001"),
-				new SqlGuid("00000000-0000-0000-0000-000000000100"),
-				new SqlGuid("00000000-0000-0000-0000-000000010000"),
-				new SqlGuid("00000000-0000-0000-0000-000001000000"),
-				new SqlGuid("00000000-0000-0000-0000-000100000000"),
-				new SqlGuid("00000000-0000-0000-0000-010000000000")
+				new("01000000-0000-0000-0000-000000000000"),
+				new("00010000-0000-0000-0000-000000000000"),
+				new("00000100-0000-0000-0000-000000000000"),
+				new("00000001-0000-0000-0000-000000000000"),
+				new("00000000-0100-0000-0000-000000000000"),
+				new("00000000-0001-0000-0000-000000000000"),
+				new("00000000-0000-0100-0000-000000000000"),
+				new("00000000-0000-0001-0000-000000000000"),
+				new("00000000-0000-0000-0001-000000000000"),
+				new("00000000-0000-0000-0100-000000000000"),
+				new("00000000-0000-0000-0000-000000000001"),
+				new("00000000-0000-0000-0000-000000000100"),
+				new("00000000-0000-0000-0000-000000010000"),
+				new("00000000-0000-0000-0000-000001000000"),
+				new("00000000-0000-0000-0000-000100000000"),
+				new("00000000-0000-0000-0000-010000000000")
 			});
 
 		[Fact]
@@ -67,7 +68,9 @@ namespace SequentialGuid.Tests
 			//Assert
 			Assert.Equal(16, SortedGuidList.Count);
 			for (var i = 0; i < SortedGuidList.Count; i++)
+			{
 				Assert.Equal(SortedGuidList[i], sortedList[i]);
+			}
 		}
 
 		[Fact]
@@ -78,7 +81,9 @@ namespace SequentialGuid.Tests
 			//Assert
 			Assert.Equal(16, SortedSqlGuidList.Count);
 			for (var i = 0; i < SortedSqlGuidList.Count; i++)
+			{
 				Assert.Equal(SortedSqlGuidList[i], sortedList[i]);
+			}
 		}
 
 		[Fact]
@@ -86,12 +91,14 @@ namespace SequentialGuid.Tests
 		{
 			//Arrange
 			var generator = SequentialGuidGenerator.Instance;
-			var items = Enumerable.Range(0, 25).Select(i => new { Id = generator.NewGuid(), Sort = i });
+			var items = Enumerable.Range(0, 25).Select(i => new {Id = generator.NewGuid(), Sort = i});
 			//Act
 			var sortedItems = items.OrderBy(x => x.Id).ToList();
 			//Assert
 			for (var i = 0; i < sortedItems.Count; i++)
+			{
 				Assert.Equal(i, sortedItems[i].Sort);
+			}
 		}
 
 		[Fact]
@@ -99,12 +106,14 @@ namespace SequentialGuid.Tests
 		{
 			//Arrange
 			var generator = SequentialSqlGuidGenerator.Instance;
-			var items = Enumerable.Range(0, 25).Select(i => new { Id = new SqlGuid(generator.NewGuid()), Sort = i });
+			var items = Enumerable.Range(0, 25).Select(i => new {Id = new SqlGuid(generator.NewGuid()), Sort = i});
 			//Act
 			var sortedItems = items.OrderBy(x => x.Id).ToList();
 			//Assert
 			for (var i = 0; i < sortedItems.Count; i++)
+			{
 				Assert.Equal(i, sortedItems[i].Sort);
+			}
 		}
 
 		[Fact]
@@ -114,7 +123,6 @@ namespace SequentialGuid.Tests
 			TestLocalDateIsUtcInGuidImpl(localNow,
 				SequentialGuidGenerator.Instance.NewGuid(localNow));
 		}
-
 
 		[Fact]
 		private void TestLocalDateIsUtcInSqlGuid()
@@ -140,7 +148,9 @@ namespace SequentialGuid.Tests
 		{
 			//Act & Assert
 			for (var i = 0; i < 16; i++)
+			{
 				Assert.Equal(SortedGuidList[i], SortedSqlGuidList[i].ToGuid());
+			}
 		}
 
 		[Fact]
@@ -148,7 +158,9 @@ namespace SequentialGuid.Tests
 		{
 			//Act & Assert
 			for (var i = 0; i < 16; i++)
+			{
 				Assert.Equal(SortedSqlGuidList[i], SortedGuidList[i].ToSqlGuid());
+			}
 		}
 
 		[Fact]
@@ -177,39 +189,55 @@ namespace SequentialGuid.Tests
 		}
 
 		[Fact]
-		private void TestNowDoesNotThrowException() =>
+		private void TestNowDoesNotThrowException()
+		{
 			SequentialGuidGenerator.Instance.NewGuid(DateTime.UtcNow);
+		}
 
 		[Fact]
-		private void TestUnixEpochDoesNotThrowException() =>
-			SequentialGuidGenerator.Instance.NewGuid(SequentialGuid.UnixEpoch);
+		private void TestUnixEpochDoesNotThrowException()
+		{
+			SequentialGuidGenerator.Instance.NewGuid(SequentialGuidExtensions.UnixEpoch);
+		}
 
 		[Fact]
-		private void TestBetweenUnixEpochAndNowDoesNotThrowException() =>
+		private void TestBetweenUnixEpochAndNowDoesNotThrowException()
+		{
 			SequentialGuidGenerator.Instance.NewGuid(
 				new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+		}
 
 		[Fact]
-		private void TestDateTimeKindUnspecifiedThrowsArgumentException() =>
+		private void TestDateTimeKindUnspecifiedThrowsArgumentException()
+		{
 			TestThrowsArgumentException(new DateTime(2000, 1, 1));
+		}
 
 		[Fact]
-		private void TestAfterNowThrowsArgumentException() =>
+		private void TestAfterNowThrowsArgumentException()
+		{
 			TestThrowsArgumentException(DateTime.UtcNow.AddSeconds(1));
+		}
 
 		[Fact]
-		private void TestAfterNowReturnsNullDateTime() =>
+		private void TestAfterNowReturnsNullDateTime()
+		{
 			TestReturnsNullDateTime(DateTime.UtcNow.AddSeconds(1).Ticks);
+		}
 
 		[Fact]
-		private void TestBeforeUnixEpochThrowsArgumentException() =>
+		private void TestBeforeUnixEpochThrowsArgumentException()
+		{
 			TestThrowsArgumentException(
-				SequentialGuid.UnixEpoch.AddMilliseconds(-1));
+				SequentialGuidExtensions.UnixEpoch.AddMilliseconds(-1));
+		}
 
 		[Fact]
-		private void TestBeforeUnixEpochReturnsNullDateTime() =>
-			TestReturnsNullDateTime(SequentialGuid.UnixEpoch.AddMilliseconds(-1)
+		private void TestBeforeUnixEpochReturnsNullDateTime()
+		{
+			TestReturnsNullDateTime(SequentialGuidExtensions.UnixEpoch.AddMilliseconds(-1)
 				.Ticks);
+		}
 
 		// Test the internal mechanism that bypasses date validation
 		private static void TestReturnsNullDateTime(long ticks)
@@ -222,9 +250,11 @@ namespace SequentialGuid.Tests
 			Assert.Null(sqlGuid.ToDateTime());
 		}
 
-		private static void TestThrowsArgumentException(DateTime timestamp) =>
+		private static void TestThrowsArgumentException(DateTime timestamp)
+		{
 			Assert.Throws<ArgumentException>(() =>
 				SequentialGuidGenerator.Instance.NewGuid(timestamp));
+		}
 
 		[Fact]
 		private void TestSqlGuidToDateTime()
@@ -247,12 +277,17 @@ namespace SequentialGuid.Tests
 			var items = new List<Guid>();
 			//Act
 			for (var i = 1970; i < DateTime.Today.Year; i++)
+			{
 				items.Add(generator.NewGuid(new DateTime(i, 1, 1, 0, 0, 0,
-					DateTimeKind.Utc)));
+					DateTimeKind.Local)));
+			}
+
 			var sortedItems = items.OrderBy(x => x).ToList();
 			//Assert
 			for (var i = 0; i < sortedItems.Count; i++)
+			{
 				Assert.Equal(items[i], sortedItems[i]);
+			}
 		}
 
 		[Fact]
@@ -263,12 +298,29 @@ namespace SequentialGuid.Tests
 			var items = new List<SqlGuid>();
 			//Act
 			for (var i = 1970; i < DateTime.Today.Year; i++)
+			{
 				items.Add(generator.NewGuid(new DateTime(i, 1, 1, 0, 0, 0,
 					DateTimeKind.Utc)));
+			}
+
 			var sortedItems = items.OrderBy(x => x).ToList();
 			//Assert
 			for (var i = 0; i < sortedItems.Count; i++)
+			{
 				Assert.Equal(items[i], sortedItems[i]);
+			}
+		}
+
+		[Fact]
+		private void TestSqlGuidGenerator()
+		{
+			// Arrange
+			var now = DateTime.UtcNow;
+			// Act
+			var guid = SequentialSqlGuidGenerator.Instance.NewSqlGuid(now);
+			var stamp = guid.ToDateTime();
+			// Assert
+			Assert.Equal(now, stamp);
 		}
 	}
 }

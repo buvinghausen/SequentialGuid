@@ -6,15 +6,22 @@ using System.Linq;
 
 namespace SequentialGuid
 {
-	public static class ExtensionMethods
+	/// <summary>
+	///     Provides extension methods to return back timestamps from a guid as well as convert to &amp; from normal sorting
+	///     and SQL Server sorting
+	/// </summary>
+	public static class SequentialGuidExtensions
 	{
+		internal static readonly DateTime UnixEpoch =
+			new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
 		private static readonly IReadOnlyDictionary<byte, byte> ToSqlGuidMap;
 		private static readonly IReadOnlyDictionary<byte, byte> ToGuidMap;
 
 		/// <summary>
-		/// Constructor initializes the guid sequence mappings
+		///     Constructor initializes the guid sequence mappings
 		/// </summary>
-		static ExtensionMethods()
+		static SequentialGuidExtensions()
 		{
 			//See: http://sqlblog.com/blogs/alberto_ferrari/archive/2007/08/31/how-are-guids-sorted-by-sql-server.aspx
 			ToGuidMap = new ReadOnlyDictionary<byte, byte>(
@@ -43,11 +50,14 @@ namespace SequentialGuid
 					ToGuidMap.ToDictionary(d => d.Value, d => d.Key));
 		}
 
-		private static DateTime ToDateTime(this long ticks) =>
-			new DateTime(ticks, DateTimeKind.Utc);
+		private static DateTime ToDateTime(this long ticks)
+		{
+			return new(ticks, DateTimeKind.Utc);
+		}
 
 		/// <summary>
-		/// Will return the value of DateTime.UtcNow at the time of the generation of the Guid will keep you from storing separate audit fields
+		///     Will return the value of DateTime.UtcNow at the time of the generation of the Guid will keep you from storing
+		///     separate audit fields
 		/// </summary>
 		/// <param name="guid">A sequential Guid with the first 8 bytes containing the system ticks at time of generation</param>
 		/// <returns>DateTime?</returns>
@@ -55,7 +65,9 @@ namespace SequentialGuid
 		{
 			var ticks = guid.ToTicks();
 			if (ticks.IsDateTime())
+			{
 				return ticks.ToDateTime();
+			}
 
 			//Try conversion through sql guid
 			ticks = new SqlGuid(guid).ToGuid().ToTicks();
@@ -65,15 +77,21 @@ namespace SequentialGuid
 		}
 
 		/// <summary>
-		/// Will return the value of DateTime.UtcNow at the time of the generation of the Guid will keep you from storing separate audit fields
+		///     Will return the value of DateTime.UtcNow at the time of the generation of the Guid will keep you from storing
+		///     separate audit fields
 		/// </summary>
-		/// <param name="sqlGuid">A sequential SqlGuid with the first sorted 8 bytes containing the system ticks at time of generation</param>
+		/// <param name="sqlGuid">
+		///     A sequential SqlGuid with the first sorted 8 bytes containing the system ticks at time of
+		///     generation
+		/// </param>
 		/// <returns>DateTime?</returns>
-		public static DateTime? ToDateTime(this SqlGuid sqlGuid) =>
-			sqlGuid.ToGuid().ToDateTime();
+		public static DateTime? ToDateTime(this SqlGuid sqlGuid)
+		{
+			return sqlGuid.ToGuid().ToDateTime();
+		}
 
 		/// <summary>
-		/// Will take a SqlGuid and re-sequence to a Guid that will sort in the same order
+		///     Will take a SqlGuid and re-sequence to a Guid that will sort in the same order
 		/// </summary>
 		/// <param name="sqlGuid">Any SqlGuid</param>
 		/// <returns>Guid</returns>
@@ -86,7 +104,8 @@ namespace SequentialGuid
 		}
 
 		/// <summary>
-		/// Will take a Guid and will re-sequence it so that it will sort properly in SQL Server without fragmenting your tables
+		///     Will take a Guid and will re-sequence it so that it will sort properly in SQL Server without fragmenting your
+		///     tables
 		/// </summary>
 		/// <param name="guid">Any Guid</param>
 		/// <returns>SqlGuid</returns>
@@ -98,9 +117,11 @@ namespace SequentialGuid
 				.ToArray());
 		}
 
-		internal static bool IsDateTime(this long ticks) =>
-			ticks <= DateTime.UtcNow.Ticks &&
-			ticks >= SequentialGuid.UnixEpoch.Ticks;
+		internal static bool IsDateTime(this long ticks)
+		{
+			return ticks <= DateTime.UtcNow.Ticks &&
+			       ticks >= UnixEpoch.Ticks;
+		}
 
 		private static long ToTicks(this Guid guid)
 		{
