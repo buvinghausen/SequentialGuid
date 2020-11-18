@@ -12,6 +12,8 @@ namespace SequentialGuid.Tests
 		Justification = "xUnit discovers private tests too")]
 	public class SequentialGuidTests
 	{
+		private const long EpochTicks = 621355968000000000;
+
 		/// <summary>
 		///     Properly sequenced Guid array
 		/// </summary>
@@ -197,7 +199,7 @@ namespace SequentialGuid.Tests
 		[Fact]
 		private void TestUnixEpochDoesNotThrowException()
 		{
-			SequentialGuidGenerator.Instance.NewGuid(SequentialGuidExtensions.UnixEpoch);
+			SequentialGuidGenerator.Instance.NewGuid(EpochTicks);
 		}
 
 		[Fact]
@@ -229,14 +231,13 @@ namespace SequentialGuid.Tests
 		private void TestBeforeUnixEpochThrowsArgumentException()
 		{
 			TestThrowsArgumentException(
-				SequentialGuidExtensions.UnixEpoch.AddMilliseconds(-1));
+				new DateTime(EpochTicks - 1));
 		}
 
 		[Fact]
 		private void TestBeforeUnixEpochReturnsNullDateTime()
 		{
-			TestReturnsNullDateTime(SequentialGuidExtensions.UnixEpoch.AddMilliseconds(-1)
-				.Ticks);
+			TestReturnsNullDateTime(EpochTicks - 1);
 		}
 
 		// Test the internal mechanism that bypasses date validation

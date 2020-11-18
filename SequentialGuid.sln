@@ -23,6 +23,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SequentialGuid.MongoDB", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SequentialGuid.NodaTime", "src\SequentialGuid.NodaTime\SequentialGuid.NodaTime.csproj", "{2A329917-6C2F-496D-A0B2-322CEE9389A9}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SequentialGuid.NodaTime.Tests", "test\SequentialGuid.NodaTime.Tests\SequentialGuid.NodaTime.Tests.csproj", "{1B937928-6BC4-4E95-9122-10C43C365DAE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SequentialGuid.MongoDB.Tests", "test\SequentialGuid.MongoDB.Tests\SequentialGuid.MongoDB.Tests.csproj", "{68CE6E6A-879C-4B8D-89FF-F4B1EA15E8B8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +48,14 @@ Global
 		{2A329917-6C2F-496D-A0B2-322CEE9389A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A329917-6C2F-496D-A0B2-322CEE9389A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2A329917-6C2F-496D-A0B2-322CEE9389A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B937928-6BC4-4E95-9122-10C43C365DAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B937928-6BC4-4E95-9122-10C43C365DAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B937928-6BC4-4E95-9122-10C43C365DAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B937928-6BC4-4E95-9122-10C43C365DAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68CE6E6A-879C-4B8D-89FF-F4B1EA15E8B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68CE6E6A-879C-4B8D-89FF-F4B1EA15E8B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68CE6E6A-879C-4B8D-89FF-F4B1EA15E8B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68CE6E6A-879C-4B8D-89FF-F4B1EA15E8B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

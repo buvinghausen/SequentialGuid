@@ -9,9 +9,10 @@ namespace SequentialGuid.MongoDB
 	public static class ExtensionMethods
 	{
 		/// <summary>
+		/// Registers SequentialGuidGenerator with the Mongo BsonSerializer for all Guid types
 		/// </summary>
 		/// <param name="generator"></param>
-		public static void Register(this SequentialGuidGenerator generator)
+		public static void RegisterMongoIdGenerator(this SequentialGuidGenerator generator)
 		{
 			BsonSerializer.RegisterIdGenerator(typeof(Guid), generator);
 		}
