@@ -60,10 +60,8 @@ namespace SequentialGuid
 		///     Returns a guid for the value of UtcNow
 		/// </summary>
 		/// <returns>Sequential guid</returns>
-		public Guid NewGuid()
-		{
-			return NewGuid(DateTime.UtcNow.Ticks);
-		}
+		public Guid NewGuid() =>
+			NewGuid(DateTime.UtcNow.Ticks);
 
 		/// <summary>
 		///     Takes a date time parameter to encode in a sequential guid

@@ -11,19 +11,15 @@ namespace SequentialGuid
 	{
 		private SequentialSqlGuidGenerator() { }
 
-		internal override Guid NewGuid(long timestamp)
-		{
-			return base.NewGuid(timestamp).ToSqlGuid().Value;
-		}
+		internal override Guid NewGuid(long timestamp) =>
+			base.NewGuid(timestamp).ToSqlGuid().Value;
 
 		/// <summary>
 		///     Returns a guid for the value of UtcNow
 		/// </summary>
 		/// <returns>Sequential SQL guid</returns>
-		public SqlGuid NewSqlGuid()
-		{
-			return new(NewGuid());
-		}
+		public SqlGuid NewSqlGuid() =>
+			new(NewGuid());
 
 		/// <summary>
 		///     Takes a date time parameter to encode in a sequential SQL guid
@@ -33,9 +29,7 @@ namespace SequentialGuid
 		///     considered valid
 		/// </param>
 		/// <returns>Sequential SQL guid</returns>
-		public SqlGuid NewSqlGuid(DateTime timestamp)
-		{
-			return new(NewGuid(timestamp));
-		}
+		public SqlGuid NewSqlGuid(DateTime timestamp) =>
+			new(NewGuid(timestamp));
 	}
 }

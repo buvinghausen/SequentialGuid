@@ -12,8 +12,8 @@ namespace SequentialGuid
 	/// </summary>
 	public static class SequentialGuidExtensions
 	{
-#if !NETSTANDARD2_1
-		// Was added in .NET Standard 2.1 and later
+#if NET462
+		// Was added in .NET Standard 2.1 and later so we only need to provide it for .NET Framework
 		internal static readonly DateTime UnixEpoch =
 			new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 #endif
@@ -52,10 +52,8 @@ namespace SequentialGuid
 					ToGuidMap.ToDictionary(d => d.Value, d => d.Key));
 		}
 
-		private static DateTime ToDateTime(this long ticks)
-		{
-			return new(ticks, DateTimeKind.Utc);
-		}
+		private static DateTime ToDateTime(this long ticks) =>
+			new(ticks, DateTimeKind.Utc);
 
 		/// <summary>
 		///     Will return the value of DateTime.UtcNow at the time of the generation of the Guid will keep you from storing
@@ -87,10 +85,8 @@ namespace SequentialGuid
 		///     generation
 		/// </param>
 		/// <returns>DateTime?</returns>
-		public static DateTime? ToDateTime(this SqlGuid sqlGuid)
-		{
-			return sqlGuid.ToGuid().ToDateTime();
-		}
+		public static DateTime? ToDateTime(this SqlGuid sqlGuid) =>
+			sqlGuid.ToGuid().ToDateTime();
 
 		/// <summary>
 		///     Will take a SqlGuid and re-sequence to a Guid that will sort in the same order
@@ -100,7 +96,7 @@ namespace SequentialGuid
 		public static Guid ToGuid(this SqlGuid sqlGuid)
 		{
 			var bytes = sqlGuid.ToByteArray();
-			return new Guid(Enumerable.Range(0, 16)
+			return new (Enumerable.Range(0, 16)
 				.Select(e => bytes[ToGuidMap[(byte)e]])
 				.ToArray());
 		}
@@ -114,22 +110,20 @@ namespace SequentialGuid
 		public static SqlGuid ToSqlGuid(this Guid guid)
 		{
 			var bytes = guid.ToByteArray();
-			return new SqlGuid(Enumerable.Range(0, 16)
+			return new (Enumerable.Range(0, 16)
 				.Select(e => bytes[ToSqlGuidMap[(byte)e]])
 				.ToArray());
 		}
 
-		internal static bool IsDateTime(this long ticks)
-		{
-			return ticks <= DateTime.UtcNow.Ticks &&
+		internal static bool IsDateTime(this long ticks) =>
+			ticks <= DateTime.UtcNow.Ticks &&
 			       ticks >=
-#if !NETSTANDARD2_1
+#if NET462
 							UnixEpoch.Ticks
 #else
 							DateTime.UnixEpoch.Ticks
 #endif
 				;
-		}
 
 		private static long ToTicks(this Guid guid)
 		{
