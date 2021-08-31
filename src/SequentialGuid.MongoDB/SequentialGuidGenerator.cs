@@ -6,7 +6,7 @@ namespace SequentialGuid.MongoDB
 	/// <summary>
 	///     Implementation of the <see cref="IIdGenerator" /> interface so it can be used by the Mongo driver
 	/// </summary>
-	public class SequentialGuidGenerator : IIdGenerator
+	public sealed class SequentialGuidGenerator : IIdGenerator
 	{
 		/// <summary>
 		///     Gets an instance of SequentialGuidGenerator helpful for calling the registration method
