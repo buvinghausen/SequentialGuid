@@ -4,8 +4,14 @@
     <TargetFrameworks>net6.0;net5.0;netcoreapp3.1;net462</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>10.0</LangVersion>
+    <ImplicitUsings>true</ImplicitUsings>
+    <NoWarn>IDE0051</NoWarn>
   </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'=='net462'">
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="coverlet.msbuild" Version="2.*" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
