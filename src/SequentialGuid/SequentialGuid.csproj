@@ -5,12 +5,4 @@
     <Description>Will generate Sequential Guids based on MongoDB's ObjectId specification. Date &amp; time are encoded into the value so you do not need to store them separately in your database.  Supports standard Guids as well as SQL Server guids.</Description>
   </PropertyGroup>
 
-  <!--
-    This is likely an RC1 issue but System.Net.Http is not included in .net framework legacy
-    Track: https://github.com/dotnet/core/issues/6688
-  -->
-  <ItemGroup Condition="'$(TargetFramework)' == 'net462'">
-    <PackageReference Include="System.Net.Http" Version="4.3.4" />
-  </ItemGroup>
-
 </Project>

@@ -9,6 +9,10 @@
     <NoWarn>IDE0051</NoWarn>
   </PropertyGroup>
 
+  <ItemGroup Condition="'$(TargetFramework)'=='net462'">
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="coverlet.msbuild" Version="2.*" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.*" />
