@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿#if NET462 || NETCOREAPP3_1
+using System.Diagnostics;
+#endif
 using System.Security;
 using System.Security.Cryptography;
 using System.Text;
