@@ -27,7 +27,7 @@ public abstract class SequentialGuidGeneratorBase<T> where T : SequentialGuidGen
 	{
 		_increment = new Random().Next(500000);
 		_machinePid = new byte[5];
-		using (var algorithm = MD5.Create())
+		using (var algorithm = SHA512.Create())
 		{
 			var hash = algorithm.ComputeHash(Encoding.UTF8.GetBytes(Environment.MachineName));
 			// use first 3 bytes of hash
