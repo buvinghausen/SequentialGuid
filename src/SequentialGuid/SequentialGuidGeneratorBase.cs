@@ -1,4 +1,4 @@
-﻿#if NET462 || NETCOREAPP3_1
+﻿#if NET462 || NETCOREAPP3_1 || NETSTANDARD2_0 || NETSTANDARD2_1
 using System.Diagnostics;
 #endif
 using System.Security;
@@ -40,7 +40,7 @@ public abstract class SequentialGuidGeneratorBase<T> where T : SequentialGuidGen
 		try
 		{
 			var pid =
-#if NET462 || NETCOREAPP3_1
+#if NET462 || NETCOREAPP3_1 || NETSTANDARD2_0 || NETSTANDARD2_1
 				Process.GetCurrentProcess().Id
 #else
 				Environment.ProcessId

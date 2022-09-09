@@ -9,7 +9,7 @@ namespace SequentialGuid;
 /// </summary>
 public static class SequentialGuidExtensions
 {
-#if NET462
+#if NET462 || NETSTANDARD2_0
 	// Was added in .NET Standard 2.1 and later so we only need to provide it for .NET Framework
 	internal static readonly DateTime UnixEpoch =
 		new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -115,7 +115,7 @@ public static class SequentialGuidExtensions
 	internal static bool IsDateTime(this long ticks) =>
 		ticks <= DateTime.UtcNow.Ticks &&
 			    ticks >=
-#if NET462
+#if NET462 || NETSTANDARD2_0
 						UnixEpoch.Ticks
 #else
 						DateTime.UnixEpoch.Ticks
