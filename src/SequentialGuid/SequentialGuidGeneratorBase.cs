@@ -1,4 +1,4 @@
-﻿#if NET462 || NETCOREAPP3_1
+﻿#if !NET6_0_OR_GREATER
 using System.Diagnostics;
 #endif
 using System.Security;
@@ -14,7 +14,7 @@ namespace SequentialGuid;
 public abstract class SequentialGuidGeneratorBase<T> where T : SequentialGuidGeneratorBase<T>
 {
 	private static readonly Lazy<T> Lazy =
-		new(() => Activator.CreateInstance(typeof(T), true) as T);
+		new(() => (Activator.CreateInstance(typeof(T), true) as T)!);
 
 	private readonly byte[] _machinePid;
 	private int _increment;
@@ -27,23 +27,25 @@ public abstract class SequentialGuidGeneratorBase<T> where T : SequentialGuidGen
 	{
 		_increment = new Random().Next(500000);
 		_machinePid = new byte[5];
-		using (var algorithm = SHA512.Create())
-		{
-			var hash = algorithm.ComputeHash(Encoding.UTF8.GetBytes(Environment.MachineName));
-			// use first 3 bytes of hash
-			for (var i = 0; i < 3; i++)
-			{
-				_machinePid[i] = hash[i];
-			}
-		}
-
+// For newer frameworks use the preferred static function
+#if NET6_0_OR_GREATER
+		var hash = SHA512.HashData
+#else
+		using var algorithm = SHA512.Create();
+		var hash = algorithm.ComputeHash		
+#endif
+			(Encoding.UTF8.GetBytes(Environment.MachineName));
+		for (var i = 0; i < 3; i++)
+			_machinePid[i] = hash[i];
 		try
 		{
 			var pid =
-#if NET462 || NETCOREAPP3_1
-				Process.GetCurrentProcess().Id
-#else
+// Older frameworks don't support the static value on the environment
+// So get it off the old process path
+#if NET6_0_OR_GREATER
 				Environment.ProcessId
+#else
+				Process.GetCurrentProcess().Id
 #endif
 				;
 			// use low order two bytes only

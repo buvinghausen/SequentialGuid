@@ -1,7 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using System.Data.SqlTypes;
 
-namespace SequentialGuid;
+// ReSharper disable once CheckNamespace
+namespace System;
 
 /// <summary>
 ///     Provides extension methods to return back timestamps from a guid as well as convert to &amp; from normal sorting
@@ -92,7 +93,7 @@ public static class SequentialGuidExtensions
 	/// <returns>Guid</returns>
 	public static Guid ToGuid(this SqlGuid sqlGuid)
 	{
-		var bytes = sqlGuid.ToByteArray();
+		var bytes = sqlGuid.ToByteArray()!;
 		return new (Enumerable.Range(0, 16)
 			.Select(e => bytes[ToGuidMap[(byte)e]])
 			.ToArray());
