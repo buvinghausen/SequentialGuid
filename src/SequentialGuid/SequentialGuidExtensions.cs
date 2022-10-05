@@ -10,9 +10,9 @@ namespace System;
 /// </summary>
 public static class SequentialGuidExtensions
 {
-#if NET462
+#if NETFRAMEWORK || NETSTANDARD2_0
 	// Was added in .NET Standard 2.1 and later so we only need to provide it for .NET Framework
-	internal static readonly DateTime UnixEpoch =
+	private static readonly DateTime UnixEpoch =
 		new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 #endif
 	private static readonly IReadOnlyDictionary<byte, byte> ToSqlGuidMap;
@@ -116,12 +116,12 @@ public static class SequentialGuidExtensions
 	internal static bool IsDateTime(this long ticks) =>
 		ticks <= DateTime.UtcNow.Ticks &&
 			    ticks >=
-#if NET462
-						UnixEpoch.Ticks
+#if NETFRAMEWORK || NETSTANDARD2_0
+						UnixEpoch
 #else
-						DateTime.UnixEpoch.Ticks
+						DateTime.UnixEpoch
 #endif
-			;
+											.Ticks;
 
 	private static long ToTicks(this Guid guid)
 	{
