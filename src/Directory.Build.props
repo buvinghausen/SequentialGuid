@@ -9,8 +9,6 @@
     <PackageProjectUrl>https://github.com/buvinghausen/SequentialGuid/blob/master/README.md</PackageProjectUrl>
     <PackageTags>Sequential UUID;MongoDB ObjectId</PackageTags>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Nullable>enable</Nullable>
