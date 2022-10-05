@@ -20,4 +20,4 @@ jobs:
     - name: Create NuGet Package
       run: dotnet pack -c Release -o . /p:Version=${{ github.event.release.tag_name }} /p:PackageReleaseNotes="See https://github.com/buvinghausen/SequentialGuid/releases/tag/${{ github.event.release.tag_name }}"
     - name: Publish NuGet Package
-      run: dotnet nuget push *.nupkg --api-key ${{ secrets.nuget_api_key }} --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push *.nupkg --api-key ${{ secrets.nuget_api_key }} --source https://api.nuget.org/v3/index.json --skip-duplicate
