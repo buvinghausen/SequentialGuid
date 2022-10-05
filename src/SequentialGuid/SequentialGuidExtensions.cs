@@ -93,7 +93,12 @@ public static class SequentialGuidExtensions
 	/// <returns>Guid</returns>
 	public static Guid ToGuid(this SqlGuid sqlGuid)
 	{
-		var bytes = sqlGuid.ToByteArray()!;
+		
+		var bytes = sqlGuid.ToByteArray()
+#if NET6_0_OR_GREATER
+				!
+#endif
+			;
 		return new (Enumerable.Range(0, 16)
 			.Select(e => bytes[ToGuidMap[(byte)e]])
 			.ToArray());

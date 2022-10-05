@@ -1,7 +1,8 @@
 ﻿using System.Data.SqlTypes;
-using NodaTime;
+using SequentialGuid;
 
-namespace SequentialGuid.NodaTime;
+// ReSharper disable once CheckNamespace
+namespace NodaTime;
 
 /// <summary>
 ///     Helper functions that utilize NodaTime's Instant struct rather than DateTime
