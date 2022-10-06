@@ -32,7 +32,7 @@ public abstract class SequentialGuidGeneratorBase<T> where T : SequentialGuidGen
 		var hash = SHA512.HashData
 #else
 		using var algorithm = SHA512.Create();
-		var hash = algorithm.ComputeHash		
+		var hash = algorithm.ComputeHash
 #endif
 			(Encoding.UTF8.GetBytes(Environment.MachineName));
 		for (var i = 0; i < 3; i++)
