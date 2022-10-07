@@ -89,10 +89,8 @@ public abstract class SequentialGuidGeneratorBase<T> where T : SequentialGuidGen
 
 		// run validation after tick conversion
 		if (!ticks.IsDateTime())
-		{
 			throw new ArgumentException("Timestamp must be between January 1st, 1970 UTC and now",
 				nameof(timestamp));
-		}
 
 		// Once we've gotten here we have a valid UTC tick count so yield the Guid
 		return NewGuid(ticks);

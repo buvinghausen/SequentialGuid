@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.Data.SqlTypes;
+﻿using System.Data.SqlTypes;
 
 // ReSharper disable once CheckNamespace
 namespace System;
@@ -15,40 +14,9 @@ public static class SequentialGuidExtensions
 	private static readonly DateTime UnixEpoch =
 		new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 #endif
-	private static readonly IReadOnlyDictionary<byte, byte> ToSqlGuidMap;
-	private static readonly IReadOnlyDictionary<byte, byte> ToGuidMap;
-
-	/// <summary>
-	///     Constructor initializes the guid sequence mappings
-	/// </summary>
-	static SequentialGuidExtensions()
-	{
-		//See: http://sqlblog.com/blogs/alberto_ferrari/archive/2007/08/31/how-are-guids-sorted-by-sql-server.aspx
-		ToGuidMap = new ReadOnlyDictionary<byte, byte>(
-			new Dictionary<byte, byte>
-			{
-				{0, 13},
-				{1, 12},
-				{2, 11},
-				{3, 10},
-				{4, 15},
-				{5, 14},
-				{6, 9},
-				{7, 8},
-				{8, 6},
-				{9, 7},
-				{10, 4},
-				{11, 5},
-				{12, 0},
-				{13, 1},
-				{14, 2},
-				{15, 3}
-			});
-		//Invert map
-		ToSqlGuidMap =
-			new ReadOnlyDictionary<byte, byte>(
-				ToGuidMap.ToDictionary(d => d.Value, d => d.Key));
-	}
+	//See: https://www.sqlbi.com/blog/alberto/2007/08/31/how-are-guids-sorted-by-sql-server/
+	private static readonly int[] ToGuidMap = { 13, 12, 11, 10, 15, 14, 9, 8, 6, 7, 4, 5, 0, 1, 2, 3 };
+	private static readonly int[] ToSqlGuidMap = { 12, 13, 14, 15, 10, 11, 8, 9, 7, 6, 3, 2, 1, 0, 5, 4 };
 
 	private static DateTime ToDateTime(this long ticks) =>
 		new(ticks, DateTimeKind.Utc);
@@ -62,10 +30,7 @@ public static class SequentialGuidExtensions
 	public static DateTime? ToDateTime(this Guid guid)
 	{
 		var ticks = guid.ToTicks();
-		if (ticks.IsDateTime())
-		{
-			return ticks.ToDateTime();
-		}
+		if (ticks.IsDateTime()) return ticks.ToDateTime();
 
 		//Try conversion through sql guid
 		ticks = new SqlGuid(guid).ToGuid().ToTicks();
@@ -93,15 +58,12 @@ public static class SequentialGuidExtensions
 	/// <returns>Guid</returns>
 	public static Guid ToGuid(this SqlGuid sqlGuid)
 	{
-		
 		var bytes = sqlGuid.ToByteArray()
 #if NET6_0_OR_GREATER
 				!
 #endif
 			;
-		return new (Enumerable.Range(0, 16)
-			.Select(e => bytes[ToGuidMap[(byte)e]])
-			.ToArray());
+		return new (ToGuidMap.Select(b => bytes[b]).ToArray());
 	}
 
 	/// <summary>
@@ -113,9 +75,7 @@ public static class SequentialGuidExtensions
 	public static SqlGuid ToSqlGuid(this Guid guid)
 	{
 		var bytes = guid.ToByteArray();
-		return new (Enumerable.Range(0, 16)
-			.Select(e => bytes[ToSqlGuidMap[(byte)e]])
-			.ToArray());
+		return new(ToSqlGuidMap.Select(b => bytes[b]).ToArray());
 	}
 
 	internal static bool IsDateTime(this long ticks) =>
