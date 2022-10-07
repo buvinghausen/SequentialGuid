@@ -105,7 +105,7 @@ public abstract class SequentialGuidGeneratorBase<T> where T : SequentialGuidGen
 	{
 		// only use low order 3 bytes
 		var increment = Interlocked.Increment(ref _increment) & 0x00ffffff;
-		return new Guid(
+		return new(
 			(int)(timestamp >> 32),
 			(short)(timestamp >> 16),
 			(short)timestamp,
