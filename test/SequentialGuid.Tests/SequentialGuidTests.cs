@@ -79,13 +79,14 @@ public class SequentialGuidTests
 	{
 		//Arrange
 		var generator = SequentialGuidGenerator.Instance;
-		var items = Enumerable.Range(0, 25).Select(i => new { Id = generator.NewGuid(), Sort = i });
+		var items = Enumerable.Range(0, 25).Select(i => new { Id = generator.NewGuid(), Sort = i }).ToArray();
 		//Act
-		var sortedItems = items.OrderBy(x => x.Id).ToList();
+		var sortedItems = items.OrderBy(x => x.Id).ToArray();
 		//Assert
-		for (var i = 0; i < sortedItems.Count; i++)
+		for (var i = 0; i < sortedItems.Length; i++)
 		{
-			Assert.Equal(i, sortedItems[i].Sort);
+			Assert.Equal(items[i].Id, sortedItems[i].Id);
+			Assert.Equal(items[i].Sort, sortedItems[i].Sort);
 		}
 	}
 
@@ -94,13 +95,14 @@ public class SequentialGuidTests
 	{
 		//Arrange
 		var generator = SequentialSqlGuidGenerator.Instance;
-		var items = Enumerable.Range(0, 25).Select(i => new { Id = new SqlGuid(generator.NewGuid()), Sort = i });
+		var items = Enumerable.Range(0, 25).Select(i => new { Id = generator.NewSqlGuid(), Sort = i }).ToArray();
 		//Act
-		var sortedItems = items.OrderBy(x => x.Id).ToList();
+		var sortedItems = items.OrderBy(x => x.Id).ToArray();
 		//Assert
-		for (var i = 0; i < sortedItems.Count; i++)
+		for (var i = 0; i < sortedItems.Length; i++)
 		{
-			Assert.Equal(i, sortedItems[i].Sort);
+			Assert.Equal(items[i].Id, sortedItems[i].Id);
+			Assert.Equal(items[i].Sort, sortedItems[i].Sort);
 		}
 	}
 
@@ -302,5 +304,27 @@ public class SequentialGuidTests
 		var stamp = SequentialSqlGuidGenerator.Instance.NewSqlGuid(now).ToDateTime();
 		// Assert
 		Assert.Equal(now, stamp);
+	}
+
+	[Fact]
+	private void TestGuidConversions()
+	{
+		// Arrange
+		var id = SequentialGuidGenerator.Instance.NewGuid();
+		// Act
+		var converted = id.ToSqlGuid().ToGuid();
+		// Assert
+		Assert.Equal(id, converted);
+	}
+
+	[Fact]
+	private void TestSqlGuidConversions()
+	{
+		// Arrange
+		var id = SequentialSqlGuidGenerator.Instance.NewSqlGuid();
+		// Act
+		var converted = id.ToGuid().ToSqlGuid();
+		// Assert
+		Assert.Equal(id, converted);
 	}
 }
