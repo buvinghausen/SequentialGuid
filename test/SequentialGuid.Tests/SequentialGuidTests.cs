@@ -11,7 +11,7 @@ public class SequentialGuidTests
 	/// <summary>
 	///     Properly sequenced Guid array
 	/// </summary>
-	private IReadOnlyList<Guid> SortedGuidList { get; } =
+	private IEnumerable<Guid> SortedGuidList { get; } =
 		new ReadOnlyCollection<Guid>(new List<Guid>
 		{
 			new("00000000-0000-0000-0000-000000000001"),
@@ -35,7 +35,8 @@ public class SequentialGuidTests
 	/// <summary>
 	///     Properly sequenced SqlGuid array
 	/// </summary>
-	private IReadOnlyList<SqlGuid> SortedSqlGuidList { get; } =
+	/// See: https://www.sqlbi.com/blog/alberto/2007/08/31/how-are-guids-sorted-by-sql-server/
+	private IEnumerable<SqlGuid> SortedSqlGuidList { get; } =
 		new ReadOnlyCollection<SqlGuid>(new List<SqlGuid>
 		{
 			new("01000000-0000-0000-0000-000000000000"),
@@ -167,6 +168,21 @@ public class SequentialGuidTests
 	}
 
 	[Fact]
+	private void TestGuidLocalDateTime()
+	{
+		//Arrange
+		var expectedDateTime = DateTime.Now;
+		//Act
+		var dateTime = SequentialGuidGenerator.Instance
+			.NewGuid(expectedDateTime)
+			.ToDateTime()
+			.GetValueOrDefault();
+		//Assert
+		Assert.Equal(expectedDateTime.ToUniversalTime().Ticks, dateTime.Ticks);
+		Assert.Equal(DateTimeKind.Utc, dateTime.Kind);
+	}
+
+	[Fact]
 	private void TestGuidToDateTimeForNonSequentialGuidReturnsNull()
 	{
 		//Arrange
@@ -244,11 +260,9 @@ public class SequentialGuidTests
 		Assert.Null(sqlGuid.ToDateTime());
 	}
 
-	private static void TestThrowsArgumentException(DateTime timestamp)
-	{
+	private static void TestThrowsArgumentException(DateTime timestamp) =>
 		Assert.Throws<ArgumentException>(() =>
 			SequentialGuidGenerator.Instance.NewGuid(timestamp));
-	}
 
 	[Fact]
 	private void TestSqlGuidToDateTime()
@@ -256,10 +270,28 @@ public class SequentialGuidTests
 		//Arrange
 		var expectedDateTime = DateTime.UtcNow;
 		//Act
-		var dateTime = SequentialSqlGuidGenerator.Instance.NewGuid(expectedDateTime).ToDateTime()
+		var dateTime = SequentialSqlGuidGenerator.Instance
+			.NewSqlGuid(expectedDateTime)
+			.ToDateTime()
 			.GetValueOrDefault();
 		//Assert
 		Assert.Equal(expectedDateTime.Ticks, dateTime.Ticks);
+		Assert.Equal(expectedDateTime.Kind, dateTime.Kind);
+	}
+
+	[Fact]
+	private void TestSqlGuidLocalDateTime()
+	{
+		//Arrange
+		var expectedDateTime = DateTime.Now;
+		//Act
+		var dateTime = SequentialSqlGuidGenerator.Instance
+			.NewSqlGuid(expectedDateTime)
+			.ToDateTime()
+			.GetValueOrDefault();
+		//Assert
+		Assert.Equal(expectedDateTime.ToUniversalTime().Ticks, dateTime.Ticks);
+		Assert.Equal(DateTimeKind.Utc, dateTime.Kind);
 	}
 
 	[Fact]
@@ -293,17 +325,6 @@ public class SequentialGuidTests
 
 		//Assert
 		Assert.True(items.SequenceEqual(items.OrderBy(x => x)));
-	}
-
-	[Fact]
-	private void TestSqlGuidGenerator()
-	{
-		// Arrange
-		var now = DateTime.UtcNow;
-		// Act
-		var stamp = SequentialSqlGuidGenerator.Instance.NewSqlGuid(now).ToDateTime();
-		// Assert
-		Assert.Equal(now, stamp);
 	}
 
 	[Fact]
