@@ -5,6 +5,12 @@ SequentialGuid
 
 Will generate Sequential Guids based on [MongoDB's ObjectId specification](https://docs.mongodb.com/manual/reference/method/ObjectId/). Date &amp; time are encoded into the value so you do not need to store them separately in your database
 
+Returns a new [Guid](https://learn.microsoft.com/en-us/dotnet/api/system.guid) or [SqlGuid](https://learn.microsoft.com/en-us/dotnet/api/system.data.sqltypes.sqlguid). The 16-byte [Guid](https://learn.microsoft.com/en-us/dotnet/api/system.guid) or [SqlGuid](https://learn.microsoft.com/en-us/dotnet/api/system.data.sqltypes.sqlguid) consists of:
+
+* A 8-byte timestamp, representing the Guids's creation, measured in system [ticks](https://learn.microsoft.com/en-us/dotnet/api/system.datetime.ticks).
+* A 5-byte random value generated once per process. This random value is unique to the machine and process.
+* A 3-byte incrementing counter, initialized to a random value.
+
 Define an interface to the signature you like
 ```csharp
 public interface IIdGenerator
@@ -41,4 +47,15 @@ public abstract class BaseEntity
     // If you really must have non-UTC time
     public DateTime? LocalTime => Id.ToDateTime()?.ToLocalTime();
 }
+```
+
+You can convert between a standard Guid and a SqlGuid using the available helper functions
+```csharp
+var guid = SequentialGuidGenerator.Instance.NewGuid();
+var sqlGuid = guid.ToSqlGuid();
+```
+OR
+```csharp
+var sqlGuid = SequentialSqlGuidGenerator.Instance.NewSqlGuid();
+var guid = sqlGuid.ToGuid();
 ```
