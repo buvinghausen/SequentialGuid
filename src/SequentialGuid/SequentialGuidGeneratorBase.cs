@@ -27,10 +27,11 @@ public abstract class SequentialGuidGeneratorBase<T> where T : SequentialGuidGen
 	{
 		_increment = new Random().Next(500000);
 		_machinePid = new byte[5];
-// For newer frameworks use the preferred static function
 #if NET6_0_OR_GREATER
+		// For newer frameworks use the preferred static function
 		var hash = SHA512.HashData
 #else
+		// For older frameworks use the old algorithm create function
 		using var algorithm = SHA512.Create();
 		var hash = algorithm.ComputeHash
 #endif
@@ -40,11 +41,11 @@ public abstract class SequentialGuidGeneratorBase<T> where T : SequentialGuidGen
 		try
 		{
 			var pid =
-// Older frameworks don't support the static value on the environment
-// So get it off the old process path
 #if NET6_0_OR_GREATER
+				// For newer frameworks prefer to use the static property on the Environment
 				Environment.ProcessId
 #else
+				// For older frameworks get the process id the old school way
 				Process.GetCurrentProcess().Id
 #endif
 				;
@@ -110,7 +111,7 @@ public abstract class SequentialGuidGeneratorBase<T> where T : SequentialGuidGen
 			(short)(timestamp >> 16),
 			(short)timestamp,
 			_machinePid.Concat(
-				new[] {(byte)(increment >> 16), (byte)(increment >> 8), (byte)increment}).ToArray()
+				new[] { (byte)(increment >> 16), (byte)(increment >> 8), (byte)increment }).ToArray()
 		);
 	}
 }

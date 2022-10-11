@@ -63,7 +63,7 @@ public static class SequentialGuidExtensions
 				!
 #endif
 			;
-		return new (GuidIndex.Select(i => bytes[i]).ToArray());
+		return new(GuidIndex.Select(i => bytes[i]).ToArray());
 	}
 
 	/// <summary>
@@ -80,7 +80,7 @@ public static class SequentialGuidExtensions
 
 	internal static bool IsDateTime(this long ticks) =>
 		ticks <= DateTime.UtcNow.Ticks &&
-			    ticks >=
+				ticks >=
 #if NETFRAMEWORK || NETSTANDARD2_0
 						UnixEpoch
 #else
