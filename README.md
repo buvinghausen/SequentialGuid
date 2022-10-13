@@ -12,8 +12,8 @@ Returns a new [Guid](https://learn.microsoft.com/en-us/dotnet/api/system.guid) o
 * A 3-byte incrementing counter, initialized to a random value.
 
 If you use [SQL Server](https://www.microsoft.com/en-us/sql-server/) then I highly recommend reading the following two articles to get a basic understanding of how [SQL Server](https://www.microsoft.com/en-us/sql-server/) sorts [uniqueidentifier](https://learn.microsoft.com/en-us/sql/t-sql/data-types/uniqueidentifier-transact-sql) values
-[Comparing GUID and uniqueidentifier Values](https://learn.microsoft.com/en-us/dotnet/framework/data/adonet/sql/comparing-guid-and-uniqueidentifier-values)
-[How are GUIDs sorted by SQL Server?](https://www.sqlbi.com/blog/alberto/2007/08/31/how-are-guids-sorted-by-sql-server/)
+* [Comparing GUID and uniqueidentifier Values](https://learn.microsoft.com/en-us/dotnet/framework/data/adonet/sql/comparing-guid-and-uniqueidentifier-values)
+* [How are GUIDs sorted by SQL Server?](https://www.sqlbi.com/blog/alberto/2007/08/31/how-are-guids-sorted-by-sql-server/)
 
 Define an interface to the signature you like
 ```csharp
