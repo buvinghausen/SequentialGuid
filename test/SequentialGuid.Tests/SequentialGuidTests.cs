@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.Data.SqlTypes;
+﻿using System.Data.SqlTypes;
 using Xunit;
 
 namespace SequentialGuid.Tests;
@@ -12,7 +11,7 @@ public class SequentialGuidTests
 	///     Properly sequenced Guid array
 	/// </summary>
 	private IEnumerable<Guid> SortedGuidList { get; } =
-		new ReadOnlyCollection<Guid>(new List<Guid>
+		new Guid[]
 		{
 			new("00000000-0000-0000-0000-000000000001"),
 			new("00000000-0000-0000-0000-000000000100"),
@@ -30,14 +29,14 @@ public class SequentialGuidTests
 			new("00000100-0000-0000-0000-000000000000"),
 			new("00010000-0000-0000-0000-000000000000"),
 			new("01000000-0000-0000-0000-000000000000")
-		});
+		};
 
 	/// <summary>
 	///     Properly sequenced SqlGuid array
 	/// </summary>
 	/// See: https://www.sqlbi.com/blog/alberto/2007/08/31/how-are-guids-sorted-by-sql-server/
 	private IEnumerable<SqlGuid> SortedSqlGuidList { get; } =
-		new ReadOnlyCollection<SqlGuid>(new List<SqlGuid>
+		new SqlGuid[]
 		{
 			new("01000000-0000-0000-0000-000000000000"),
 			new("00010000-0000-0000-0000-000000000000"),
@@ -55,7 +54,7 @@ public class SequentialGuidTests
 			new("00000000-0000-0000-0000-000001000000"),
 			new("00000000-0000-0000-0000-000100000000"),
 			new("00000000-0000-0000-0000-010000000000")
-		});
+		};
 
 	[Fact]
 	private void TestGuidSorting()
@@ -194,60 +193,41 @@ public class SequentialGuidTests
 	}
 
 	[Fact]
-	private void TestUtcNowDoesNotThrowException()
-	{
+	private void TestUtcNowDoesNotThrowException() =>
 		SequentialGuidGenerator.Instance.NewGuid(DateTime.UtcNow);
-	}
 
 	[Fact]
-	private void TestLocalNowDoesNotThrowException()
-	{
+	private void TestLocalNowDoesNotThrowException() =>
 		SequentialGuidGenerator.Instance.NewGuid(DateTime.Now);
-	}
 
 	[Fact]
-	private void TestUnixEpochDoesNotThrowException()
-	{
+	private void TestUnixEpochDoesNotThrowException() =>
 		SequentialGuidGenerator.Instance.NewGuid(EpochTicks);
-	}
 
 	[Fact]
-	private void TestBetweenUnixEpochAndNowDoesNotThrowException()
-	{
+	private void TestBetweenUnixEpochAndNowDoesNotThrowException() =>
 		SequentialGuidGenerator.Instance.NewGuid(
 			new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc));
-	}
 
 	[Fact]
-	private void TestDateTimeKindUnspecifiedThrowsArgumentException()
-	{
+	private void TestDateTimeKindUnspecifiedThrowsArgumentException() =>
 		TestThrowsArgumentException(new DateTime(2000, 1, 1));
-	}
 
 	[Fact]
-	private void TestAfterNowThrowsArgumentException()
-	{
+	private void TestAfterNowThrowsArgumentException() =>
 		TestThrowsArgumentException(DateTime.UtcNow.AddSeconds(1));
-	}
 
 	[Fact]
-	private void TestAfterNowReturnsNullDateTime()
-	{
+	private void TestAfterNowReturnsNullDateTime() =>
 		TestReturnsNullDateTime(DateTime.UtcNow.AddSeconds(1).Ticks);
-	}
 
 	[Fact]
-	private void TestBeforeUnixEpochThrowsArgumentException()
-	{
-		TestThrowsArgumentException(
-			new DateTime(EpochTicks - 1));
-	}
+	private void TestBeforeUnixEpochThrowsArgumentException() =>
+		TestThrowsArgumentException(new DateTime(EpochTicks - 1));
 
 	[Fact]
-	private void TestBeforeUnixEpochReturnsNullDateTime()
-	{
+	private void TestBeforeUnixEpochReturnsNullDateTime() =>
 		TestReturnsNullDateTime(EpochTicks - 1);
-	}
 
 	// Test the internal mechanism that bypasses date validation
 	private static void TestReturnsNullDateTime(long ticks)

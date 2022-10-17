@@ -81,13 +81,13 @@ public static class SequentialGuidExtensions
 
 	internal static bool IsDateTime(this long ticks) =>
 		ticks <= DateTime.UtcNow.Ticks &&
-				ticks >=
+		ticks >=
 #if NETFRAMEWORK || NETSTANDARD2_0
-						UnixEpoch
+				 UnixEpoch
 #else
-						DateTime.UnixEpoch
+				 DateTime.UnixEpoch
 #endif
-											.Ticks;
+							.Ticks;
 
 	private static long ToTicks(this Guid guid)
 	{
