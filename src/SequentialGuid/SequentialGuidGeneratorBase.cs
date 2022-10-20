@@ -27,8 +27,10 @@ public abstract class SequentialGuidGeneratorBase<T> where T : SequentialGuidGen
 	{
 		_increment =
 #if NETFRAMEWORK || NETSTANDARD2_0
+			// Fall back to the old Random class for compatibility
 			new Random().Next
 #else
+			// Use the RandomNumberGenerator static function where available
 			RandomNumberGenerator.GetInt32
 #endif
 				(500000);
