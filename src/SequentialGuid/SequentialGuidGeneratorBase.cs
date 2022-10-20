@@ -25,7 +25,13 @@ public abstract class SequentialGuidGeneratorBase<T> where T : SequentialGuidGen
 	/// </summary>
 	protected SequentialGuidGeneratorBase()
 	{
-		_increment = new Random().Next(500000);
+		_increment =
+#if NETFRAMEWORK || NETSTANDARD2_0
+			new Random().Next
+#else
+			RandomNumberGenerator.GetInt32
+#endif
+				(500000);
 		_machinePid = new byte[5];
 #if NET6_0_OR_GREATER
 		// For newer frameworks use the preferred static function
