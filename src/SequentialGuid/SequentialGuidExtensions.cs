@@ -26,15 +26,15 @@ public static class SequentialGuidExtensions
 	///     Will return the value of DateTime.UtcNow at the time of the generation of the Guid will keep you from storing
 	///     separate audit fields
 	/// </summary>
-	/// <param name="guid">A sequential Guid with the first 8 bytes containing the system ticks at time of generation</param>
+	/// <param name="id">A sequential Guid with the first 8 bytes containing the system ticks at time of generation</param>
 	/// <returns>DateTime?</returns>
-	public static DateTime? ToDateTime(this Guid guid)
+	public static DateTime? ToDateTime(this Guid id)
 	{
-		var ticks = guid.ToTicks();
+		var ticks = id.ToTicks();
 		if (ticks.IsDateTime()) return ticks.ToDateTime();
 
 		//Try conversion through sql guid
-		ticks = new SqlGuid(guid).ToGuid().ToTicks();
+		ticks = new SqlGuid(id).ToGuid().ToTicks();
 		return ticks.IsDateTime()
 			? ticks.ToDateTime()
 			: default(DateTime?);
@@ -71,11 +71,11 @@ public static class SequentialGuidExtensions
 	///     Will take a Guid and will re-sequence it so that it will sort properly in SQL Server without fragmenting your
 	///     tables
 	/// </summary>
-	/// <param name="guid">Any Guid</param>
+	/// <param name="id">Any Guid</param>
 	/// <returns>SqlGuid</returns>
-	public static SqlGuid ToSqlGuid(this Guid guid)
+	public static SqlGuid ToSqlGuid(this Guid id)
 	{
-		var bytes = guid.ToByteArray();
+		var bytes = id.ToByteArray();
 		return new(SqlGuidIndex.Select(i => bytes[i]).ToArray());
 	}
 

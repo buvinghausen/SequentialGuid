@@ -69,9 +69,10 @@ public abstract class SequentialGuidGeneratorBase<T> where T : SequentialGuidGen
 	/// <summary>
 	///     Singleton instance of the generator
 	/// </summary>
+#pragma warning disable CA1000
 	public static T Instance =>
 		Lazy.Value;
-
+#pragma warning restore CA1000
 	/// <summary>
 	///     Returns a guid for the value of UtcNow
 	/// </summary>
