@@ -25,15 +25,15 @@ public abstract class SequentialGuidGeneratorBase<T> where T : SequentialGuidGen
 	/// </summary>
 	protected SequentialGuidGeneratorBase()
 	{
-		_increment =
 #if NETFRAMEWORK || NETSTANDARD2_0
-			// Fall back to the old Random class for compatibility
-			new Random().Next
+		// Fall back to the old Random create function
+		using var rng = RandomNumberGenerator.Create();
+		_increment = rng
 #else
-			// Use the RandomNumberGenerator static function where available
-			RandomNumberGenerator.GetInt32
+		// Use the RandomNumberGenerator static function where available
+		_increment = RandomNumberGenerator
 #endif
-				(500000);
+			.GetInt32(500000);
 		_machinePid = new byte[5];
 #if NET6_0_OR_GREATER
 		// For newer frameworks use the preferred static function

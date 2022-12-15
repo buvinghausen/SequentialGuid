@@ -1,4 +1,7 @@
 ﻿using System.Data.SqlTypes;
+#if NETFRAMEWORK || NETSTANDARD2_0
+using System.Security.Cryptography;
+#endif
 
 // ReSharper disable once CheckNamespace
 namespace System;
@@ -13,6 +16,15 @@ public static class SequentialGuidExtensions
 	// Was added in .NET Standard 2.1 and later so we only need to provide it for .NET Framework
 	private static readonly DateTime UnixEpoch =
 		new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+	// Create matching signature for old RNG class
+	internal static int GetInt32(this RandomNumberGenerator generator, int toExclusive)
+	{
+		// where max is exclusive
+		var bytes = new byte[sizeof(int)]; // 4 bytes
+		generator.GetNonZeroBytes(bytes);
+		return (BitConverter.ToInt32(bytes, 0) % toExclusive + toExclusive) % toExclusive;
+	}
 #endif
 	//See: https://www.sqlbi.com/blog/alberto/2007/08/31/how-are-guids-sorted-by-sql-server/
 	//See: https://learn.microsoft.com/en-us/dotnet/framework/data/adonet/sql/comparing-guid-and-uniqueidentifier-values

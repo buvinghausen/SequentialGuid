@@ -36,8 +36,7 @@ public class SequentialGuidMongoTests
 		// Make sure an empty nullable guid returns not empty
 		Assert.True(generator.IsEmpty(nullableEmpty));
 		// Make sure injecting non-guid types comes back as empty
-		Assert.True(generator.IsEmpty(new Random().Next()));
-
+		Assert.True(generator.IsEmpty(5000));
 		// Make sure a hydrated guid returns not empty
 		Assert.False(generator.IsEmpty(Guid.NewGuid()));
 		Guid? nullableWithValue = Guid.NewGuid();
