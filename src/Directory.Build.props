@@ -6,6 +6,7 @@
     <Company>Buvinghausen Solutions</Company>
     <Copyright>Copyright © 2023 Brian Buvinghausen</Copyright>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageProjectUrl>https://github.com/buvinghausen/SequentialGuid/blob/master/README.md</PackageProjectUrl>
     <PackageTags>Sequential UUID;MongoDB ObjectId</PackageTags>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -29,6 +30,7 @@
 
   <ItemGroup>
     <None Include="../../LICENSE.txt" Pack="true" PackagePath="$(PackageLicenseFile)" />
+    <None Include="../../README.md" Pack="true" PackagePath="$(PackageReadmeFile)" />
   </ItemGroup>
 
 </Project>
