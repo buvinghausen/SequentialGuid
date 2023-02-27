@@ -9,4 +9,11 @@
     <SupportedPlatform Include="browser" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Remove="System.Collections.Generic" />
+    <Using Remove="System.IO" />
+    <Using Remove="System.Net.Http" />
+    <Using Remove="System.Threading.Tasks" />
+  </ItemGroup>
+
 </Project>

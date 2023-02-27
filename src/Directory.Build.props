@@ -24,7 +24,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Condition="'$(TargetFramework)'=='net462'" Include="System.Net.Http" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.*" PrivateAssets="All" />
   </ItemGroup>
 

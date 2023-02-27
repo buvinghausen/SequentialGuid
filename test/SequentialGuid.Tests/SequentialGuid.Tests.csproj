@@ -1,4 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <Using Remove="System.IO" />
+    <Using Remove="System.Net.Http" />
+    <Using Remove="System.Threading" />
+    <Using Remove="System.Threading.Tasks" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\src\SequentialGuid\SequentialGuid.csproj" />
   </ItemGroup>
