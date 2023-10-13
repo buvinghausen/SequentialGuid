@@ -17,7 +17,7 @@ public class SequentialGuidMongoTests
 		}
 		else
 		{
-			Assert.True(false, "Invalid data type");
+			Assert.Fail("Invalid data type");
 		}
 	}
 
@@ -31,7 +31,7 @@ public class SequentialGuidMongoTests
 		// Make sure a new guid returns empty
 		Assert.True(generator.IsEmpty(new Guid()));
 		// Make sure a nullable guid is empty
-		Assert.True(generator.IsEmpty(new Guid?()));
+		Assert.True(generator.IsEmpty(new Guid?()!));
 		Guid? nullableEmpty = Guid.Empty;
 		// Make sure an empty nullable guid returns not empty
 		Assert.True(generator.IsEmpty(nullableEmpty));
