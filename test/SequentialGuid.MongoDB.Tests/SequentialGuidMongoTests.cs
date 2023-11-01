@@ -10,7 +10,7 @@ public class SequentialGuidMongoTests
 	{
 		// Mongo must be able to publicly construct the generator
 		var generator = new SequentialGuidGenerator();
-		var objId = generator.GenerateId(default, default);
+		var objId = generator.GenerateId(default!, default!);
 		if (objId is Guid id)
 		{
 			Assert.True(id.ToDateTime().HasValue);

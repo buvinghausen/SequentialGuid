@@ -28,8 +28,8 @@ public static class SequentialGuidExtensions
 #endif
 	//See: https://www.sqlbi.com/blog/alberto/2007/08/31/how-are-guids-sorted-by-sql-server/
 	//See: https://learn.microsoft.com/en-us/dotnet/framework/data/adonet/sql/comparing-guid-and-uniqueidentifier-values
-	private static readonly int[] GuidIndex = { 13, 12, 11, 10, 15, 14, 9, 8, 6, 7, 4, 5, 0, 1, 2, 3 };
-	private static readonly int[] SqlGuidIndex = { 12, 13, 14, 15, 10, 11, 8, 9, 7, 6, 3, 2, 1, 0, 5, 4 };
+	private static readonly int[] GuidIndex = [13, 12, 11, 10, 15, 14, 9, 8, 6, 7, 4, 5, 0, 1, 2, 3];
+	private static readonly int[] SqlGuidIndex = [12, 13, 14, 15, 10, 11, 8, 9, 7, 6, 3, 2, 1, 0, 5, 4];
 
 	private static DateTime ToDateTime(this long ticks) =>
 		new(ticks, DateTimeKind.Utc);

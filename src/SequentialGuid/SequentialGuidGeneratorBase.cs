@@ -119,8 +119,7 @@ public abstract class SequentialGuidGeneratorBase<T> where T : SequentialGuidGen
 			(int)(timestamp >> 32),
 			(short)(timestamp >> 16),
 			(short)timestamp,
-			_machinePid.Concat(
-				new[] { (byte)(increment >> 16), (byte)(increment >> 8), (byte)increment }).ToArray()
+			[.. _machinePid, .. new[] { (byte)(increment >> 16), (byte)(increment >> 8), (byte)increment }]
 		);
 	}
 }

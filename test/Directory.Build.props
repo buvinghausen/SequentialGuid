@@ -4,7 +4,7 @@
     <TargetFrameworks>net8.0;net7.0;net6.0;net462</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>preview</LangVersion>
     <ImplicitUsings>true</ImplicitUsings>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <AnalysisLevel>latest-Recommended</AnalysisLevel>
