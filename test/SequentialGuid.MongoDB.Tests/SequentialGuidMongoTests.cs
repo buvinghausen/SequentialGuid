@@ -27,7 +27,7 @@ public class SequentialGuidMongoTests
 		// Mongo must be able to publicly construct the generator
 		var generator = new SequentialGuidGenerator();
 		// Make sure null returns empty
-		Assert.True(generator.IsEmpty(null));
+		Assert.True(generator.IsEmpty(null!));
 		// Make sure a new guid returns empty
 		Assert.True(generator.IsEmpty(new Guid()));
 		// Make sure a nullable guid is empty
