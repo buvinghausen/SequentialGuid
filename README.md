@@ -3,11 +3,13 @@ SequentialGuid
 ==============
 ![Continuous Integration](https://github.com/buvinghausen/SequentialGuid/workflows/Continuous%20Integration/badge.svg)[![NuGet](https://img.shields.io/nuget/v/SequentialGuid.svg)](https://www.nuget.org/packages/SequentialGuid/)[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/buvinghausen/SequentialGuid/blob/master/LICENSE.txt)
 
-Will generate Sequential Guids based on [MongoDB's ObjectId specification](https://docs.mongodb.com/manual/reference/method/ObjectId/). Date &amp; time are encoded into the value so you do not need to store them separately in your database
+Will generate Sequential Guids based on [MongoDB's ObjectId specification](https://docs.mongodb.com/manual/reference/method/ObjectId/) sorting algorithm. Date &amp; time are encoded into the value so you do not need to store them separately in your database
+
+Author's Note: The entire purpose of this library is for you to have a dependency free way of generating unique uuid/Guid values that contain the time of creation which will typically result in lower clustered index fragmentation on the back end once they get persisted but it will allow you to generate the keys all the way up in WebAssembly or MAUI and pass it through your API and store it in the database this can help you with itempotency not requiring a trip to the database to generate the ID.  Please DO NOT open an issue telling me it doesn't use the Unix timestamp or it isn't an ObjectId those are both true I had to find 32 additional bits to fill a Guid vs ObjectId and so I opted to use the Ticks count to do so while retaining the remainder of the Mongo algorithm. An added bonus to this is this library is not subject to break on 19 January 2038, at 03:14:07 UTC when the Unix timestamp overflows a 32 bit integer.
 
 Returns a new [Guid](https://learn.microsoft.com/en-us/dotnet/api/system.guid) or [SqlGuid](https://learn.microsoft.com/en-us/dotnet/api/system.data.sqltypes.sqlguid). The 16-byte [Guid](https://learn.microsoft.com/en-us/dotnet/api/system.guid) or [SqlGuid](https://learn.microsoft.com/en-us/dotnet/api/system.data.sqltypes.sqlguid) consists of:
 
-* A 8-byte timestamp, representing the Guids's creation, measured in system [ticks](https://learn.microsoft.com/en-us/dotnet/api/system.datetime.ticks).
+* A 8-byte timestamp, representing the Guid's creation, measured in system [ticks](https://learn.microsoft.com/en-us/dotnet/api/system.datetime.ticks).
 * A 5-byte random value generated once per process. This random value is unique to the machine and process.
 * A 3-byte incrementing counter, initialized to a random value.
 
