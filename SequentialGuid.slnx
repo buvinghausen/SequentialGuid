@@ -1,0 +1,21 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path=".github\workflows\ci.yml" />
+    <File Path="test\Directory.Build.props" />
+    <File Path="src\Directory.Build.props" />
+    <File Path="LICENSE.txt" />
+    <File Path="README.md" />
+    <File Path=".github\workflows\release.yml" />
+  </Folder>
+  <Project Path="src\SequentialGuid.MongoDB\SequentialGuid.MongoDB.csproj" />
+  <Project Path="src\SequentialGuid.NodaTime\SequentialGuid.NodaTime.csproj" />
+  <Project Path="src\SequentialGuid\SequentialGuid.csproj" />
+  <Project Path="test\SequentialGuid.MongoDB.Tests\SequentialGuid.MongoDB.Tests.csproj" />
+  <Project Path="test\SequentialGuid.NodaTime.Tests\SequentialGuid.NodaTime.Tests.csproj" />
+  <Project Path="test\SequentialGuid.Tests\SequentialGuid.Tests.csproj">
+    <Configuration Solution="Release|*" Project="*|*|NoBuild" />
+  </Project>
+</Solution>
