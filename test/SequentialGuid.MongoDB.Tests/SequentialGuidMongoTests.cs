@@ -5,12 +5,11 @@ namespace SequentialGuid.MongoDB.Tests;
 public class SequentialGuidMongoTests
 {
 	[Fact]
-
 	private void VerifyGenerateId()
 	{
 		// Mongo must be able to publicly construct the generator
-		var generator = new SequentialGuidGenerator();
-		var objId = generator.GenerateId(default!, default!);
+		var generator = new MongoSequentialGuidGenerator();
+		var objId = generator.GenerateId(null!, null!);
 		if (objId is Guid id)
 		{
 			Assert.True(id.ToDateTime().HasValue);
@@ -25,13 +24,13 @@ public class SequentialGuidMongoTests
 	private void VerifyIsEmpty()
 	{
 		// Mongo must be able to publicly construct the generator
-		var generator = new SequentialGuidGenerator();
+		var generator = new MongoSequentialGuidGenerator();
 		// Make sure null returns empty
 		Assert.True(generator.IsEmpty(null!));
 		// Make sure a new guid returns empty
-		Assert.True(generator.IsEmpty(new Guid()));
+		Assert.True(generator.IsEmpty(Guid.Empty));
 		// Make sure a nullable guid is empty
-		Assert.True(generator.IsEmpty(new Guid?()!));
+		Assert.True(generator.IsEmpty(null!));
 		Guid? nullableEmpty = Guid.Empty;
 		// Make sure an empty nullable guid returns not empty
 		Assert.True(generator.IsEmpty(nullableEmpty));

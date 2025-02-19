@@ -7,8 +7,8 @@ using System.Security.Cryptography;
 namespace System;
 
 /// <summary>
-///     Provides extension methods to return back timestamps from a guid as well as convert to &amp; from normal sorting
-///     and SQL Server sorting
+/// Provides extension methods for working with <see cref="Guid"/> and <see cref="SqlGuid"/> objects, 
+/// including conversions and operations related to timestamps and SQL Server sorting order.
 /// </summary>
 public static class SequentialGuidExtensions
 {
@@ -35,11 +35,13 @@ public static class SequentialGuidExtensions
 		new(ticks, DateTimeKind.Utc);
 
 	/// <summary>
-	///     Will return the value of DateTime.UtcNow at the time of the generation of the Guid will keep you from storing
-	///     separate audit fields
+	/// Converts a <see cref="Guid"/> to a <see cref="DateTime"/> if the <see cref="Guid"/> contains a valid timestamp.
 	/// </summary>
-	/// <param name="id">A sequential Guid with the first 8 bytes containing the system ticks at time of generation</param>
-	/// <returns>DateTime?</returns>
+	/// <param name="id">The <see cref="Guid"/> to extract the timestamp from.</param>
+	/// <returns>
+	/// A <see cref="DateTime"/> representing the timestamp embedded in the <see cref="Guid"/>, 
+	/// or <c>null</c> if the <see cref="Guid"/> does not contain a valid timestamp.
+	/// </returns>
 	public static DateTime? ToDateTime(this Guid id)
 	{
 		var ticks = id.ToTicks();
@@ -49,26 +51,25 @@ public static class SequentialGuidExtensions
 		ticks = new SqlGuid(id).ToGuid().ToTicks();
 		return ticks.IsDateTime()
 			? ticks.ToDateTime()
-			: default(DateTime?);
+			: null;
 	}
 
 	/// <summary>
-	///     Will return the value of DateTime.UtcNow at the time of the generation of the Guid will keep you from storing
-	///     separate audit fields
+	/// Converts a <see cref="SqlGuid"/> to a <see cref="DateTime"/> if the <see cref="SqlGuid"/> contains a valid timestamp.
 	/// </summary>
-	/// <param name="sqlGuid">
-	///     A sequential SqlGuid with the first sorted 8 bytes containing the system ticks at time of
-	///     generation
-	/// </param>
-	/// <returns>DateTime?</returns>
+	/// <param name="sqlGuid">The <see cref="SqlGuid"/> to extract the timestamp from.</param>
+	/// <returns>
+	/// A <see cref="DateTime"/> representing the timestamp embedded in the <see cref="SqlGuid"/>, 
+	/// or <c>null</c> if the <see cref="SqlGuid"/> does not contain a valid timestamp.
+	/// </returns>
 	public static DateTime? ToDateTime(this SqlGuid sqlGuid) =>
 		sqlGuid.ToGuid().ToDateTime();
 
 	/// <summary>
-	///     Will take a SqlGuid and re-sequence to a Guid that will sort in the same order
+	/// Converts a <see cref="SqlGuid"/> to a <see cref="Guid"/>.
 	/// </summary>
-	/// <param name="sqlGuid">Any SqlGuid</param>
-	/// <returns>Guid</returns>
+	/// <param name="sqlGuid">The <see cref="SqlGuid"/> to convert.</param>
+	/// <returns>A <see cref="Guid"/> representation of the specified <see cref="SqlGuid"/>.</returns>
 	public static Guid ToGuid(this SqlGuid sqlGuid)
 	{
 		var bytes = sqlGuid.ToByteArray()
@@ -80,11 +81,11 @@ public static class SequentialGuidExtensions
 	}
 
 	/// <summary>
-	///     Will take a Guid and will re-sequence it so that it will sort properly in SQL Server without fragmenting your
-	///     tables
+	/// Converts a <see cref="Guid"/> to a <see cref="SqlGuid"/> by rearranging its byte order
+	/// to match the sorting order used by SQL Server.
 	/// </summary>
-	/// <param name="id">Any Guid</param>
-	/// <returns>SqlGuid</returns>
+	/// <param name="id">The <see cref="Guid"/> to convert.</param>
+	/// <returns>A <see cref="SqlGuid"/> representation of the provided <see cref="Guid"/>.</returns>
 	public static SqlGuid ToSqlGuid(this Guid id)
 	{
 		var bytes = id.ToByteArray();

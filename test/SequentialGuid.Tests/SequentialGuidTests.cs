@@ -11,8 +11,7 @@ public class SequentialGuidTests
 	///     Properly sequenced Guid array
 	/// </summary>
 	private IEnumerable<Guid> SortedGuidList { get; } =
-		new Guid[]
-		{
+		[
 			new("00000000-0000-0000-0000-000000000001"),
 			new("00000000-0000-0000-0000-000000000100"),
 			new("00000000-0000-0000-0000-000000010000"),
@@ -29,15 +28,14 @@ public class SequentialGuidTests
 			new("00000100-0000-0000-0000-000000000000"),
 			new("00010000-0000-0000-0000-000000000000"),
 			new("01000000-0000-0000-0000-000000000000")
-		};
+		];
 
 	/// <summary>
 	///     Properly sequenced SqlGuid array
 	/// </summary>
 	/// See: https://www.sqlbi.com/blog/alberto/2007/08/31/how-are-guids-sorted-by-sql-server/
 	private IEnumerable<SqlGuid> SortedSqlGuidList { get; } =
-		new SqlGuid[]
-		{
+		[
 			new("01000000-0000-0000-0000-000000000000"),
 			new("00010000-0000-0000-0000-000000000000"),
 			new("00000100-0000-0000-0000-000000000000"),
@@ -54,13 +52,13 @@ public class SequentialGuidTests
 			new("00000000-0000-0000-0000-000001000000"),
 			new("00000000-0000-0000-0000-000100000000"),
 			new("00000000-0000-0000-0000-010000000000")
-		};
+		];
 
 	[Fact]
 	private void TestGuidSorting()
 	{
 		//Act
-		var sortedList = SortedGuidList.OrderBy(x => x);
+		var sortedList = SortedGuidList.OrderBy(x => x).ToArray();
 		//Assert
 		Assert.True(SortedGuidList.SequenceEqual(sortedList));
 	}
@@ -69,7 +67,7 @@ public class SequentialGuidTests
 	private void TestSqlGuidSorting()
 	{
 		//Act
-		var sortedList = SortedSqlGuidList.OrderBy(x => x);
+		var sortedList = SortedSqlGuidList.OrderBy(x => x).ToArray();
 		//Assert
 		Assert.True(SortedSqlGuidList.SequenceEqual(sortedList));
 	}
