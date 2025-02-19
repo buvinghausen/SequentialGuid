@@ -12,11 +12,8 @@ namespace System;
 /// </summary>
 public static class SequentialGuidExtensions
 {
+	private const long UnixEpochTicks = 621355968000000000L;
 #if NETFRAMEWORK || NETSTANDARD2_0
-	// Was added in .NET Standard 2.1 and later so we only need to provide it for .NET Framework
-	private static readonly DateTime UnixEpoch =
-		new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
 	// Create matching signature for old RNG class
 	internal static int GetInt32(this RandomNumberGenerator generator, int toExclusive)
 	{
@@ -93,14 +90,8 @@ public static class SequentialGuidExtensions
 	}
 
 	internal static bool IsDateTime(this long ticks) =>
-		ticks <= DateTime.UtcNow.Ticks &&
-		ticks >=
-#if NETFRAMEWORK || NETSTANDARD2_0
-				 UnixEpoch
-#else
-				 DateTime.UnixEpoch
-#endif
-							.Ticks;
+		ticks >= UnixEpochTicks &&
+		ticks <= DateTime.UtcNow.Ticks;
 
 	private static long ToTicks(this Guid guid)
 	{
