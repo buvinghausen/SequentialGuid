@@ -157,3 +157,5 @@ coverage.*.info
 coverage.*.json
 coverage.*.xml
 
+
+.fake
