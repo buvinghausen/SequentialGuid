@@ -1,4 +1,4 @@
-﻿#if !NET6_0_OR_GREATER
+#if !NET6_0_OR_GREATER
 using System.Diagnostics;
 #endif
 using System.Security;
@@ -98,7 +98,7 @@ public abstract class SequentialGuidGeneratorBase<T> where T : SequentialGuidGen
 	public static T Instance =>
 		Lazy.Value;
 #pragma warning restore CA1000
-	
+
 	/// <summary>
 	/// Generates a new sequential <see cref="Guid"/>.
 	/// </summary>
@@ -109,7 +109,7 @@ public abstract class SequentialGuidGeneratorBase<T> where T : SequentialGuidGen
 	/// </remarks>
 	public Guid NewGuid() =>
 		NewGuid(DateTime.UtcNow.Ticks);
-	
+
 	/// <summary>
 	/// Generates a new <see cref="Guid"/> based on the provided timestamp.
 	/// </summary>
@@ -142,7 +142,7 @@ public abstract class SequentialGuidGeneratorBase<T> where T : SequentialGuidGen
 		// Once we've gotten here we have a valid UTC tick count so yield the Guid
 		return NewGuid(ticks);
 	}
-	
+
 	internal virtual Guid NewGuid(long timestamp)
 	{
 		// only use low order 3 bytes

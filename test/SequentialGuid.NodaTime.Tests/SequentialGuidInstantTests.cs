@@ -1,4 +1,4 @@
-﻿using NodaTime;
+using NodaTime;
 using Xunit;
 
 namespace SequentialGuid.NodaTime.Tests;

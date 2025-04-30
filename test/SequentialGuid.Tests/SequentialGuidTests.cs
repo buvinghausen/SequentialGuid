@@ -1,4 +1,4 @@
-﻿using System.Data.SqlTypes;
+using System.Data.SqlTypes;
 using Xunit;
 
 namespace SequentialGuid.Tests;

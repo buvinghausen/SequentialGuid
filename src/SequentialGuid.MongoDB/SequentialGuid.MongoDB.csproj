@@ -1,25 +1,25 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <Title>SequentialGuid.MongoDB</Title>
-    <Description>Implement MongoDB's IIdGenerator interface and add registration BsonSerializer helper method</Description>
-  </PropertyGroup>
+	<PropertyGroup>
+		<Title>SequentialGuid.MongoDB</Title>
+		<Description>Implement MongoDB's IIdGenerator interface and add registration BsonSerializer helper method</Description>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Using Remove="System.Collections.Generic" />
-    <Using Remove="System.IO" />
-    <Using Remove="System.Linq" />
-    <Using Remove="System.Net.Http" />
-    <Using Remove="System.Threading" />
-    <Using Remove="System.Threading.Tasks" />
-  </ItemGroup>
+	<ItemGroup>
+		<Using Remove="System.Collections.Generic" />
+		<Using Remove="System.IO" />
+		<Using Remove="System.Linq" />
+		<Using Remove="System.Net.Http" />
+		<Using Remove="System.Threading" />
+		<Using Remove="System.Threading.Tasks" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="MongoDB.Bson" Version="2.19.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="MongoDB.Bson" Version="2.19.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\SequentialGuid\SequentialGuid.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\SequentialGuid\SequentialGuid.csproj" />
+	</ItemGroup>
 
 </Project>

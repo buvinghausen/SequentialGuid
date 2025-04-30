@@ -1,29 +1,29 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <Title>SequentialGuid.NodaTime</Title>
-    <Description>Provide extension methods to round trip between NodaTime Instant and sequential guid</Description>
-  </PropertyGroup>
+	<PropertyGroup>
+		<Title>SequentialGuid.NodaTime</Title>
+		<Description>Provide extension methods to round trip between NodaTime Instant and sequential guid</Description>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <SupportedPlatform Include="browser" />
-  </ItemGroup>
+	<ItemGroup>
+		<SupportedPlatform Include="browser" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Using Remove="System.Collections.Generic" />
-    <Using Remove="System.IO" />
-    <Using Remove="System.Linq" />
-    <Using Remove="System.Net.Http" />
-    <Using Remove="System.Threading" />
-    <Using Remove="System.Threading.Tasks" />
-  </ItemGroup>
+	<ItemGroup>
+		<Using Remove="System.Collections.Generic" />
+		<Using Remove="System.IO" />
+		<Using Remove="System.Linq" />
+		<Using Remove="System.Net.Http" />
+		<Using Remove="System.Threading" />
+		<Using Remove="System.Threading.Tasks" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="NodaTime" Version="2.4.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="NodaTime" Version="2.4.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\SequentialGuid\SequentialGuid.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\SequentialGuid\SequentialGuid.csproj" />
+	</ItemGroup>
 
 </Project>

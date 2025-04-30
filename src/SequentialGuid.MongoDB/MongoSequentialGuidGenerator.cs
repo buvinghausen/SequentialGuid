@@ -1,4 +1,4 @@
-﻿using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization;
 
 namespace SequentialGuid.MongoDB;
 
@@ -24,7 +24,7 @@ public sealed class MongoSequentialGuidGenerator : IIdGenerator
 	/// of sequential <see cref="Guid"/> values for improved database indexing performance.
 	/// </remarks>
 	public static MongoSequentialGuidGenerator Instance { get; } = new();
-	
+
 	/// <summary>
 	/// Generates a new sequential <see cref="Guid"/> to be used as an identifier for a MongoDB document.
 	/// </summary>
@@ -37,7 +37,7 @@ public sealed class MongoSequentialGuidGenerator : IIdGenerator
 	/// </remarks>
 	public object GenerateId(object container, object document) =>
 		SequentialGuidGenerator.Instance.NewGuid();
-	
+
 	/// <summary>
 	/// Determines whether the specified identifier is considered empty.
 	/// </summary>

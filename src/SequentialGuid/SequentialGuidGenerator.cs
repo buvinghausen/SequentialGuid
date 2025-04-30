@@ -1,4 +1,4 @@
-﻿namespace SequentialGuid;
+namespace SequentialGuid;
 
 /// <summary>
 /// Represents a generator for creating sequential <see cref="Guid"/> values.

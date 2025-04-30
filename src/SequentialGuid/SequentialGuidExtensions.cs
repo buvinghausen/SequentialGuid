@@ -1,10 +1,12 @@
-﻿using System.Data.SqlTypes;
+using System.Data.SqlTypes;
 #if NETFRAMEWORK || NETSTANDARD2_0
 using System.Security.Cryptography;
 #endif
 
+#pragma warning disable IDE0130 // Namespace does not match folder structure
 // ReSharper disable once CheckNamespace
 namespace System;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
 /// <summary>
 /// Provides extension methods for working with <see cref="Guid"/> and <see cref="SqlGuid"/> objects, 
@@ -74,7 +76,7 @@ public static class SequentialGuidExtensions
 				!
 #endif
 			;
-		return new(GuidIndex.Select(i => bytes[i]).ToArray());
+		return new([.. GuidIndex.Select(i => bytes[i])]);
 	}
 
 	/// <summary>
@@ -86,7 +88,7 @@ public static class SequentialGuidExtensions
 	public static SqlGuid ToSqlGuid(this Guid id)
 	{
 		var bytes = id.ToByteArray();
-		return new(SqlGuidIndex.Select(i => bytes[i]).ToArray());
+		return new([.. SqlGuidIndex.Select(i => bytes[i])]);
 	}
 
 	internal static bool IsDateTime(this long ticks) =>

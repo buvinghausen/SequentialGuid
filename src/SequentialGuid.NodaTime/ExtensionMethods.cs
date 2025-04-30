@@ -1,8 +1,10 @@
-﻿using System.Data.SqlTypes;
+using System.Data.SqlTypes;
 using SequentialGuid;
 
+#pragma warning disable IDE0130 // Namespace does not match folder structure
 // ReSharper disable once CheckNamespace
 namespace NodaTime;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
 /// <summary>
 /// Provides extension methods for working with NodaTime's <see cref="Instant"/> and sequential GUID generators.
@@ -35,7 +37,7 @@ public static class ExtensionMethods
 	/// </exception>
 	public static Guid NewGuid(this SequentialGuidGenerator generator, Instant timestamp) =>
 		generator.NewGuid(timestamp.ToDateTimeUtc());
-	
+
 	/// <summary>
 	/// Generates a new sequential <see cref="Guid"/> based on the provided <see cref="Instant"/> timestamp.
 	/// </summary>
@@ -58,7 +60,7 @@ public static class ExtensionMethods
 	/// </exception>
 	public static Guid NewGuid(this SequentialSqlGuidGenerator generator, Instant timestamp) =>
 		generator.NewGuid(timestamp.ToDateTimeUtc());
-	
+
 	/// <summary>
 	/// Generates a new sequential <see cref="SqlGuid"/> based on the specified <see cref="Instant"/> timestamp.
 	/// </summary>
