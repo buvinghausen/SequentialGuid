@@ -1,9 +1,9 @@
 namespace SequentialGuid.MongoDB.Tests;
 
-public class SequentialGuidMongoTests
+public sealed class SequentialGuidMongoTests
 {
 	[Fact]
-	private void VerifyGenerateId()
+	void VerifyGenerateId()
 	{
 		// Mongo must be able to publicly construct the generator
 		var generator = new MongoSequentialGuidGenerator();
@@ -19,7 +19,7 @@ public class SequentialGuidMongoTests
 	}
 
 	[Fact]
-	private void VerifyIsEmpty()
+	void VerifyIsEmpty()
 	{
 		// Mongo must be able to publicly construct the generator
 		var generator = new MongoSequentialGuidGenerator();

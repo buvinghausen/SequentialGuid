@@ -8,19 +8,10 @@ using System.Text;
 namespace SequentialGuid;
 
 /// <summary>
-/// Provides a base class for generating sequential <see cref="Guid"/> values.
+/// Provides a base implementation for generating sequential <see cref="Guid"/> values
+/// that embed a timestamp and machine/process identifier, ensuring monotonically increasing ordering.
 /// </summary>
-/// <typeparam name="T">
-/// The type of the derived generator class. This type must inherit from 
-/// <see cref="SequentialGuidGeneratorBase{T}"/>.
-/// </typeparam>
-/// <remarks>
-/// This abstract class serves as the foundation for creating sequential GUID generators.
-/// It ensures that GUIDs are generated in a sequential manner, which can improve performance
-/// in scenarios such as database indexing. The class includes mechanisms for generating
-/// machine-specific identifiers and increment values, ensuring compatibility across different
-/// .NET versions.
-/// </remarks>
+/// <typeparam name="T">The derived generator type used to implement the singleton pattern.</typeparam>
 public abstract class SequentialGuidGeneratorBase<T> where T : SequentialGuidGeneratorBase<T>
 {
 	private static readonly Lazy<T> Lazy =
@@ -30,16 +21,8 @@ public abstract class SequentialGuidGeneratorBase<T> where T : SequentialGuidGen
 	private int _increment;
 
 	/// <summary>
-	/// Initializes a new instance of the <see cref="SequentialGuidGeneratorBase{T}"/> class.
+	/// Initializes a new instance by seeding the increment counter and capturing the machine/process identifier.
 	/// </summary>
-	/// <remarks>
-	/// This constructor sets up the initial state of the generator, including generating a machine-specific identifier
-	/// and initializing an increment value. It ensures compatibility across different .NET versions by using appropriate
-	/// APIs for cryptographic operations and process identification.
-	/// </remarks>
-	/// <exception cref="SecurityException">
-	/// Thrown if access to process information is restricted due to security settings.
-	/// </exception>
 	protected SequentialGuidGeneratorBase()
 	{
 #if NETFRAMEWORK || NETSTANDARD2_0
@@ -67,11 +50,11 @@ public abstract class SequentialGuidGeneratorBase<T> where T : SequentialGuidGen
 		{
 			var pid =
 #if NET6_0_OR_GREATER
-				// For newer frameworks prefer to use the static property on the Environment
-				Environment.ProcessId
+					// For newer frameworks prefer to use the static property on the Environment
+					Environment.ProcessId
 #else
-				// For older frameworks get the process id the old school way
-				Process.GetCurrentProcess().Id
+					// For older frameworks get the process id the old school way
+					Process.GetCurrentProcess().Id
 #endif
 				;
 			// use low order two bytes only
@@ -85,45 +68,31 @@ public abstract class SequentialGuidGeneratorBase<T> where T : SequentialGuidGen
 
 #pragma warning disable CA1000
 	/// <summary>
-	/// Gets the singleton instance of the <typeparamref name="T"/> generator.
+	/// Gets the singleton instance of the generator.
 	/// </summary>
-	/// <value>
-	/// The singleton instance of the <typeparamref name="T"/> generator, ensuring a single shared instance
-	/// across the application for generating sequential GUIDs.
-	/// </value>
-	/// <remarks>
-	/// This property uses a thread-safe lazy initialization pattern to create the instance of the generator.
-	/// It ensures that the generator is only instantiated once and is reused throughout the application.
-	/// </remarks>
 	public static T Instance =>
 		Lazy.Value;
 #pragma warning restore CA1000
 
 	/// <summary>
-	/// Generates a new sequential <see cref="Guid"/>.
+	/// Generates a new sequential <see cref="Guid"/> using the current UTC time as the timestamp.
 	/// </summary>
 	/// <returns>A new sequential <see cref="Guid"/>.</returns>
-	/// <remarks>
-	/// The generated <see cref="Guid"/> is based on the current UTC timestamp and is designed to be sequential,
-	/// which can improve performance in certain scenarios, such as database indexing.
-	/// </remarks>
 	public Guid NewGuid() =>
 		NewGuid(DateTime.UtcNow.Ticks);
 
 	/// <summary>
-	/// Generates a new <see cref="Guid"/> based on the provided timestamp.
+	/// Generates a new sequential <see cref="Guid"/> using the specified timestamp.
 	/// </summary>
 	/// <param name="timestamp">
-	/// The <see cref="DateTime"/> value used to generate the <see cref="Guid"/>. 
-	/// The timestamp must be in UTC or convertible to UTC. 
-	/// <see cref="DateTimeKind.Unspecified"/> is not supported.
+	/// The timestamp to embed in the <see cref="Guid"/>. Must be a <see cref="DateTime"/> with
+	/// <see cref="DateTimeKind.Utc"/> or <see cref="DateTimeKind.Local"/> kind, with a value
+	/// between January 1st, 1970 UTC and now.
 	/// </param>
-	/// <returns>
-	/// A <see cref="Guid"/> that incorporates the provided timestamp, ensuring sequential ordering.
-	/// </returns>
+	/// <returns>A new sequential <see cref="Guid"/>.</returns>
 	/// <exception cref="ArgumentException">
-	/// Thrown if the <paramref name="timestamp"/> is of kind <see cref="DateTimeKind.Unspecified"/> 
-	/// or if the timestamp is outside the valid range (between January 1st, 1970 UTC and now).
+	/// Thrown when <paramref name="timestamp"/> has <see cref="DateTimeKind.Unspecified"/> kind,
+	/// or when its value is outside the valid range.
 	/// </exception>
 	public Guid NewGuid(DateTime timestamp)
 	{
@@ -151,7 +120,7 @@ public abstract class SequentialGuidGeneratorBase<T> where T : SequentialGuidGen
 			(int)(timestamp >> 32),
 			(short)(timestamp >> 16),
 			(short)timestamp,
-			[.. _machinePid, .. new[] { (byte)(increment >> 16), (byte)(increment >> 8), (byte)increment }]
+			[.. _machinePid, (byte)(increment >> 16), (byte)(increment >> 8), (byte)increment]
 		);
 	}
 }

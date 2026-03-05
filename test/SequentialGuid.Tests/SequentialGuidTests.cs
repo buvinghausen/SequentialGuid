@@ -54,7 +54,7 @@ public sealed class SequentialGuidTests
 		];
 
 	[Fact]
-	private void TestGuidSorting()
+	void TestGuidSorting()
 	{
 		//Act
 		IList<Guid> sortedList = [.. SortedGuidList.OrderBy(x => x)];
@@ -63,7 +63,7 @@ public sealed class SequentialGuidTests
 	}
 
 	[Fact]
-	private void TestSqlGuidSorting()
+	void TestSqlGuidSorting()
 	{
 		//Act
 		IList<SqlGuid> sortedList = [.. SortedSqlGuidList.OrderBy(x => x)];
@@ -72,7 +72,7 @@ public sealed class SequentialGuidTests
 	}
 
 	[Fact]
-	private void TestSequentialGuidNewGuid()
+	void TestSequentialGuidNewGuid()
 	{
 		//Arrange
 		var generator = SequentialGuidGenerator.Instance;
@@ -88,7 +88,7 @@ public sealed class SequentialGuidTests
 	}
 
 	[Fact]
-	private void TestSequentialGuidNewSqlGuid()
+	void TestSequentialGuidNewSqlGuid()
 	{
 		//Arrange
 		var generator = SequentialSqlGuidGenerator.Instance;
@@ -104,7 +104,7 @@ public sealed class SequentialGuidTests
 	}
 
 	[Fact]
-	private void TestLocalDateIsUtcInGuid()
+	void TestLocalDateIsUtcInGuid()
 	{
 		var localNow = DateTime.Now;
 		TestLocalDateIsUtcInGuidImpl(localNow,
@@ -112,7 +112,7 @@ public sealed class SequentialGuidTests
 	}
 
 	[Fact]
-	private void TestLocalDateIsUtcInSqlGuid()
+	void TestLocalDateIsUtcInSqlGuid()
 	{
 		var localNow = DateTime.Now;
 		TestLocalDateIsUtcInGuidImpl(localNow,
@@ -131,7 +131,7 @@ public sealed class SequentialGuidTests
 	}
 
 	[Fact]
-	private void TestSqlGuidToGuid()
+	void TestSqlGuidToGuid()
 	{
 		// Act
 		var sqlList = SortedSqlGuidList.Select(g => g.ToGuid());
@@ -140,7 +140,7 @@ public sealed class SequentialGuidTests
 	}
 
 	[Fact]
-	private void TestGuidToSqlGuid()
+	void TestGuidToSqlGuid()
 	{
 		// Act
 		var guidList = SortedGuidList.Select(g => g.ToSqlGuid());
@@ -149,7 +149,7 @@ public sealed class SequentialGuidTests
 	}
 
 	[Fact]
-	private void TestGuidToDateTimeIsUtc()
+	void TestGuidToDateTimeIsUtc()
 	{
 		//Arrange
 		var expectedDateTime = DateTime.UtcNow;
@@ -164,7 +164,7 @@ public sealed class SequentialGuidTests
 	}
 
 	[Fact]
-	private void TestGuidLocalDateTime()
+	void TestGuidLocalDateTime()
 	{
 		//Arrange
 		var expectedDateTime = DateTime.Now;
@@ -179,7 +179,7 @@ public sealed class SequentialGuidTests
 	}
 
 	[Fact]
-	private void TestGuidToDateTimeForNonSequentialGuidReturnsNull()
+	void TestGuidToDateTimeForNonSequentialGuidReturnsNull()
 	{
 		//Arrange
 		var guid = Guid.NewGuid();
@@ -190,40 +190,40 @@ public sealed class SequentialGuidTests
 	}
 
 	[Fact]
-	private void TestUtcNowDoesNotThrowException() =>
+	void TestUtcNowDoesNotThrowException() =>
 		SequentialGuidGenerator.Instance.NewGuid(DateTime.UtcNow);
 
 	[Fact]
-	private void TestLocalNowDoesNotThrowException() =>
+	void TestLocalNowDoesNotThrowException() =>
 		SequentialGuidGenerator.Instance.NewGuid(DateTime.Now);
 
 	[Fact]
-	private void TestUnixEpochDoesNotThrowException() =>
+	void TestUnixEpochDoesNotThrowException() =>
 		SequentialGuidGenerator.Instance.NewGuid(EpochTicks);
 
 	[Fact]
-	private void TestBetweenUnixEpochAndNowDoesNotThrowException() =>
+	void TestBetweenUnixEpochAndNowDoesNotThrowException() =>
 		SequentialGuidGenerator.Instance.NewGuid(
 			new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc));
 
 	[Fact]
-	private void TestDateTimeKindUnspecifiedThrowsArgumentException() =>
+	void TestDateTimeKindUnspecifiedThrowsArgumentException() =>
 		TestThrowsArgumentException(new DateTime(2000, 1, 1));
 
 	[Fact]
-	private void TestAfterNowThrowsArgumentException() =>
+	void TestAfterNowThrowsArgumentException() =>
 		TestThrowsArgumentException(DateTime.UtcNow.AddSeconds(1));
 
 	[Fact]
-	private void TestAfterNowReturnsNullDateTime() =>
+	void TestAfterNowReturnsNullDateTime() =>
 		TestReturnsNullDateTime(DateTime.UtcNow.AddSeconds(1).Ticks);
 
 	[Fact]
-	private void TestBeforeUnixEpochThrowsArgumentException() =>
+	void TestBeforeUnixEpochThrowsArgumentException() =>
 		TestThrowsArgumentException(new DateTime(EpochTicks - 1));
 
 	[Fact]
-	private void TestBeforeUnixEpochReturnsNullDateTime() =>
+	void TestBeforeUnixEpochReturnsNullDateTime() =>
 		TestReturnsNullDateTime(EpochTicks - 1);
 
 	// Test the internal mechanism that bypasses date validation
@@ -242,7 +242,7 @@ public sealed class SequentialGuidTests
 			SequentialGuidGenerator.Instance.NewGuid(timestamp));
 
 	[Fact]
-	private void TestSqlGuidToDateTime()
+	void TestSqlGuidToDateTime()
 	{
 		//Arrange
 		var expectedDateTime = DateTime.UtcNow;
@@ -257,7 +257,7 @@ public sealed class SequentialGuidTests
 	}
 
 	[Fact]
-	private void TestSqlGuidLocalDateTime()
+	void TestSqlGuidLocalDateTime()
 	{
 		//Arrange
 		var expectedDateTime = DateTime.Now;
@@ -272,7 +272,7 @@ public sealed class SequentialGuidTests
 	}
 
 	[Fact]
-	private void TestGuidBigDateRange()
+	void TestGuidBigDateRange()
 	{
 		//Arrange
 		var generator = SequentialGuidGenerator.Instance;
@@ -290,7 +290,7 @@ public sealed class SequentialGuidTests
 	}
 
 	[Fact]
-	private void TestSqlGuidBigDateRange()
+	void TestSqlGuidBigDateRange()
 	{
 		//Arrange
 		var generator = SequentialSqlGuidGenerator.Instance;
@@ -307,7 +307,7 @@ public sealed class SequentialGuidTests
 	}
 
 	[Fact]
-	private void TestGuidConversions()
+	void TestGuidConversions()
 	{
 		// Arrange
 		var id = SequentialGuidGenerator.Instance.NewGuid();
@@ -318,7 +318,7 @@ public sealed class SequentialGuidTests
 	}
 
 	[Fact]
-	private void TestSqlGuidConversions()
+	void TestSqlGuidConversions()
 	{
 		// Arrange
 		var id = SequentialSqlGuidGenerator.Instance.NewSqlGuid();

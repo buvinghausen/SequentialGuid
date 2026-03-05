@@ -3,52 +3,30 @@ using MongoDB.Bson.Serialization;
 namespace SequentialGuid.MongoDB;
 
 /// <summary>
-/// Provides a mechanism for generating sequential <see cref="Guid"/> values specifically for use with MongoDB.
+/// Implements <see cref="IIdGenerator"/> to generate sequential <see cref="Guid"/> values
+/// for use as MongoDB document identifiers.
 /// </summary>
-/// <remarks>
-/// The <see cref="MongoSequentialGuidGenerator"/> class is designed to integrate seamlessly with MongoDB's BSON serialization framework.
-/// It generates sequential <see cref="Guid"/> values to improve database indexing performance by reducing fragmentation.
-/// This class implements the <see cref="IIdGenerator"/> interface, making it compatible with MongoDB's ID generation system.
-/// </remarks>
 public sealed class MongoSequentialGuidGenerator : IIdGenerator
 {
 	/// <summary>
-	/// Gets the singleton instance of the <see cref="SequentialGuidGenerator"/> class.
+	/// Gets the singleton instance of the generator.
 	/// </summary>
-	/// <value>
-	/// The singleton instance of <see cref="SequentialGuidGenerator"/>.
-	/// </value>
-	/// <remarks>
-	/// This property provides a globally accessible instance of the <see cref="MongoSequentialGuidGenerator"/>.
-	/// It is designed to integrate seamlessly with MongoDB's BSON serialization framework, enabling the generation
-	/// of sequential <see cref="Guid"/> values for improved database indexing performance.
-	/// </remarks>
 	public static MongoSequentialGuidGenerator Instance { get; } = new();
 
 	/// <summary>
-	/// Generates a new sequential <see cref="Guid"/> to be used as an identifier for a MongoDB document.
+	/// Generates a new sequential <see cref="Guid"/> as the document identifier.
 	/// </summary>
-	/// <param name="container">The container object that holds the document. This parameter is not used in the implementation.</param>
-	/// <param name="document">The document for which the ID is being generated. This parameter is not used in the implementation.</param>
+	/// <param name="container">The container of the document being assigned an id.</param>
+	/// <param name="document">The document being assigned an id.</param>
 	/// <returns>A new sequential <see cref="Guid"/>.</returns>
-	/// <remarks>
-	/// This method utilizes the <see cref="SequentialGuidGenerator"/> to generate a sequential <see cref="Guid"/>.
-	/// Sequential GUIDs are designed to improve performance in scenarios such as database indexing by reducing fragmentation.
-	/// </remarks>
 	public object GenerateId(object container, object document) =>
 		SequentialGuidGenerator.Instance.NewGuid();
 
 	/// <summary>
-	/// Determines whether the specified identifier is considered empty.
+	/// Determines whether the specified id is considered empty.
 	/// </summary>
-	/// <param name="id">The identifier to evaluate. This can be of any type.</param>
-	/// <returns>
-	/// <c>true</c> if the <paramref name="id"/> is either not a <see cref="Guid"/> or is an empty <see cref="Guid"/>; otherwise, <c>false</c>.
-	/// </returns>
-	/// <remarks>
-	/// This method checks if the provided <paramref name="id"/> is either not a <see cref="Guid"/> or represents an empty <see cref="Guid"/> value.
-	/// It is useful for validating identifiers in scenarios where <see cref="Guid"/> values are expected.
-	/// </remarks>
+	/// <param name="id">The id value to test.</param>
+	/// <returns><see langword="true"/> if <paramref name="id"/> is not a <see cref="Guid"/> or equals <see cref="Guid.Empty"/>; otherwise <see langword="false"/>.</returns>
 	public bool IsEmpty(object id) =>
 		id is not Guid guid || guid == Guid.Empty;
 	// Pattern matching is life

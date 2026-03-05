@@ -3,13 +3,9 @@ using System.Data.SqlTypes;
 namespace SequentialGuid;
 
 /// <summary>
-/// Represents a generator for creating sequential <see cref="SqlGuid"/> values.
+/// Generates sequential <see cref="SqlGuid"/> values ordered according to SQL Server's
+/// <c>uniqueidentifier</c> comparison rules, minimizing index fragmentation when used as primary keys.
 /// </summary>
-/// <remarks>
-/// This class extends <see cref="SequentialGuidGeneratorBase{T}"/> to provide functionality
-/// for generating sequential <see cref="SqlGuid"/> values. Sequential GUIDs are particularly
-/// useful in database scenarios where maintaining index performance is critical.
-/// </remarks>
 public sealed class SequentialSqlGuidGenerator : SequentialGuidGeneratorBase<SequentialSqlGuidGenerator>
 {
 	private SequentialSqlGuidGenerator() { }
@@ -18,33 +14,25 @@ public sealed class SequentialSqlGuidGenerator : SequentialGuidGeneratorBase<Seq
 		base.NewGuid(timestamp).ToSqlGuid().Value;
 
 	/// <summary>
-	/// Generates a new sequential <see cref="SqlGuid"/>.
+	/// Generates a new sequential <see cref="SqlGuid"/> using the current UTC time as the timestamp.
 	/// </summary>
 	/// <returns>A new sequential <see cref="SqlGuid"/>.</returns>
-	/// <remarks>
-	/// The generated <see cref="SqlGuid"/> is based on a sequential <see cref="Guid"/> 
-	/// and is particularly useful in database scenarios where maintaining index performance 
-	/// is critical. This method ensures that the <see cref="SqlGuid"/> values are sequential 
-	/// to optimize database indexing and retrieval operations.
-	/// </remarks>
 	public SqlGuid NewSqlGuid() =>
 		new(NewGuid());
 
 
 	/// <summary>
-	/// Generates a new sequential <see cref="SqlGuid"/> based on the provided timestamp.
+	/// Generates a new sequential <see cref="SqlGuid"/> using the specified timestamp.
 	/// </summary>
 	/// <param name="timestamp">
-	/// The <see cref="DateTime"/> value used to generate the <see cref="SqlGuid"/>. 
-	/// The timestamp must be in UTC or convertible to UTC. 
-	/// <see cref="DateTimeKind.Unspecified"/> is not supported.
+	/// The timestamp to embed in the <see cref="SqlGuid"/>. Must be a <see cref="DateTime"/> with
+	/// <see cref="DateTimeKind.Utc"/> or <see cref="DateTimeKind.Local"/> kind, with a value
+	/// between January 1st, 1970 UTC and now.
 	/// </param>
-	/// <returns>
-	/// A <see cref="SqlGuid"/> that incorporates the provided timestamp, ensuring sequential ordering.
-	/// </returns>
+	/// <returns>A new sequential <see cref="SqlGuid"/>.</returns>
 	/// <exception cref="ArgumentException">
-	/// Thrown if the <paramref name="timestamp"/> is of kind <see cref="DateTimeKind.Unspecified"/> 
-	/// or if the timestamp is outside the valid range (between January 1st, 1970 UTC and now).
+	/// Thrown when <paramref name="timestamp"/> has <see cref="DateTimeKind.Unspecified"/> kind,
+	/// or when its value is outside the valid range.
 	/// </exception>
 	public SqlGuid NewSqlGuid(DateTime timestamp) =>
 		new(NewGuid(timestamp));
