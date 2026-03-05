@@ -1,20 +1,16 @@
 <Project>
 
+	<Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" Condition="'' != $([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
 	<PropertyGroup>
-		<TargetFrameworks>net9.0;net8.0;net462</TargetFrameworks>
+		<OutputType>Exe</OutputType>
 		<IsPackable>false</IsPackable>
-		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-		<LangVersion>preview</LangVersion>
-		<ImplicitUsings>true</ImplicitUsings>
-		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-		<AnalysisLevel>latest-Recommended</AnalysisLevel>
+		<TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+		<UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="coverlet.collector" Version="6.*" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.*" />
-		<PackageReference Include="xunit" Version="2.*" />
-		<PackageReference Include="xunit.runner.visualstudio" Version="2.*" />
+		<PackageReference Include="xunit.v3.mtp-v2" Version="3.*" />
 	</ItemGroup>
 
 </Project>

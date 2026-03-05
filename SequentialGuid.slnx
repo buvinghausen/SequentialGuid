@@ -4,11 +4,17 @@
     <File Path=".gitattributes" />
     <File Path=".gitignore" />
     <File Path=".github\workflows\ci.yml" />
-    <File Path="test\Directory.Build.props" />
-    <File Path="src\Directory.Build.props" />
+    <File Path="Directory.Build.props" />
+    <File Path="global.json" />
     <File Path="LICENSE.txt" />
     <File Path="README.md" />
     <File Path=".github\workflows\release.yml" />
+  </Folder>
+  <Folder Name="/Solution Items/src/">
+    <File Path="src\Directory.Build.props" />
+  </Folder>
+  <Folder Name="/Solution Items/test/">
+    <File Path="test\Directory.Build.props" />
   </Folder>
   <Project Path="src\SequentialGuid.MongoDB\SequentialGuid.MongoDB.csproj" />
   <Project Path="src\SequentialGuid.NodaTime\SequentialGuid.NodaTime.csproj" />
