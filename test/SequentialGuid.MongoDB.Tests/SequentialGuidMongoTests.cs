@@ -1,5 +1,3 @@
-using Xunit;
-
 namespace SequentialGuid.MongoDB.Tests;
 
 public class SequentialGuidMongoTests
@@ -12,7 +10,7 @@ public class SequentialGuidMongoTests
 		var objId = generator.GenerateId(null!, null!);
 		if (objId is Guid id)
 		{
-			Assert.True(id.ToDateTime().HasValue);
+			id.ToDateTime().HasValue.ShouldBeTrue();
 		}
 		else
 		{
@@ -26,20 +24,20 @@ public class SequentialGuidMongoTests
 		// Mongo must be able to publicly construct the generator
 		var generator = new MongoSequentialGuidGenerator();
 		// Make sure null returns empty
-		Assert.True(generator.IsEmpty(null!));
+		generator.IsEmpty(null!).ShouldBeTrue();
 		// Make sure a new guid returns empty
-		Assert.True(generator.IsEmpty(Guid.Empty));
+		generator.IsEmpty(Guid.Empty).ShouldBeTrue();
 		// Make sure a nullable guid is empty
-		Assert.True(generator.IsEmpty(null!));
+		generator.IsEmpty(null!).ShouldBeTrue();
 		Guid? nullableEmpty = Guid.Empty;
 		// Make sure an empty nullable guid returns not empty
-		Assert.True(generator.IsEmpty(nullableEmpty));
+		generator.IsEmpty(nullableEmpty).ShouldBeTrue();
 		// Make sure injecting non-guid types comes back as empty
-		Assert.True(generator.IsEmpty(5000));
+		generator.IsEmpty(5000).ShouldBeTrue();
 		// Make sure a hydrated guid returns not empty
-		Assert.False(generator.IsEmpty(Guid.NewGuid()));
+		generator.IsEmpty(Guid.NewGuid()).ShouldBeFalse();
 		Guid? nullableWithValue = Guid.NewGuid();
 		// Make sure a hydrated nullable guid returns not empty
-		Assert.False(generator.IsEmpty(nullableWithValue));
+		generator.IsEmpty(nullableWithValue).ShouldBeFalse();
 	}
 }

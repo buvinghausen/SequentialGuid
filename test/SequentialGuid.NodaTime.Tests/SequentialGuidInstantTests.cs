@@ -1,37 +1,36 @@
 using NodaTime;
-using Xunit;
 
 namespace SequentialGuid.NodaTime.Tests;
 
-public class SequentialGuidInstantTests
+public sealed class SequentialGuidInstantTests
 {
 	[Fact]
-	private void TestInstantToGuidRoundTrip()
+	void TestInstantToGuidRoundTrip()
 	{
 		var now = SystemClock.Instance.GetCurrentInstant();
 		var id = SequentialGuidGenerator.Instance.NewGuid(now);
 		var instant = id.ToInstant();
-		Assert.True(instant.HasValue);
-		Assert.Equal(now, instant);
+		instant.HasValue.ShouldBeTrue();
+		instant.ShouldBe(now);
 	}
 
 	[Fact]
-	private void TestInstantToGuidRoundTripSqlSorting()
+	void TestInstantToGuidRoundTripSqlSorting()
 	{
 		var now = SystemClock.Instance.GetCurrentInstant();
 		var id = SequentialSqlGuidGenerator.Instance.NewGuid(now);
 		var instant = id.ToInstant();
-		Assert.True(instant.HasValue);
-		Assert.Equal(now, instant);
+		instant.HasValue.ShouldBeTrue();
+		instant.ShouldBe(now);
 	}
 
 	[Fact]
-	private void TestInstantToSqlGuidRoundTrip()
+	void TestInstantToSqlGuidRoundTrip()
 	{
 		var now = SystemClock.Instance.GetCurrentInstant();
 		var id = SequentialSqlGuidGenerator.Instance.NewSqlGuid(now);
 		var instant = id.ToInstant();
-		Assert.True(instant.HasValue);
-		Assert.Equal(now, instant);
+		instant.HasValue.ShouldBeTrue();
+		instant.ShouldBe(now);
 	}
 }

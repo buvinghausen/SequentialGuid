@@ -1,16 +1,15 @@
 using System.Data.SqlTypes;
-using Xunit;
 
 namespace SequentialGuid.Tests;
 
-public class SequentialGuidTests
+public sealed class SequentialGuidTests
 {
 	private const long EpochTicks = 621355968000000000;
 
 	/// <summary>
 	///     Properly sequenced Guid array
 	/// </summary>
-	private IEnumerable<Guid> SortedGuidList { get; } =
+	private IList<Guid> SortedGuidList { get; } =
 		[
 			new("00000000-0000-0000-0000-000000000001"),
 			new("00000000-0000-0000-0000-000000000100"),
@@ -34,7 +33,7 @@ public class SequentialGuidTests
 	///     Properly sequenced SqlGuid array
 	/// </summary>
 	/// See: https://www.sqlbi.com/blog/alberto/2007/08/31/how-are-guids-sorted-by-sql-server/
-	private IEnumerable<SqlGuid> SortedSqlGuidList { get; } =
+	private IList<SqlGuid> SortedSqlGuidList { get; } =
 		[
 			new("01000000-0000-0000-0000-000000000000"),
 			new("00010000-0000-0000-0000-000000000000"),
@@ -58,18 +57,18 @@ public class SequentialGuidTests
 	private void TestGuidSorting()
 	{
 		//Act
-		var sortedList = SortedGuidList.OrderBy(x => x).ToArray();
+		IList<Guid> sortedList = [.. SortedGuidList.OrderBy(x => x)];
 		//Assert
-		Assert.True(SortedGuidList.SequenceEqual(sortedList));
+		sortedList.ShouldBe(SortedGuidList);
 	}
 
 	[Fact]
 	private void TestSqlGuidSorting()
 	{
 		//Act
-		var sortedList = SortedSqlGuidList.OrderBy(x => x).ToArray();
+		IList<SqlGuid> sortedList = [.. SortedSqlGuidList.OrderBy(x => x)];
 		//Assert
-		Assert.True(SortedSqlGuidList.SequenceEqual(sortedList));
+		sortedList.ShouldBe(SortedSqlGuidList);
 	}
 
 	[Fact]
@@ -83,8 +82,8 @@ public class SequentialGuidTests
 		//Assert
 		for (var i = 0; i < sortedItems.Length; i++)
 		{
-			Assert.Equal(items[i].Id, sortedItems[i].Id);
-			Assert.Equal(items[i].Sort, sortedItems[i].Sort);
+			sortedItems[i].Id.ShouldBe(items[i].Id);
+			sortedItems[i].Sort.ShouldBe(items[i].Sort);
 		}
 	}
 
@@ -99,8 +98,8 @@ public class SequentialGuidTests
 		//Assert
 		for (var i = 0; i < sortedItems.Length; i++)
 		{
-			Assert.Equal(items[i].Id, sortedItems[i].Id);
-			Assert.Equal(items[i].Sort, sortedItems[i].Sort);
+			sortedItems[i].Id.ShouldBe(items[i].Id);
+			sortedItems[i].Sort.ShouldBe(items[i].Sort);
 		}
 	}
 
@@ -127,8 +126,8 @@ public class SequentialGuidTests
 		// Act
 		var utcDate = id.ToDateTime().GetValueOrDefault();
 		// Assert
-		Assert.Equal(DateTimeKind.Utc, utcDate.Kind);
-		Assert.Equal(localNow, utcDate.ToLocalTime());
+		utcDate.Kind.ShouldBe(DateTimeKind.Utc);
+		utcDate.ToLocalTime().ShouldBe(localNow);
 	}
 
 	[Fact]
@@ -137,7 +136,7 @@ public class SequentialGuidTests
 		// Act
 		var sqlList = SortedSqlGuidList.Select(g => g.ToGuid());
 		// Assert
-		Assert.True(SortedGuidList.SequenceEqual(sqlList));
+		sqlList.ShouldBe(SortedGuidList);
 	}
 
 	[Fact]
@@ -146,7 +145,7 @@ public class SequentialGuidTests
 		// Act
 		var guidList = SortedGuidList.Select(g => g.ToSqlGuid());
 		// Assert
-		Assert.True(SortedSqlGuidList.SequenceEqual(guidList));
+		guidList.ShouldBe(SortedSqlGuidList);
 	}
 
 	[Fact]
@@ -160,8 +159,8 @@ public class SequentialGuidTests
 			.ToDateTime()
 			.GetValueOrDefault();
 		//Assert
-		Assert.Equal(expectedDateTime.Ticks, dateTime.Ticks);
-		Assert.Equal(expectedDateTime.Kind, dateTime.Kind);
+		dateTime.Ticks.ShouldBe(expectedDateTime.Ticks);
+		dateTime.Kind.ShouldBe(expectedDateTime.Kind);
 	}
 
 	[Fact]
@@ -175,8 +174,8 @@ public class SequentialGuidTests
 			.ToDateTime()
 			.GetValueOrDefault();
 		//Assert
-		Assert.Equal(expectedDateTime.ToUniversalTime().Ticks, dateTime.Ticks);
-		Assert.Equal(DateTimeKind.Utc, dateTime.Kind);
+		dateTime.Ticks.ShouldBe(expectedDateTime.ToUniversalTime().Ticks);
+		dateTime.Kind.ShouldBe(DateTimeKind.Utc);
 	}
 
 	[Fact]
@@ -187,7 +186,7 @@ public class SequentialGuidTests
 		//Act
 		var actual = guid.ToDateTime();
 		//Assert
-		Assert.Null(actual);
+		actual.ShouldBeNull();
 	}
 
 	[Fact]
@@ -234,12 +233,12 @@ public class SequentialGuidTests
 		var guid = SequentialGuidGenerator.Instance.NewGuid(ticks);
 		var sqlGuid = SequentialSqlGuidGenerator.Instance.NewGuid(ticks);
 		//Act & Assert
-		Assert.Null(guid.ToDateTime());
-		Assert.Null(sqlGuid.ToDateTime());
+		guid.ToDateTime().ShouldBeNull();
+		sqlGuid.ToDateTime().ShouldBeNull();
 	}
 
 	private static void TestThrowsArgumentException(DateTime timestamp) =>
-		Assert.Throws<ArgumentException>(() =>
+		Should.Throw<ArgumentException>(() =>
 			SequentialGuidGenerator.Instance.NewGuid(timestamp));
 
 	[Fact]
@@ -253,8 +252,8 @@ public class SequentialGuidTests
 			.ToDateTime()
 			.GetValueOrDefault();
 		//Assert
-		Assert.Equal(expectedDateTime.Ticks, dateTime.Ticks);
-		Assert.Equal(expectedDateTime.Kind, dateTime.Kind);
+		dateTime.Ticks.ShouldBe(expectedDateTime.Ticks);
+		dateTime.Kind.ShouldBe(expectedDateTime.Kind);
 	}
 
 	[Fact]
@@ -268,8 +267,8 @@ public class SequentialGuidTests
 			.ToDateTime()
 			.GetValueOrDefault();
 		//Assert
-		Assert.Equal(expectedDateTime.ToUniversalTime().Ticks, dateTime.Ticks);
-		Assert.Equal(DateTimeKind.Utc, dateTime.Kind);
+		dateTime.Ticks.ShouldBe(expectedDateTime.ToUniversalTime().Ticks);
+		dateTime.Kind.ShouldBe(DateTimeKind.Utc);
 	}
 
 	[Fact]
@@ -277,15 +276,17 @@ public class SequentialGuidTests
 	{
 		//Arrange
 		var generator = SequentialGuidGenerator.Instance;
-		var items = new List<Guid>();
+		IList<Guid> items = [];
 		//Act
 		for (var i = 1970; i < DateTime.Today.Year; i++)
 		{
 			items.Add(generator.NewGuid(new DateTime(i, 1, 1, 0, 0, 0,
 				DateTimeKind.Local)));
 		}
+
+		IList<Guid> sortedItems = [.. items.OrderBy(x => x)];
 		//Assert
-		Assert.True(items.SequenceEqual(items.OrderBy(x => x)));
+		sortedItems.ShouldBe(items);
 	}
 
 	[Fact]
@@ -293,16 +294,16 @@ public class SequentialGuidTests
 	{
 		//Arrange
 		var generator = SequentialSqlGuidGenerator.Instance;
-		var items = new List<SqlGuid>();
+		IList<SqlGuid> items = [];
 		//Act
 		for (var i = 1970; i < DateTime.Today.Year; i++)
 		{
-			items.Add(generator.NewGuid(new DateTime(i, 1, 1, 0, 0, 0,
+			items.Add(generator.NewSqlGuid(new DateTime(i, 1, 1, 0, 0, 0,
 				DateTimeKind.Utc)));
 		}
-
+		IList<SqlGuid> sortedItems = [.. items.OrderBy(x => x)];
 		//Assert
-		Assert.True(items.SequenceEqual(items.OrderBy(x => x)));
+		sortedItems.ShouldBe(items);
 	}
 
 	[Fact]
@@ -313,7 +314,7 @@ public class SequentialGuidTests
 		// Act
 		var converted = id.ToSqlGuid().ToGuid();
 		// Assert
-		Assert.Equal(id, converted);
+		converted.ShouldBe(id);
 	}
 
 	[Fact]
@@ -324,6 +325,6 @@ public class SequentialGuidTests
 		// Act
 		var converted = id.ToGuid().ToSqlGuid();
 		// Assert
-		Assert.Equal(id, converted);
+		converted.ShouldBe(id);
 	}
 }
