@@ -51,15 +51,7 @@ public static class SequentialGuidExtensions
 		private long ToTicks()
 		{
 			var bytes = id.ToByteArray();
-			return
-				((long)bytes[3] << 56) +
-				((long)bytes[2] << 48) +
-				((long)bytes[1] << 40) +
-				((long)bytes[0] << 32) +
-				((long)bytes[5] << 24) +
-				(bytes[4] << 16) +
-				(bytes[7] << 8) +
-				bytes[6];
+			return bytes.IsRfc9562V8 ? bytes.Rfc9562V8Ticks : bytes.LegacyTicks;
 		}
 	}
 }

@@ -8,9 +8,18 @@ using System.Text;
 namespace SequentialGuid;
 
 /// <summary>
-/// Provides a base implementation for generating sequential <see cref="Guid"/> values
-/// that embed a timestamp and machine/process identifier, ensuring monotonically increasing ordering.
+/// Provides a base implementation for generating RFC 9562 UUID Version 8 (time-based) values
+/// that embed a 60-bit timestamp and a machine/process identifier, ensuring monotonically increasing ordering.
 /// </summary>
+/// <remarks>
+/// Implements the time-based UUIDv8 layout described in RFC 9562 Appendix B.1.
+/// The 60 least-significant bits of the .NET <see cref="DateTime.Ticks"/> timestamp are distributed
+/// across <c>custom_a</c> (48 bits) and <c>custom_b</c> (12 bits), with the mandatory version
+/// nibble (<c>0x8</c>) and variant bits (<c>10xxxxxx</c>) occupying their required positions.
+/// The remaining 62 bits of <c>custom_c</c> hold a machine/process identifier and a monotonic counter.
+/// For all .NET <see cref="DateTime"/> values through approximately the year 3662, the top 4 bits of
+/// <see cref="DateTime.Ticks"/> are zero, so the 60-bit truncation is lossless.
+/// </remarks>
 /// <typeparam name="T">The derived generator type used to implement the singleton pattern.</typeparam>
 public abstract class SequentialGuidGeneratorBase<T> where T : SequentialGuidGeneratorBase<T>
 {
@@ -116,11 +125,21 @@ public abstract class SequentialGuidGeneratorBase<T> where T : SequentialGuidGen
 	{
 		// only use low order 3 bytes
 		var increment = Interlocked.Increment(ref _increment) & 0x00ffffff;
+		// RFC 9562 §B.1 UUIDv8 time-based layout:
+		//   custom_a [48 bits] = timestamp[59:12] → Guid.a (32 bits) + Guid.b (16 bits)
+		//   ver      [ 4 bits] = 0x8              → high nibble of Guid.c
+		//   custom_b [12 bits] = timestamp[11:0]  → low 12 bits of Guid.c
+		//   var      [ 2 bits] = 0b10             → top 2 bits of d[0]
+		//   custom_c [62 bits] = machinePid + increment → d[0] (lower 6 bits) + d[1..7]
 		return new(
-			(int)(timestamp >> 32),
-			(short)(timestamp >> 16),
-			(short)timestamp,
-			[.. _machinePid, (byte)(increment >> 16), (byte)(increment >> 8), (byte)increment]
+			(int)(timestamp >> 28),
+			(short)(timestamp >> 12),
+			(short)(0x8000 | (timestamp & 0x0FFF)),
+			[
+				(byte)((_machinePid[0] & 0x3F) | 0x80),
+				_machinePid[1], _machinePid[2], _machinePid[3], _machinePid[4],
+				(byte)(increment >> 16), (byte)(increment >> 8), (byte)increment
+			]
 		);
 	}
 }

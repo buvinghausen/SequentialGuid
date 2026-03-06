@@ -88,6 +88,32 @@ public sealed class SequentialGuidTests
 	}
 
 	[Fact]
+	void TestVersion8Bits()
+	{
+		// Act
+		var id = SequentialGuidGenerator.Instance.NewGuid();
+		var bytes = id.ToByteArray();
+		// Assert - version is in the high nibble of bytes[7] (Data3 high byte, little-endian)
+		(bytes[7] >> 4).ShouldBe(8);
+#if NET9_0_OR_GREATER
+		id.Version.ShouldBe(8);
+#endif
+	}
+
+	[Fact]
+	void TestVariantBits()
+	{
+		// Act
+		var id = SequentialGuidGenerator.Instance.NewGuid();
+		var bytes = id.ToByteArray();
+		// Assert - RFC 9562 variant: bits 7-6 of bytes[8] (Data4[0]) must be 10
+		(bytes[8] & 0xC0).ShouldBe(0x80);
+#if NET9_0_OR_GREATER
+		id.Variant.ShouldBeInRange(8, 11);
+#endif
+	}
+
+	[Fact]
 	void TestSequentialGuidNewSqlGuid()
 	{
 		//Arrange

@@ -19,8 +19,7 @@ public sealed class SequentialSqlGuidGenerator : SequentialGuidGeneratorBase<Seq
 	/// <returns>A new sequential <see cref="SqlGuid"/>.</returns>
 	public SqlGuid NewSqlGuid() =>
 		new(NewGuid());
-
-
+	
 	/// <summary>
 	/// Generates a new sequential <see cref="SqlGuid"/> using the specified timestamp.
 	/// </summary>
