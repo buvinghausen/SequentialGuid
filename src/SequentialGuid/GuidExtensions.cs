@@ -10,7 +10,7 @@ namespace System;
 /// Provides extension methods for working with <see cref="Guid"/> objects,
 /// including conversions and operations related to timestamps and SQL Server sorting order.
 /// </summary>
-public static class SequentialGuidExtensions
+public static class GuidExtensions
 {
 	extension(Guid id)
 	{
