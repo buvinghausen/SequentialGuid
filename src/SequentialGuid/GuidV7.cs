@@ -8,6 +8,16 @@ namespace SequentialGuid;
 /// </summary>
 public static class GuidV7
 {
+	private static readonly
+#if NET9_0_OR_GREATER
+		Lock
+#else
+		object
+#endif
+		Sync = new();
+	private static long s_lastMs = -1;
+	private static int s_counter;
+
 	/// <summary>
 	/// Creates a new UUID version 7 using the current UTC time.
 	/// </summary>
@@ -40,33 +50,70 @@ public static class GuidV7
 			throw new ArgumentOutOfRangeException(nameof(unixMilliseconds),
 				"Unix millisecond timestamp must be non-negative and fit within 48 bits.");
 
+		// RFC 9562 §6.2 Method 1: rand_a carries a randomly-seeded 12-bit counter.
+		// A new ms tick reseeds the counter; the same tick increments it.
+		// Counter overflow advances the stored timestamp by 1 ms and resets to 0.
+		long ms;
+		int counter;
+		lock (Sync)
+		{
+			if (unixMilliseconds > s_lastMs)
+			{
+				s_lastMs = unixMilliseconds;
+				s_counter = SeedCounter();
+			}
+			else
+			{
+				if (++s_counter > 0xFFF)
+				{
+					s_lastMs++;
+					s_counter = 0;
+				}
+			}
+			ms = s_lastMs;
+			counter = s_counter;
+		}
+
 		// Build 16 bytes in network (big-endian) byte order per RFC 9562 Section 5.7
 		var bytes = new byte[16];
 
 		// unix_ts_ms: 48-bit big-endian millisecond timestamp (octets 0-5)
-		bytes[0] = (byte)(unixMilliseconds >> 40);
-		bytes[1] = (byte)(unixMilliseconds >> 32);
-		bytes[2] = (byte)(unixMilliseconds >> 24);
-		bytes[3] = (byte)(unixMilliseconds >> 16);
-		bytes[4] = (byte)(unixMilliseconds >> 8);
-		bytes[5] = (byte)unixMilliseconds;
+		bytes[0] = (byte)(ms >> 40);
+		bytes[1] = (byte)(ms >> 32);
+		bytes[2] = (byte)(ms >> 24);
+		bytes[3] = (byte)(ms >> 16);
+		bytes[4] = (byte)(ms >> 8);
+		bytes[5] = (byte)ms;
 
-		// Fill octets 6-15 with random data for rand_a (12 bits) and rand_b (62 bits)
+		// ver: bits 48-51, set to 0b0111 (7); rand_a (counter): bits 52-63 (octets 6-7)
+		bytes[6] = (byte)(0x70 | (counter >> 8));
+		bytes[7] = (byte)counter;
+
+		// Fill octets 8-15 with random data for rand_b (62 bits)
 #if NETFRAMEWORK || NETSTANDARD2_0
 		using var rng = RandomNumberGenerator.Create();
-		rng.GetBytes(bytes, 6, 10);
+		rng.GetBytes(bytes, 8, 8);
 #else
-		RandomNumberGenerator.Fill(bytes.AsSpan(6));
+		RandomNumberGenerator.Fill(bytes.AsSpan(8));
 #endif
-
-		// ver: bits 48-51, set to 0b0111 (7) in the high nibble of octet 6
-		bytes[6] = (byte)(0x70 | (bytes[6] & 0x0F));
 
 		// var: bits 64-65, set to 0b10 in the high two bits of octet 8
 		bytes[8] = (byte)(0x80 | (bytes[8] & 0x3F));
 
 		// Swap from network byte order to .NET's mixed-endian Guid format
 		return new(SwapByteOrder(bytes));
+	}
+
+	// Seeds the 12-bit counter for a new millisecond tick using the lower 11 bits
+	// (MSB left as 0 per RFC 9562 §6.2 rollover-guard guidance), giving range [0, 0x7FF].
+	private static int SeedCounter()
+	{
+#if NETFRAMEWORK || NETSTANDARD2_0
+		using var rng = RandomNumberGenerator.Create();
+		return rng.GetInt32(0x800);
+#else
+		return RandomNumberGenerator.GetInt32(0x800);
+#endif
 	}
 
 	// Converts between .NET mixed-endian and RFC 9562 network (big-endian) byte order.

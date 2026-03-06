@@ -120,12 +120,13 @@ public sealed class GuidV7Tests
 	}
 
 	[Fact]
-	void TestTwoGuidsWithSameTimestampAreDistinct()
+	void TestMonotonicityWithinSameMillisecond()
 	{
+		// Arrange - generate several UUIDs at the exact same millisecond timestamp
+		var guids = Enumerable.Range(0, 10).Select(_ => GuidV7.NewGuid(RfcTestVectorMs)).ToArray();
 		// Act
-		var first = GuidV7.NewGuid(RfcTestVectorMs);
-		var second = GuidV7.NewGuid(RfcTestVectorMs);
-		// Assert - random bits should make them extremely unlikely to collide
-		first.ShouldNotBe(second);
+		var sorted = guids.OrderBy(x => x).ToArray();
+		// Assert - monotonic counter in rand_a guarantees both distinct values and creation order
+		sorted.ShouldBe(guids);
 	}
 }
