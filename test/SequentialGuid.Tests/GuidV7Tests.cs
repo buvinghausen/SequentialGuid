@@ -57,7 +57,7 @@ public sealed class GuidV7Tests
 	void TestDateTimeOffsetOverload()
 	{
 		// Arrange - RFC 9562 Appendix A.6 timestamp expressed as DateTimeOffset (UTC)
-		var timestamp = new DateTimeOffset(2022, 2, 22, 19, 22, 22, TimeSpan.Zero);
+		DateTimeOffset timestamp = new(2022, 2, 22, 19, 22, 22, TimeSpan.Zero);
 		// Act
 		var ms = ExtractUnixMs(GuidV7.NewGuid(timestamp));
 		// Assert
@@ -82,10 +82,10 @@ public sealed class GuidV7Tests
 	void TestSequentialTimestampsProduceOrderedGuids()
 	{
 		// Arrange - generate UUIDs with strictly increasing 1 ms timestamps
-		var baseMs = 1_000_000L;
+		const long baseMs = 1_000_000L;
 		var guids = Enumerable.Range(0, 10).Select(i => GuidV7.NewGuid(baseMs + i)).ToArray();
 		// Act
-		var sorted = guids.OrderBy(x => x).ToArray();
+		Guid[] sorted = [.. guids.OrderBy(x => x)];
 		// Assert - different timestamp ms values always sort in creation order
 		sorted.ShouldBe(guids);
 	}
@@ -135,5 +135,18 @@ public sealed class GuidV7Tests
 		var second = GuidV7.NewGuid(RfcTestVectorMs);
 		// Assert - random bits should make them extremely unlikely to collide
 		first.ShouldNotBe(second);
+	}
+
+	[Fact]
+	void TestSameTimestampBatchIsMonotonicallyOrdered()
+	{
+		// Arrange - use the current time so the counter path is exercised
+		// (RFC 9562 §6.2 Method 1: fixed bit-length dedicated counter in rand_a)
+		var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+		// Act - generate 100 UUIDs all sharing the same millisecond timestamp
+		Guid[] guids = [.. Enumerable.Range(0, 100).Select(_ => GuidV7.NewGuid(timestamp))];
+		// Assert - the counter in rand_a ensures they are already in creation order
+		Guid[] sorted = [.. guids.OrderBy(x => x)];
+		sorted.ShouldBe(guids);
 	}
 }
