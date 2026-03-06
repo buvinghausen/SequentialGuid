@@ -45,7 +45,13 @@ public static class GuidV5
 	public static Guid Create(Guid namespaceId, byte[] name)
 	{
 		var buffer = new byte[16 + name.Length];
-		namespaceId.ToByteArray().SwapByteOrder().CopyTo(buffer, 0);
+		namespaceId
+#if NETFRAMEWORK || NETSTANDARD
+			.ToByteArray().SwapByteOrder()
+#else
+			.ToByteArray(true)
+#endif
+			.CopyTo(buffer, 0);
 		name.CopyTo(buffer, 16);
 #pragma warning disable CA5350 // SHA-1 is required by RFC 9562 for UUID version 5
 #if NET6_0_OR_GREATER
@@ -59,6 +65,11 @@ public static class GuidV5
 		hash[6] = (byte)((hash[6] & 0x0F) | 0x50);
 		// Set variant to RFC 9562 (10xxxxxx) in clock_seq_hi_and_reserved
 		hash[8] = (byte)((hash[8] & 0x3F) | 0x80);
-		return new(hash.SwapByteOrder());
+		return
+#if NETFRAMEWORK || NETSTANDARD
+			new(hash.SwapByteOrder());
+#else
+			new(hash.AsSpan(0, 16), true);
+#endif
 	}
 }

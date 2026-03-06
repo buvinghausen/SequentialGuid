@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace SequentialGuid.Tests;
 
 public sealed class GuidV5Tests
@@ -70,7 +72,7 @@ public sealed class GuidV5Tests
 		const string name = "test-name";
 		// Act
 		var fromString = GuidV5.Create(GuidV5.Namespaces.Url, name);
-		var fromBytes = GuidV5.Create(GuidV5.Namespaces.Url, System.Text.Encoding.UTF8.GetBytes(name));
+		var fromBytes = GuidV5.Create(GuidV5.Namespaces.Url, Encoding.UTF8.GetBytes(name));
 		// Assert
 		fromString.ShouldBe(fromBytes);
 	}

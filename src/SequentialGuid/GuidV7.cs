@@ -66,6 +66,11 @@ public static class GuidV7
 		bytes[8] = (byte)(0x80 | (bytes[8] & 0x3F));
 
 		// Swap from network byte order to .NET's mixed-endian Guid format
-		return new(bytes.SwapByteOrder());
+		return
+#if NETFRAMEWORK || NETSTANDARD
+			new(bytes.SwapByteOrder());
+#else
+			new(bytes, true);
+#endif
 	}
 }
