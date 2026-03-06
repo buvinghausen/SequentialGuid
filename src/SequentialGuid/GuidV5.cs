@@ -45,7 +45,7 @@ public static class GuidV5
 	public static Guid Create(Guid namespaceId, byte[] name)
 	{
 		var buffer = new byte[16 + name.Length];
-		SwapByteOrder(namespaceId.ToByteArray()).CopyTo(buffer, 0);
+		namespaceId.ToByteArray().SwapByteOrder().CopyTo(buffer, 0);
 		name.CopyTo(buffer, 16);
 #pragma warning disable CA5350 // SHA-1 is required by RFC 9562 for UUID version 5
 #if NET6_0_OR_GREATER
@@ -59,12 +59,6 @@ public static class GuidV5
 		hash[6] = (byte)((hash[6] & 0x0F) | 0x50);
 		// Set variant to RFC 9562 (10xxxxxx) in clock_seq_hi_and_reserved
 		hash[8] = (byte)((hash[8] & 0x3F) | 0x80);
-		return new(SwapByteOrder(hash));
+		return new(hash.SwapByteOrder());
 	}
-
-	// Swaps between .NET mixed-endian and RFC 9562 network (big-endian) byte order.
-	// Reverses Data1 (4 bytes), Data2 (2 bytes), and Data3 (2 bytes); Data4 is unchanged.
-	// This mapping is self-inverse: applying it twice returns the original bytes.
-	private static byte[] SwapByteOrder(byte[] b) =>
-		[b[3], b[2], b[1], b[0], b[5], b[4], b[7], b[6], b[8], b[9], b[10], b[11], b[12], b[13], b[14], b[15]];
 }
