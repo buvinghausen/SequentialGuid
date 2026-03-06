@@ -13,7 +13,7 @@ static class TicksExtensions
 		internal DateTime ToDateTime() =>
 			new(ticks, DateTimeKind.Utc);
 
-		internal bool IsDateTime() =>
+		internal bool IsDateTime =>
 			ticks >= UnixEpochTicks &&
 			ticks <= DateTime.UtcNow.Ticks;
 	}

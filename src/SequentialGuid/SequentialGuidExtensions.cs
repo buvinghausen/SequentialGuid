@@ -28,11 +28,11 @@ public static class SequentialGuidExtensions
 		public DateTime? ToDateTime()
 		{
 			var ticks = id.ToTicks();
-			if (ticks.IsDateTime()) return ticks.ToDateTime();
+			if (ticks.IsDateTime) return ticks.ToDateTime();
 
 			//Try conversion through sql guid
 			ticks = new SqlGuid(id).ToGuid().ToTicks();
-			return ticks.IsDateTime()
+			return ticks.IsDateTime
 				? ticks.ToDateTime()
 				: null;
 		}
