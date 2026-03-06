@@ -36,7 +36,7 @@ public static class GuidV7
 	/// </exception>
 	public static Guid NewGuid(long unixMilliseconds)
 	{
-		if (unixMilliseconds < 0 || unixMilliseconds > 0x0000_FFFF_FFFF_FFFF)
+		if (unixMilliseconds is < 0 or > 0x0000_FFFF_FFFF_FFFF)
 			throw new ArgumentOutOfRangeException(nameof(unixMilliseconds),
 				"Unix millisecond timestamp must be non-negative and fit within 48 bits.");
 

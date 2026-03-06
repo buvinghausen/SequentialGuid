@@ -21,18 +21,26 @@ public sealed class GuidV7Tests
 	void TestVersion7Bits()
 	{
 		// Act
-		var bytes = GuidV7.NewGuid().ToByteArray();
+		var id = GuidV7.NewGuid();
+		var bytes = id.ToByteArray();
 		// Assert - version is in the high nibble of bytes[7] (Data3 high byte, little-endian)
 		(bytes[7] >> 4).ShouldBe(7);
+#if NET9_0_OR_GREATER
+		id.Version.ShouldBe(7);
+#endif
 	}
 
 	[Fact]
 	void TestVariantBits()
 	{
 		// Act
-		var bytes = GuidV7.NewGuid().ToByteArray();
+		var id = GuidV7.NewGuid();
+		var bytes = id.ToByteArray();
 		// Assert - RFC 9562 variant: bits 7-6 of bytes[8] (Data4[0]) must be 10
 		(bytes[8] & 0xC0).ShouldBe(0x80);
+#if NET9_0_OR_GREATER
+		id.Variant.ShouldBeInRange(8, 11);
+#endif
 	}
 
 	[Fact]

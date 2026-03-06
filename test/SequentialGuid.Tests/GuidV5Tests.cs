@@ -21,18 +21,26 @@ public sealed class GuidV5Tests
 	void TestVersion5Bits()
 	{
 		// Act
-		var bytes = GuidV5.Create(GuidV5.Namespaces.Dns, "test").ToByteArray();
+		var id = GuidV5.Create(GuidV5.Namespaces.Dns, "test");
+		var bytes = id.ToByteArray();
 		// Assert - version is in the high nibble of bytes[7] (Data3 high byte, little-endian)
 		(bytes[7] >> 4).ShouldBe(5);
+#if NET9_0_OR_GREATER
+		id.Version.ShouldBe(5);
+#endif
 	}
 
 	[Fact]
 	void TestVariantBits()
 	{
 		// Act
-		var bytes = GuidV5.Create(GuidV5.Namespaces.Dns, "test").ToByteArray();
+		var id = GuidV5.Create(GuidV5.Namespaces.Dns, "test");
+		var bytes = id.ToByteArray();
 		// Assert - RFC 9562 variant: bits 7-6 of bytes[8] (Data4[0]) must be 10
 		(bytes[8] & 0xC0).ShouldBe(0x80);
+#if NET9_0_OR_GREATER
+		id.Variant.ShouldBeInRange(8, 11);
+#endif
 	}
 
 	[Fact]
