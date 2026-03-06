@@ -12,10 +12,6 @@ namespace System;
 /// </summary>
 public static class SequentialGuidExtensions
 {
-	//See: https://www.sqlbi.com/blog/alberto/2007/08/31/how-are-guids-sorted-by-sql-server/
-	//See: https://learn.microsoft.com/en-us/dotnet/framework/data/adonet/sql/comparing-guid-and-uniqueidentifier-values
-	private static readonly int[] SqlGuidIndex = [12, 13, 14, 15, 10, 11, 8, 9, 7, 6, 3, 2, 1, 0, 5, 4];
-
 	extension(Guid id)
 	{
 		/// <summary>
@@ -42,11 +38,8 @@ public static class SequentialGuidExtensions
 		/// to match the sorting order used by SQL Server.
 		/// </summary>
 		/// <returns>A <see cref="SqlGuid"/> representation of the provided <see cref="Guid"/>.</returns>
-		public SqlGuid ToSqlGuid()
-		{
-			var bytes = id.ToByteArray();
-			return new([.. SqlGuidIndex.Select(i => bytes[i])]);
-		}
+		public SqlGuid ToSqlGuid() =>
+			new(id.ToByteArray().ToSqlByteOrder());
 
 		private long ToTicks()
 		{

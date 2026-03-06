@@ -11,6 +11,13 @@ internal static class ByteArrayExtensions
 		internal byte[] SwapByteOrder() =>
 			[b[3], b[2], b[1], b[0], b[5], b[4], b[7], b[6], b[8], b[9], b[10], b[11], b[12], b[13], b[14], b[15]];
 #endif
+		//See: https://www.sqlbi.com/blog/alberto/2007/08/31/how-are-guids-sorted-by-sql-server/
+		//See: https://learn.microsoft.com/en-us/dotnet/framework/data/adonet/sql/comparing-guid-and-uniqueidentifier-values
+		internal byte[] ToSqlByteOrder() =>
+			[b[12], b[13], b[14], b[15], b[10], b[11], b[8], b[9], b[7], b[6], b[3], b[2], b[1], b[0], b[5], b[4]];
+
+		internal byte[] FromSqlByteOrder() =>
+			[b[13], b[12], b[11], b[10], b[15], b[14], b[9], b[8], b[6], b[7], b[4], b[5], b[0], b[1], b[2], b[3]];
 
 		// bytes[7] is the high byte of Data3 (c) in .NET's little-endian layout;
 		// its high nibble is the RFC 9562 version field.
