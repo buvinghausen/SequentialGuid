@@ -4,13 +4,13 @@ using System.Text;
 namespace SequentialGuid;
 
 /// <summary>
-/// Provides RFC 4122 UUID Version 5 generation using SHA-1 hashing to produce
+/// Provides RFC 9562 UUID Version 5 generation using SHA-1 hashing to produce
 /// deterministic, namespace-based <see cref="Guid"/> values.
 /// </summary>
 public static class GuidV5
 {
 	/// <summary>
-	/// Well-known namespace UUIDs defined in RFC 4122 Appendix C.
+	/// Well-known namespace UUIDs defined in RFC 9562 Section 6.6.
 	/// </summary>
 	public static class Namespaces
 	{

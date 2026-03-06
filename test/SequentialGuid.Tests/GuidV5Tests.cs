@@ -2,11 +2,11 @@ namespace SequentialGuid.Tests;
 
 public sealed class GuidV5Tests
 {
-	// Known test vectors from the Python standard library uuid module documentation
-	// and cross-verified against multiple RFC 4122 implementations.
+	// Known test vectors: "python.org" is from the Python standard library uuid module
+	// documentation; "www.example.com" is the official test vector from RFC 9562 Appendix A.4.
 	[Theory]
 	[InlineData("6ba7b810-9dad-11d1-80b4-00c04fd430c8", "python.org", "886313e1-3b8a-5372-9b90-0c9aee199e5d")]
-	[InlineData("6ba7b810-9dad-11d1-80b4-00c04fd430c8", "www.example.com", "2ed6657d-e927-568b-95e1-2665a8aea6a2")]
+	[InlineData("6ba7b810-9dad-11d1-80b4-00c04fd430c8", "www.example.com", "2ed6657d-e927-568b-95e1-2665a8aea6a2")] // RFC 9562 §A.4
 	void KnownValueTests(string namespaceId, string name, string expected)
 	{
 		// Act
@@ -29,7 +29,7 @@ public sealed class GuidV5Tests
 	{
 		// Act
 		var bytes = GuidV5.Create(GuidV5.Namespaces.Dns, "test").ToByteArray();
-		// Assert - RFC 4122 variant: bits 7-6 of bytes[8] (Data4[0]) must be 10
+		// Assert - RFC 9562 variant: bits 7-6 of bytes[8] (Data4[0]) must be 10
 		(bytes[8] & 0xC0).ShouldBe(0x80);
 	}
 
