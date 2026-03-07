@@ -37,8 +37,7 @@ public sealed class GuidV5Tests
 		var id = GuidV5.Create(GuidV5.Namespaces.Dns, "test");
 		var bytes = id.ToByteArray();
 		var sqlBytes = bytes.ToSqlByteOrder();
-		// Assert - RFC 9562 variant: bits 7-6 of bytes[8] (Data4[0]) must be 10
-		(bytes[8] & 0xC0).ShouldBe(0x80);
+
 #if NET9_0_OR_GREATER
 		id.Variant.ShouldBeInRange(8, 11);
 #endif

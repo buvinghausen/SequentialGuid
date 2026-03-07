@@ -87,8 +87,8 @@ public sealed class GuidV7Tests
 		var guid = GuidV7.NewGuid(0L);
 		var bytes = guid.ToByteArray();
 		// Assert
-		(bytes[7] >> 4).ShouldBe(7);
-		(bytes[8] & 0xC0).ShouldBe(0x80);
+		bytes.IsRfc9562Version(7).ShouldBeTrue();
+		bytes.VariantIsRfc9562().ShouldBeTrue();
 		guid.ToUnixMs().ShouldBe(0L);
 	}
 
@@ -100,8 +100,8 @@ public sealed class GuidV7Tests
 		var guid = GuidV7.NewGuid(maxMs);
 		var bytes = guid.ToByteArray();
 		// Assert
-		(bytes[7] >> 4).ShouldBe(7);
-		(bytes[8] & 0xC0).ShouldBe(0x80);
+		bytes.IsRfc9562Version(7).ShouldBeTrue();
+		bytes.VariantIsRfc9562().ShouldBeTrue();
 		guid.ToUnixMs().ShouldBe(maxMs);
 	}
 
