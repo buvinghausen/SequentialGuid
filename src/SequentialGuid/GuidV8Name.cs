@@ -67,10 +67,8 @@ public static class GuidV8Name
 		using var sha256 = SHA256.Create();
 		var hash = sha256.ComputeHash(buffer);
 #endif
-		// Set version to 8 (1000) in the high nibble of the ver field
-		hash[6] = (byte)((hash[6] & 0x0F) | 0x80);
-		// Set variant to RFC 9562 (10xxxxxx) in the var field
-		hash[8] = (byte)((hash[8] & 0x3F) | 0x80);
+		hash.SetRfc9562Version(8);
+		hash.SetRfc9562Variant();
 		return
 #if NETFRAMEWORK || NETSTANDARD
 			new(hash.SwapByteOrder());

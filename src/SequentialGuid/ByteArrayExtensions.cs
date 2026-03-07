@@ -23,6 +23,14 @@ internal static class ByteArrayExtensions
 		internal bool VariantIsRfc9562() =>
 			(b[8] & 0xC0) == 0x80;
 
+		// Sets the RFC 9562 version nibble (bits 48-51) in bytes[6]
+		internal void SetRfc9562Version(byte version) =>
+			b[6] = (byte)((b[6] & 0x0F) | (version << 4));
+
+		// Sets the RFC 9562 variant bits (10xxxxxx) on bytes[8]
+		internal void SetRfc9562Variant() =>
+			b[8] = (byte)((b[8] & 0x3F) | 0x80);
+
 		// For SQL byte order the variant is the 7th byte
 		internal bool SqlVariantIsRfc9562() =>
 			(b[6] & 0xC0) == 0x80;

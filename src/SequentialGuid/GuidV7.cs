@@ -127,19 +127,14 @@ public static class GuidV7
 
 		if (useCounter)
 		{
-			// ver: bits 48-51 = 0b0111 (7); rand_a bits 11-8 = counter bits 11-8
-			bytes[6] = (byte)(0x70 | ((counter >> 8) & 0x0F));
+			// rand_a bits 11-8 = counter bits 11-8
+			bytes[6] = (byte)(counter >> 8);
 			// rand_a bits 7-0 = counter bits 7-0
 			bytes[7] = (byte)(counter & 0xFF);
 		}
-		else
-		{
-			// ver: bits 48-51 = 0b0111 (7); rand_a = pure random (no counter)
-			bytes[6] = (byte)(0x70 | (bytes[6] & 0x0F));
-		}
 
-		// var: bits 64-65, set to 0b10 in the high two bits of octet 8
-		bytes[8] = (byte)(0x80 | (bytes[8] & 0x3F));
+		bytes.SetRfc9562Version(7);
+		bytes.SetRfc9562Variant();
 
 		// Swap from network byte order to .NET's mixed-endian Guid format
 		return

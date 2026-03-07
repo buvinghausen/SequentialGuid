@@ -61,10 +61,8 @@ public static class GuidV5
 		var hash = sha1.ComputeHash(buffer);
 #endif
 #pragma warning restore CA5350
-		// Set version to 5 (0101) in the high nibble of the time_hi_and_version field
-		hash[6] = (byte)((hash[6] & 0x0F) | 0x50);
-		// Set variant to RFC 9562 (10xxxxxx) in clock_seq_hi_and_reserved
-		hash[8] = (byte)((hash[8] & 0x3F) | 0x80);
+		hash.SetRfc9562Version(5);
+		hash.SetRfc9562Variant();
 		return
 #if NETFRAMEWORK || NETSTANDARD
 			new(hash.SwapByteOrder());

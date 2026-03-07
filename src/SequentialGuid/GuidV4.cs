@@ -27,10 +27,8 @@ public static class GuidV4
 #else
 		RandomNumberGenerator.Fill(bytes);
 #endif
-		// ver: bits 48-51 = 0b0100 (4)
-		bytes[6] = (byte)((bytes[6] & 0x0F) | 0x40);
-		// var: bits 64-65 = 0b10
-		bytes[8] = (byte)((bytes[8] & 0x3F) | 0x80);
+		bytes.SetRfc9562Version(4);
+		bytes.SetRfc9562Variant();
 
 		// Swap from network byte order to .NET's mixed-endian Guid format
 		return
