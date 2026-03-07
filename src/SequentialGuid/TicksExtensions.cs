@@ -8,13 +8,16 @@ static class TicksExtensions
 {
 	private const long UnixEpochTicks = 621355968000000000L;
 
-	extension(long ticks)
+	extension(long value)
 	{
 		internal DateTime ToDateTime() =>
-			new(ticks, DateTimeKind.Utc);
+			new(value, DateTimeKind.Utc);
 
 		internal bool IsDateTime =>
-			ticks >= UnixEpochTicks &&
-			ticks <= DateTime.UtcNow.Ticks;
+			value >= UnixEpochTicks &&
+			value <= DateTime.UtcNow.Ticks;
+
+		internal long Rfc9562V7Ticks =>
+			UnixEpochTicks + value * TimeSpan.TicksPerMillisecond;
 	}
 }

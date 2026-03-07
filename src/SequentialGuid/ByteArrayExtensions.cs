@@ -19,24 +19,33 @@ internal static class ByteArrayExtensions
 		internal byte[] FromSqlByteOrder() =>
 			[b[13], b[12], b[11], b[10], b[15], b[14], b[9], b[8], b[6], b[7], b[4], b[5], b[0], b[1], b[2], b[3]];
 
-		// bytes[7] is the high byte of Data3 (c) in .NET's little-endian layout;
-		// its high nibble is the RFC 9562 version field.
-		// UUIDv8 (version 8): a=ts[59:28], b=ts[27:12], c_low12=ts[11:0] — 4-bit shift vs legacy.
-		// Legacy: a=ts[63:32], b=ts[31:16], c=ts[15:0] — full 64-bit timestamp, no version nibble.
-		// Require BOTH version=8 AND RFC 9562 variant (10xxxxxx in bytes[8]) to avoid
-		// false-positives on legacy GUIDs whose timestamp bits accidentally produce a
-		// version nibble of 8; the combined probability drops to 1/64 for random data.
-		internal bool AreRfc9562V8 =>
-			b.AreRfc9562(8);
+		// RFC 9562 variant: bits 7-6 of bytes[8] (Data4[0]) must be 10
+		internal bool VariantIsRfc9562() =>
+			(b[8] & 0xC0) == 0x80;
 
-		internal bool AreRfc9562V7 =>
-			b.AreRfc9562(7);
+		// For SQL byte order the variant is the 7th byte
+		internal bool SqlVariantIsRfc9562() =>
+			(b[6] & 0xC0) == 0x80;
 
-		internal bool AreRfc9562V5 =>
-			b.AreRfc9562(5);
+		// The big endian lead byte was always 8 in the legacy calculation
+		internal bool IsLegacy() =>
+			b[3] == 8 && !b.VariantIsRfc9562();
 
-		internal bool AreRfc9562(byte version) =>
-			b[7] >> 4 == version && (b[8] & 0xC0) == 0x80;
+		// In sql byte order the 11th byte was always 8
+		internal bool IsSqlLegacy() =>
+			b[10] == 8 && !b.SqlVariantIsRfc9562();
+
+		// version is in the high nibble of bytes[7] (Data3 high byte, little-endian)
+		internal bool IsRfc9562Version(byte version) =>
+			b[7] >> 4 == version && b.VariantIsRfc9562();
+
+		internal long Rfc9562V7UnixMs =>
+			((long)b[3] << 40) |
+			((long)b[2] << 32) |
+			((long)b[1] << 24) |
+			((long)b[0] << 16) |
+			((long)b[5] << 8) |
+			b[4];
 
 		internal long Rfc9562V8Ticks =>
 			((long)b[3] << 52) +

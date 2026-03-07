@@ -23,13 +23,11 @@ public sealed class GuidV5Tests
 		// Act
 		var id = GuidV5.Create(GuidV5.Namespaces.Dns, "test");
 		var bytes = id.ToByteArray();
-		// Assert - version is in the high nibble of bytes[7] (Data3 high byte, little-endian)
-		(bytes[7] >> 4).ShouldBe(5);
+		
 #if NET9_0_OR_GREATER
 		id.Version.ShouldBe(5);
 #endif
-		// At present the compiler can't access static instance-like properties across assemblies
-		bytes.AreRfc9562(5).ShouldBeTrue();
+		bytes.IsRfc9562Version(5).ShouldBeTrue();
 	}
 
 	[Fact]
@@ -38,13 +36,14 @@ public sealed class GuidV5Tests
 		// Act
 		var id = GuidV5.Create(GuidV5.Namespaces.Dns, "test");
 		var bytes = id.ToByteArray();
+		var sqlBytes = bytes.ToSqlByteOrder();
 		// Assert - RFC 9562 variant: bits 7-6 of bytes[8] (Data4[0]) must be 10
 		(bytes[8] & 0xC0).ShouldBe(0x80);
 #if NET9_0_OR_GREATER
 		id.Variant.ShouldBeInRange(8, 11);
 #endif
-		// At present the compiler can't access static instance-like properties across assemblies
-		bytes.AreRfc9562(5).ShouldBeTrue();
+		bytes.VariantIsRfc9562().ShouldBeTrue();
+		sqlBytes.SqlVariantIsRfc9562().ShouldBeTrue();
 	}
 
 	[Fact]

@@ -6,30 +6,17 @@ public sealed class GuidV7Tests
 	// Unix Epoch milliseconds: 1645557742000 = 0x017F22E279B0
 	private const long RfcTestVectorMs = 1645557742000L;
 
-	// Extracts the embedded 48-bit Unix millisecond timestamp from a UUIDv7.
-	// In .NET's mixed-endian Guid layout the timestamp bytes are stored as:
-	//   bytes[3..0] = ms bits 47..16 (Data1 little-endian)
-	//   bytes[5..4] = ms bits 15..0  (Data2 little-endian)
-	private static long ExtractUnixMs(Guid guid)
-	{
-		var b = guid.ToByteArray();
-		return ((long)b[3] << 40) | ((long)b[2] << 32) | ((long)b[1] << 24) |
-		       ((long)b[0] << 16) | ((long)b[5] << 8)  | b[4];
-	}
-
 	[Fact]
 	void TestVersion7Bits()
 	{
 		// Act
 		var id = GuidV7.NewGuid();
 		var bytes = id.ToByteArray();
-		// Assert - version is in the high nibble of bytes[7] (Data3 high byte, little-endian)
-		(bytes[7] >> 4).ShouldBe(7);
 #if NET9_0_OR_GREATER
 		id.Version.ShouldBe(7);
 #endif
 		// At present the compiler can't access static instance-like properties across assemblies
-		bytes.AreRfc9562(7).ShouldBeTrue();
+		bytes.IsRfc9562Version(7).ShouldBeTrue();
 	}
 
 	[Fact]
@@ -38,13 +25,12 @@ public sealed class GuidV7Tests
 		// Act
 		var id = GuidV7.NewGuid();
 		var bytes = id.ToByteArray();
-		// Assert - RFC 9562 variant: bits 7-6 of bytes[8] (Data4[0]) must be 10
-		(bytes[8] & 0xC0).ShouldBe(0x80);
+		var sqlBytes = bytes.ToSqlByteOrder();
 #if NET9_0_OR_GREATER
 		id.Variant.ShouldBeInRange(8, 11);
 #endif
-		// At present the compiler can't access static instance-like properties across assemblies
-		bytes.AreRfc9562(7).ShouldBeTrue();
+		bytes.VariantIsRfc9562().ShouldBeTrue();
+		sqlBytes.SqlVariantIsRfc9562().ShouldBeTrue();
 	}
 
 	[Fact]
@@ -52,7 +38,7 @@ public sealed class GuidV7Tests
 	{
 		// Arrange - use the RFC 9562 Appendix A.6 timestamp
 		// Act
-		var ms = ExtractUnixMs(GuidV7.NewGuid(RfcTestVectorMs));
+		var ms = GuidV7.NewGuid(RfcTestVectorMs).ToUnixMs();
 		// Assert
 		ms.ShouldBe(RfcTestVectorMs);
 	}
@@ -63,7 +49,7 @@ public sealed class GuidV7Tests
 		// Arrange - RFC 9562 Appendix A.6 timestamp expressed as DateTimeOffset (UTC)
 		DateTimeOffset timestamp = new(2022, 2, 22, 19, 22, 22, TimeSpan.Zero);
 		// Act
-		var ms = ExtractUnixMs(GuidV7.NewGuid(timestamp));
+		var ms = GuidV7.NewGuid(timestamp).ToUnixMs();
 		// Assert
 		ms.ShouldBe(RfcTestVectorMs);
 	}
@@ -76,7 +62,7 @@ public sealed class GuidV7Tests
 		// Act
 		var guid = GuidV7.NewGuid();
 		var after = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-		var ms = ExtractUnixMs(guid);
+		var ms = guid.ToUnixMs();
 		// Assert
 		ms.ShouldBeGreaterThanOrEqualTo(before);
 		ms.ShouldBeLessThanOrEqualTo(after);
@@ -103,7 +89,7 @@ public sealed class GuidV7Tests
 		// Assert
 		(bytes[7] >> 4).ShouldBe(7);
 		(bytes[8] & 0xC0).ShouldBe(0x80);
-		ExtractUnixMs(guid).ShouldBe(0L);
+		guid.ToUnixMs().ShouldBe(0L);
 	}
 
 	[Fact]
@@ -116,7 +102,7 @@ public sealed class GuidV7Tests
 		// Assert
 		(bytes[7] >> 4).ShouldBe(7);
 		(bytes[8] & 0xC0).ShouldBe(0x80);
-		ExtractUnixMs(guid).ShouldBe(maxMs);
+		guid.ToUnixMs().ShouldBe(maxMs);
 	}
 
 	[Fact]
