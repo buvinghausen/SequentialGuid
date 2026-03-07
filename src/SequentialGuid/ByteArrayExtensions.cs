@@ -26,8 +26,17 @@ internal static class ByteArrayExtensions
 		// Require BOTH version=8 AND RFC 9562 variant (10xxxxxx in bytes[8]) to avoid
 		// false-positives on legacy GUIDs whose timestamp bits accidentally produce a
 		// version nibble of 8; the combined probability drops to 1/64 for random data.
-		internal bool IsRfc9562V8 =>
-			b[7] >> 4 == 8 && (b[8] & 0xC0) == 0x80;
+		internal bool AreRfc9562V8 =>
+			b.AreRfc9562(8);
+
+		internal bool AreRfc9562V7 =>
+			b.AreRfc9562(7);
+
+		internal bool AreRfc9562V5 =>
+			b.AreRfc9562(5);
+
+		internal bool AreRfc9562(byte version) =>
+			b[7] >> 4 == version && (b[8] & 0xC0) == 0x80;
 
 		internal long Rfc9562V8Ticks =>
 			((long)b[3] << 52) +

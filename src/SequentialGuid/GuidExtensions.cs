@@ -44,7 +44,7 @@ public static class GuidExtensions
 		private long ToTicks()
 		{
 			var bytes = id.ToByteArray();
-			return bytes.IsRfc9562V8 ? bytes.Rfc9562V8Ticks : bytes.LegacyTicks;
+			return bytes.AreRfc9562V8 ? bytes.Rfc9562V8Ticks : bytes.LegacyTicks;
 		}
 	}
 }

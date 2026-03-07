@@ -28,6 +28,8 @@ public sealed class GuidV5Tests
 #if NET9_0_OR_GREATER
 		id.Version.ShouldBe(5);
 #endif
+		// At present the compiler can't access static instance-like properties across assemblies
+		bytes.AreRfc9562(5).ShouldBeTrue();
 	}
 
 	[Fact]
@@ -41,6 +43,8 @@ public sealed class GuidV5Tests
 #if NET9_0_OR_GREATER
 		id.Variant.ShouldBeInRange(8, 11);
 #endif
+		// At present the compiler can't access static instance-like properties across assemblies
+		bytes.AreRfc9562(5).ShouldBeTrue();
 	}
 
 	[Fact]
