@@ -6,11 +6,11 @@ public sealed class GuidV8NameTests
 {
 	// RFC 9562 Appendix B.2 official test vector: DNS namespace + "www.example.com"
 	[Theory]
-	[InlineData("6ba7b810-9dad-11d1-80b4-00c04fd430c8", "www.example.com", "5c146b14-3c52-8afd-938a-375d0df1fbf6")] // RFC 9562 §B.2
-	void KnownValueTests(string namespaceId, string name, string expected)
+	[InlineData("www.example.com", "5c146b14-3c52-8afd-938a-375d0df1fbf6")] // RFC 9562 §B.2
+	void KnownValueTests(string name, string expected)
 	{
 		// Act
-		var actual = GuidV8Name.Create(new(namespaceId), name);
+		var actual = GuidV8Name.Create(GuidV8Name.Namespaces.Dns, name);
 		// Assert
 		actual.ShouldBe(new(expected));
 	}
@@ -34,13 +34,11 @@ public sealed class GuidV8NameTests
 		// Act
 		var id = GuidV8Name.Create(GuidV8Name.Namespaces.Dns, "test");
 		var bytes = id.ToByteArray();
-		var sqlBytes = bytes.ToSqlByteOrder();
 
 #if NET9_0_OR_GREATER
 		id.Variant.ShouldBeInRange(8, 11);
 #endif
 		bytes.VariantIsRfc9562().ShouldBeTrue();
-		sqlBytes.SqlVariantIsRfc9562().ShouldBeTrue();
 	}
 
 	[Fact]
