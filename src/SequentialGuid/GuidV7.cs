@@ -45,6 +45,21 @@ public static class GuidV7
 		NewGuid(timestamp).ToSqlGuid().Value;
 
 	/// <summary>
+	/// Creates a new UUID version 7 from a <see cref="DateTime"/> timestamp, with byte ordering
+	/// suitable for storage in a SQL Server <c>uniqueidentifier</c> column.
+	/// </summary>
+	/// <param name="timestamp">
+	/// The timestamp whose millisecond-precision Unix Epoch value is embedded in the UUID.
+	/// Must not have <see cref="DateTimeKind.Unspecified"/> kind.
+	/// </param>
+	/// <returns>A new time-ordered version 7 <see cref="Guid"/> with bytes in SQL Server sort order.</returns>
+	/// <exception cref="ArgumentException">
+	/// Thrown when <paramref name="timestamp"/> has <see cref="DateTimeKind.Unspecified"/> kind.
+	/// </exception>
+	public static Guid NewSqlGuid(DateTime timestamp) =>
+		NewGuid(timestamp).ToSqlGuid().Value;
+
+	/// <summary>
 	/// Creates a new UUID version 7 from a Unix Epoch millisecond timestamp, with byte ordering
 	/// suitable for storage in a SQL Server <c>uniqueidentifier</c> column.
 	/// </summary>
@@ -73,6 +88,22 @@ public static class GuidV7
 	/// <returns>A new time-ordered version 7 <see cref="Guid"/>.</returns>
 	public static Guid NewGuid(DateTimeOffset timestamp) =>
 		NewGuid(timestamp.ToUnixTimeMilliseconds());
+
+	/// <summary>
+	/// Creates a new UUID version 7 from a <see cref="DateTime"/> timestamp.
+	/// </summary>
+	/// <param name="timestamp">
+	/// The timestamp whose millisecond-precision Unix Epoch value is embedded in the UUID.
+	/// Must not have <see cref="DateTimeKind.Unspecified"/> kind.
+	/// </param>
+	/// <returns>A new time-ordered version 7 <see cref="Guid"/>.</returns>
+	/// <exception cref="ArgumentException">
+	/// Thrown when <paramref name="timestamp"/> has <see cref="DateTimeKind.Unspecified"/> kind.
+	/// </exception>
+	public static Guid NewGuid(DateTime timestamp) =>
+		timestamp.Kind == DateTimeKind.Unspecified
+			? throw new ArgumentException("DateTimeKind.Unspecified not supported", nameof(timestamp))
+			: NewGuid(new DateTimeOffset(timestamp));
 
 	/// <summary>
 	/// Creates a new UUID version 7 from a Unix Epoch millisecond timestamp.

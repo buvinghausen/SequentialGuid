@@ -117,4 +117,49 @@ public sealed class GuidV8TimeTests
 	void TestBeforeUnixEpochThrowsArgumentException() =>
 		Should.Throw<ArgumentException>(() =>
 			GuidV8Time.NewGuid(new DateTime(EpochTicks - 1, DateTimeKind.Utc)));
+
+	[Fact]
+	void TestDateTimeOffsetOverload()
+	{
+		// Arrange
+		var expected = DateTimeOffset.UtcNow;
+		// Act
+		var dateTime = GuidV8Time.NewGuid(expected).ToDateTime().GetValueOrDefault();
+		// Assert - ticks are stored as UTC
+		dateTime.Ticks.ShouldBe(expected.UtcTicks);
+		dateTime.Kind.ShouldBe(DateTimeKind.Utc);
+	}
+
+	[Fact]
+	void TestDateTimeOffsetWithOffsetIsStoredAsUtc()
+	{
+		var dto = DateTimeOffset.Now;
+		// Act
+		var dateTime = GuidV8Time.NewGuid(dto).ToDateTime().GetValueOrDefault();
+		// Assert - stored value equals the UTC representation
+		dateTime.Kind.ShouldBe(DateTimeKind.Utc);
+		dateTime.Ticks.ShouldBe(dto.UtcTicks);
+	}
+
+	[Fact]
+	void TestSqlGuidDateTimeOffsetOverload()
+	{
+		// Arrange
+		var expected = DateTimeOffset.UtcNow;
+		// Act
+		var dateTime = GuidV8Time.NewSqlGuid(expected).ToDateTime().GetValueOrDefault();
+		// Assert
+		dateTime.Kind.ShouldBe(DateTimeKind.Utc);
+		dateTime.Ticks.ShouldBe(expected.UtcTicks);
+	}
+
+	[Fact]
+	void TestDateTimeOffsetAfterNowThrowsArgumentException() =>
+		Should.Throw<ArgumentException>(() =>
+			GuidV8Time.NewGuid(DateTimeOffset.UtcNow.AddSeconds(1)));
+
+	[Fact]
+	void TestDateTimeOffsetBeforeUnixEpochThrowsArgumentException() =>
+		Should.Throw<ArgumentException>(() =>
+			GuidV8Time.NewGuid(new DateTimeOffset(new DateTime(EpochTicks - 1, DateTimeKind.Utc))));
 }

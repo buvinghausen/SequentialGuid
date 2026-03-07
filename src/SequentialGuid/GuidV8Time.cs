@@ -93,6 +93,20 @@ public static class GuidV8Time
 		NewGuid(timestamp).ToSqlGuid().Value;
 
 	/// <summary>
+	/// Creates a new UUID version 8 from a <see cref="DateTimeOffset"/> timestamp, with byte ordering
+	/// suitable for storage in a SQL Server <c>uniqueidentifier</c> column.
+	/// </summary>
+	/// <param name="timestamp">
+	/// The timestamp to embed in the UUID. Its UTC equivalent must be between January 1st, 1970 UTC and now.
+	/// </param>
+	/// <returns>A new time-ordered version 8 <see cref="Guid"/> with bytes in SQL Server sort order.</returns>
+	/// <exception cref="ArgumentException">
+	/// Thrown when the UTC equivalent of <paramref name="timestamp"/> is outside the valid range.
+	/// </exception>
+	public static Guid NewSqlGuid(DateTimeOffset timestamp) =>
+		NewGuid(timestamp).ToSqlGuid().Value;
+
+	/// <summary>
 	/// Creates a new UUID version 8 using the current UTC time.
 	/// </summary>
 	/// <returns>A new time-ordered version 8 <see cref="Guid"/>.</returns>
@@ -127,6 +141,19 @@ public static class GuidV8Time
 
 		return NewGuid(ticks);
 	}
+
+	/// <summary>
+	/// Creates a new UUID version 8 from a <see cref="DateTimeOffset"/> timestamp.
+	/// </summary>
+	/// <param name="timestamp">
+	/// The timestamp to embed in the UUID. Its UTC equivalent must be between January 1st, 1970 UTC and now.
+	/// </param>
+	/// <returns>A new time-ordered version 8 <see cref="Guid"/>.</returns>
+	/// <exception cref="ArgumentException">
+	/// Thrown when the UTC equivalent of <paramref name="timestamp"/> is outside the valid range.
+	/// </exception>
+	public static Guid NewGuid(DateTimeOffset timestamp) =>
+		NewGuid(timestamp.UtcDateTime);
 
 	internal static Guid NewGuid(long timestamp)
 	{

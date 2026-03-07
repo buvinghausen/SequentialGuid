@@ -55,6 +55,47 @@ public sealed class GuidV7Tests
 	}
 
 	[Fact]
+	void TestUtcDateTimeOverload()
+	{
+		// Arrange - RFC 9562 Appendix A.6 timestamp expressed as UTC DateTime
+		DateTime timestamp = new(2022, 2, 22, 19, 22, 22, DateTimeKind.Utc);
+		// Act
+		var ms = GuidV7.NewGuid(timestamp).ToUnixMs();
+		// Assert
+		ms.ShouldBe(RfcTestVectorMs);
+	}
+
+	[Fact]
+	void TestLocalDateTimeOverload()
+	{
+		// Arrange - a local DateTime that round-trips through UTC
+		var localNow = DateTime.Now;
+		var expected = new DateTimeOffset(localNow).ToUnixTimeMilliseconds();
+		// Act
+		var ms = GuidV7.NewGuid(localNow).ToUnixMs();
+		// Assert
+		ms.ShouldBe(expected);
+	}
+
+	[Fact]
+	void TestUnspecifiedDateTimeKindThrows()
+	{
+		Should.Throw<ArgumentException>(() => GuidV7.NewGuid(new DateTime(2022, 2, 22, 19, 22, 22)));
+	}
+
+	[Fact]
+	void TestSqlGuidDateTimeOverload()
+	{
+		// Arrange - RFC 9562 Appendix A.6 timestamp expressed as UTC DateTime
+		DateTime timestamp = new(2022, 2, 22, 19, 22, 22, DateTimeKind.Utc);
+		// Act
+		var ms = GuidV7.NewSqlGuid(timestamp).ToDateTime();
+		// Assert - strip sub-millisecond precision for comparison
+		var expected = timestamp.AddTicks(-(timestamp.Ticks % TimeSpan.TicksPerMillisecond));
+		ms.ShouldBe(expected);
+	}
+
+	[Fact]
 	void TestCurrentTimestampIsEmbedded()
 	{
 		// Arrange
