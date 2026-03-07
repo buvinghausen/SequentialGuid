@@ -23,21 +23,15 @@ public static class GuidExtensions
 		/// </returns>
 		public DateTime? ToDateTime()
 		{
-			// We have 3 guid formats (Legacy, V7, and V8)
-			// And they can all be SQL Sort byte order
-			// Fortunately the legacy algorithm doesn't set the RFC variant
-			// So sniff the bytes if they are in RFC format
-			// Pull the version and return the correct calculation
-			// If not sniff and see if SQL byte order is RFC variant
-			// If so reorder, pull version and perform calculation
+			var bytes = id.ToByteArray();
+			var ticks = bytes.ToTicks();
+			if (ticks is { IsDateTime: true })
+				return ticks.Value.ToDateTime();
 
-			var ticks = id.ToTicks();
-			if (ticks.IsDateTime) return ticks.ToDateTime();
-
-			//Try conversion through sql guid
-			ticks = new SqlGuid(id).ToGuid().ToTicks();
-			return ticks.IsDateTime
-				? ticks.ToDateTime()
+			// Could be sql guid so normalize byte order
+			ticks = bytes.FromSqlByteOrder().ToTicks();
+			return ticks is { IsDateTime: true }
+				? ticks.Value.ToDateTime()
 				: null;
 		}
 
@@ -51,11 +45,5 @@ public static class GuidExtensions
 
 		internal long ToUnixMs() =>
 			id.ToByteArray().Rfc9562V7UnixMs;
-
-		private long ToTicks()
-		{
-			var bytes = id.ToByteArray();
-			return bytes.IsRfc9562Version(8) ? bytes.Rfc9562V8Ticks : bytes.LegacyTicks;
-		}
 	}
 }

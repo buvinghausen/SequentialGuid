@@ -66,5 +66,11 @@ internal static class ByteArrayExtensions
 			(b[4] << 16) +
 			(b[7] << 8) +
 			b[6];
+
+		internal long? ToTicks() =>
+			b.IsRfc9562Version(8) ? b.Rfc9562V8Ticks :
+			b.IsRfc9562Version(7) ? b.Rfc9562V7UnixMs.Rfc9562V7Ticks :
+			b.IsLegacy() ? b.LegacyTicks :
+			null;
 	}
 }
