@@ -9,6 +9,7 @@ namespace NodaTime;
 /// <summary>
 /// Provides extension methods for <see cref="SequentialSqlGuidGenerator"/> that accept NodaTime <see cref="Instant"/> timestamps.
 /// </summary>
+[Obsolete("Use GuidV8Time.NewSqlGuid(instant) directly instead.")]
 public static class SequentialSqlGuidGeneratorExtensions
 {
 	extension(SequentialSqlGuidGenerator generator)

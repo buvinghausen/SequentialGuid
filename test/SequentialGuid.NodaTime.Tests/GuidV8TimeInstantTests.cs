@@ -2,23 +2,13 @@ using NodaTime;
 
 namespace SequentialGuid.NodaTime.Tests;
 
-public sealed class SequentialGuidInstantTests
+public sealed class GuidV8TimeInstantTests
 {
 	[Fact]
 	void TestInstantToGuidRoundTrip()
 	{
 		var now = SystemClock.Instance.GetCurrentInstant();
-		var id = SequentialGuidGenerator.Instance.NewGuid(now);
-		var instant = id.ToInstant();
-		instant.HasValue.ShouldBeTrue();
-		instant.ShouldBe(now);
-	}
-
-	[Fact]
-	void TestInstantToGuidRoundTripSqlSorting()
-	{
-		var now = SystemClock.Instance.GetCurrentInstant();
-		var id = SequentialSqlGuidGenerator.Instance.NewGuid(now);
+		var id = GuidV8Time.NewGuid(now);
 		var instant = id.ToInstant();
 		instant.HasValue.ShouldBeTrue();
 		instant.ShouldBe(now);
@@ -28,7 +18,7 @@ public sealed class SequentialGuidInstantTests
 	void TestInstantToSqlGuidRoundTrip()
 	{
 		var now = SystemClock.Instance.GetCurrentInstant();
-		var id = SequentialSqlGuidGenerator.Instance.NewSqlGuid(now);
+		var id = GuidV8Time.NewSqlGuid(now);
 		var instant = id.ToInstant();
 		instant.HasValue.ShouldBeTrue();
 		instant.ShouldBe(now);

@@ -9,6 +9,7 @@ namespace SequentialGuid;
 /// <see cref="NewGuid(long)"/> to apply additional byte-order transformations (e.g. SQL Server ordering).
 /// </remarks>
 /// <typeparam name="T">The derived generator type used to implement the singleton pattern.</typeparam>
+[Obsolete("Use GuidV8Time static methods directly instead.")]
 public abstract class SequentialGuidGeneratorBase<T> where T : SequentialGuidGeneratorBase<T>
 {
 	private static readonly Lazy<T> Lazy =

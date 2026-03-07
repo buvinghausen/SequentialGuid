@@ -20,7 +20,7 @@ public sealed class MongoSequentialGuidGenerator : IIdGenerator
 	/// <param name="document">The document being assigned an id.</param>
 	/// <returns>A new sequential <see cref="Guid"/>.</returns>
 	public object GenerateId(object container, object document) =>
-		SequentialGuidGenerator.Instance.NewGuid();
+		GuidV8Time.NewGuid();
 
 	/// <summary>
 	/// Determines whether the specified id is considered empty.

@@ -8,6 +8,7 @@ namespace NodaTime;
 /// <summary>
 /// Provides extension methods for <see cref="SequentialGuidGenerator"/> that accept NodaTime <see cref="Instant"/> timestamps.
 /// </summary>
+[Obsolete("Use GuidV8Time.NewGuid(instant) directly instead.")]
 public static class SequentialGuidGeneratorExtensions
 {
 	extension(SequentialGuidGenerator generator)

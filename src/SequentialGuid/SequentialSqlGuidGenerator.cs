@@ -6,6 +6,7 @@ namespace SequentialGuid;
 /// Generates sequential <see cref="SqlGuid"/> values ordered according to SQL Server's
 /// <c>uniqueidentifier</c> comparison rules, minimizing index fragmentation when used as primary keys.
 /// </summary>
+[Obsolete("Use GuidV8Time static methods directly instead.")]
 public sealed class SequentialSqlGuidGenerator : SequentialGuidGeneratorBase<SequentialSqlGuidGenerator>
 {
 	private SequentialSqlGuidGenerator() { }
