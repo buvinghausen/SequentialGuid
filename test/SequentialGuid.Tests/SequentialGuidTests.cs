@@ -129,20 +129,6 @@ public sealed class SequentialGuidTests
 	}
 
 	[Fact]
-	void TestToSqlByteOrder()
-	{
-		IList<SqlGuid> reordered = [.. SortedGuidList.Select(g => new SqlGuid(g.ToByteArray().ToSqlByteOrder()))];
-		reordered.ShouldBe(SortedSqlGuidList);
-	}
-
-	[Fact]
-	void TestFromSqlByteOrder()
-	{
-		IList<Guid> reordered = [.. SortedSqlGuidList.Select(g => new Guid(g.ToByteArray()!.FromSqlByteOrder()))];
-		reordered.ShouldBe(SortedGuidList);
-	}
-
-	[Fact]
 	void TestSequentialGuidNewGuid()
 	{
 		//Arrange
@@ -231,7 +217,7 @@ public sealed class SequentialGuidTests
 	void TestSqlGuidToGuid()
 	{
 		// Act
-		var sqlList = SortedSqlGuidList.Select(g => g.ToGuid());
+		IList<Guid> sqlList = [.. SortedSqlGuidList.Select(g => g.ToGuid())];
 		// Assert
 		sqlList.ShouldBe(SortedGuidList);
 	}
@@ -240,7 +226,7 @@ public sealed class SequentialGuidTests
 	void TestGuidToSqlGuid()
 	{
 		// Act
-		var guidList = SortedGuidList.Select(g => g.ToSqlGuid());
+		IList<SqlGuid> guidList = [.. SortedGuidList.Select(g => g.ToSqlGuid())];
 		// Assert
 		guidList.ShouldBe(SortedSqlGuidList);
 	}

@@ -28,7 +28,7 @@ public static class GuidExtensions
 			if (ticks is { IsDateTime: true })
 				return ticks.Value.ToDateTime();
 
-			// Could be sql guid so normalize byte order
+			// Could be sql guid so normalize byte order and re-run
 			ticks = bytes.FromSqlByteOrder().ToTicks();
 			return ticks is { IsDateTime: true }
 				? ticks.Value.ToDateTime()
