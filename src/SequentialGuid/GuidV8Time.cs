@@ -69,6 +69,30 @@ public static class GuidV8Time
 	}
 
 	/// <summary>
+	/// Creates a new UUID version 8 using the current UTC time, with byte ordering
+	/// suitable for storage in a SQL Server <c>uniqueidentifier</c> column.
+	/// </summary>
+	/// <returns>A new time-ordered version 8 <see cref="Guid"/> with bytes in SQL Server sort order.</returns>
+	public static Guid NewSqlGuid() =>
+		NewGuid().ToSqlGuid().Value;
+
+	/// <summary>
+	/// Creates a new UUID version 8 from a <see cref="DateTime"/> timestamp, with byte ordering
+	/// suitable for storage in a SQL Server <c>uniqueidentifier</c> column.
+	/// </summary>
+	/// <param name="timestamp">
+	/// The timestamp to embed in the UUID. Must have <see cref="DateTimeKind.Utc"/> or
+	/// <see cref="DateTimeKind.Local"/> kind, with a value between January 1st, 1970 UTC and now.
+	/// </param>
+	/// <returns>A new time-ordered version 8 <see cref="Guid"/> with bytes in SQL Server sort order.</returns>
+	/// <exception cref="ArgumentException">
+	/// Thrown when <paramref name="timestamp"/> has <see cref="DateTimeKind.Unspecified"/> kind,
+	/// or when its value is outside the valid range.
+	/// </exception>
+	public static Guid NewSqlGuid(DateTime timestamp) =>
+		NewGuid(timestamp).ToSqlGuid().Value;
+
+	/// <summary>
 	/// Creates a new UUID version 8 using the current UTC time.
 	/// </summary>
 	/// <returns>A new time-ordered version 8 <see cref="Guid"/>.</returns>

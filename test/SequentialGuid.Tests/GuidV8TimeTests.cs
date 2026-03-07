@@ -70,6 +70,18 @@ public sealed class GuidV8TimeTests
 	}
 
 	[Fact]
+	void TestSqlLocalDateTimeIsStoredAsUtc()
+	{
+		// Arrange
+		var localNow = DateTime.Now;
+		// Act
+		var dateTime = GuidV8Time.NewSqlGuid(localNow).ToDateTime().GetValueOrDefault();
+		// Assert
+		dateTime.Kind.ShouldBe(DateTimeKind.Utc);
+		dateTime.ToLocalTime().ShouldBe(localNow);
+	}
+
+	[Fact]
 	void TestSequentialTimestampsProduceOrderedGuids()
 	{
 		// Arrange - generate UUIDs with strictly increasing tick timestamps

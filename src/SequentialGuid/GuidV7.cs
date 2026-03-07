@@ -28,6 +28,38 @@ public static class GuidV7
 		SyncRoot = new();
 
 	/// <summary>
+	/// Creates a new UUID version 7 using the current UTC time, with byte ordering
+	/// suitable for storage in a SQL Server <c>uniqueidentifier</c> column.
+	/// </summary>
+	/// <returns>A new time-ordered version 7 <see cref="Guid"/> with bytes in SQL Server sort order.</returns>
+	public static Guid NewSqlGuid() =>
+		NewGuid().ToSqlGuid().Value;
+
+	/// <summary>
+	/// Creates a new UUID version 7 from a <see cref="DateTimeOffset"/> timestamp, with byte ordering
+	/// suitable for storage in a SQL Server <c>uniqueidentifier</c> column.
+	/// </summary>
+	/// <param name="timestamp">The timestamp whose millisecond-precision Unix Epoch value is embedded in the UUID.</param>
+	/// <returns>A new time-ordered version 7 <see cref="Guid"/> with bytes in SQL Server sort order.</returns>
+	public static Guid NewSqlGuid(DateTimeOffset timestamp) =>
+		NewGuid(timestamp).ToSqlGuid().Value;
+
+	/// <summary>
+	/// Creates a new UUID version 7 from a Unix Epoch millisecond timestamp, with byte ordering
+	/// suitable for storage in a SQL Server <c>uniqueidentifier</c> column.
+	/// </summary>
+	/// <param name="unixMilliseconds">
+	/// The number of milliseconds since 1970-01-01T00:00:00Z. Must be non-negative and
+	/// fit in 48 bits (maximum value 281474976710655, valid until the year 10889 AD).
+	/// </param>
+	/// <returns>A new time-ordered version 7 <see cref="Guid"/> with bytes in SQL Server sort order.</returns>
+	/// <exception cref="ArgumentOutOfRangeException">
+	/// Thrown when <paramref name="unixMilliseconds"/> is negative or exceeds the 48-bit maximum.
+	/// </exception>
+	public static Guid NewSqlGuid(long unixMilliseconds) =>
+		NewGuid(unixMilliseconds).ToSqlGuid().Value;
+
+	/// <summary>
 	/// Creates a new UUID version 7 using the current UTC time.
 	/// </summary>
 	/// <returns>A new time-ordered version 7 <see cref="Guid"/>.</returns>

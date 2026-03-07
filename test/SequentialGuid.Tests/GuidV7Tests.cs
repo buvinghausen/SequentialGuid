@@ -139,4 +139,34 @@ public sealed class GuidV7Tests
 		Guid[] sorted = [.. guids.OrderBy(x => x)];
 		sorted.ShouldBe(guids);
 	}
+
+	[Fact]
+	void TestGuidToDateTime()
+	{
+		// Arrange
+		var utcNow = DateTimeOffset.UtcNow;
+		// Guid V7 only keeps time to the millisecond so strip off additional precision
+		var expected = utcNow.DateTime.AddTicks(-(utcNow.Ticks % TimeSpan.TicksPerMillisecond));
+
+		// Act
+		var actual = GuidV7.NewGuid(utcNow).ToDateTime();
+
+		// Assert
+		actual.ShouldBe(expected);
+	}
+
+	[Fact]
+	void TestSqlGuidToDateTime()
+	{
+		// Arrange
+		var utcNow = DateTimeOffset.UtcNow;
+		// Guid V7 only keeps time to the millisecond so strip off additional precision
+		var expected = utcNow.DateTime.AddTicks(-(utcNow.Ticks % TimeSpan.TicksPerMillisecond));
+
+		// Act
+		var actual = GuidV7.NewSqlGuid(utcNow).ToDateTime();
+
+		// Assert
+		actual.ShouldBe(expected);
+	}
 }
