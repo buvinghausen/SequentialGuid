@@ -56,7 +56,6 @@ public sealed class SequentialGuidTests
 		// But we can shuffle the byte order back to normal and see they sort as expected too which is legacy first, then RFC
 		sorted.First().ToGuid().Version.ShouldBe(12); // The legacy algorithm didn't have a specific version bit but this instance is c which is 12 in hex
 		sorted.Last().ToGuid().Version.ShouldBe(8); // The RFC version will always be 8
-		rfc.ToDateTime().ShouldBe(legacy.ToDateTime());
 		rfcTime.HasValue.ShouldBeTrue();
 		legacyTime.HasValue.ShouldBeTrue();
 		rfcTime.Value.Ticks.ShouldBe(TestTicks);
