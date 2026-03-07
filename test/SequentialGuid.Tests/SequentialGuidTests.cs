@@ -4,7 +4,65 @@ namespace SequentialGuid.Tests;
 
 public sealed class SequentialGuidTests
 {
-	private const long EpochTicks = 621355968000000000;
+	private const long
+		EpochTicks = 621355968000000000L,
+		TestTicks = 639084490271870091L;
+
+#if NET9_0_OR_GREATER
+	// I'm putting this test at the top to illustrate the change in the algo
+	// As you can see we gave up the leading 0 to set the version bit
+	// What this means for the end user is Guids will still sort accordingly
+	// Even if you update to version 5 of the library as they can never
+	// Start with a zero which will always sort before 8
+
+	[Fact]
+	void TestLegacyVsRfcSorting()
+	{
+		// Arrange
+		Guid rfc = new("8de7bf53-81dc-8c8b-b24c-56b51005eee1");
+		Guid legacy = new("08de7bf5-381d-cc8b-f24c-56e3580439dd");
+
+		// Act
+		IList<Guid> list = [rfc, legacy];
+		IList<Guid> sorted = [.. list.OrderBy(x => x)];
+		var rfcTime = rfc.ToDateTime();
+		var legacyTime = legacy.ToDateTime();
+
+		// Assert
+		sorted.First().Version.ShouldBe(12); // The legacy algorithm didn't have a specific version bit but this instance is c which is 12 in hex
+		sorted.Last().Version.ShouldBe(8); // The RFC version will always be 8
+		rfcTime.HasValue.ShouldBeTrue();
+		legacyTime.HasValue.ShouldBeTrue();
+		rfcTime.Value.Ticks.ShouldBe(TestTicks);
+		rfcTime.ShouldBe(legacyTime);
+	}
+
+	[Fact]
+	void TestLegacyVsRfcSqlSorting()
+	{
+		SqlGuid rfc = new("aca70268-aa56-4cb2-8c8b-8de7bf5381dc");
+		SqlGuid legacy = new("ac210700-c656-4cf2-cc8b-08de7bf5381d");
+
+		// Act
+		IList<SqlGuid> list = [rfc, legacy];
+		IList<SqlGuid> sorted = [.. list.OrderBy(x => x)];
+		var rfcTime = rfc.ToDateTime();
+		var legacyTime = legacy.ToDateTime();
+
+		// Assert
+		// Due to the SQL Server byte order being wonky the version is 4 in both
+		sorted.First().Value.Version.ShouldBe(4);
+		sorted.Last().Value.Version.ShouldBe(4);
+		// But we can shuffle the byte order back to normal and see they sort as expected too which is legacy first, then RFC
+		sorted.First().ToGuid().Version.ShouldBe(12); // The legacy algorithm didn't have a specific version bit but this instance is c which is 12 in hex
+		sorted.Last().ToGuid().Version.ShouldBe(8); // The RFC version will always be 8
+		rfc.ToDateTime().ShouldBe(legacy.ToDateTime());
+		rfcTime.HasValue.ShouldBeTrue();
+		legacyTime.HasValue.ShouldBeTrue();
+		rfcTime.Value.Ticks.ShouldBe(TestTicks);
+		rfcTime.ShouldBe(legacyTime);
+	}
+#endif
 
 	/// <summary>
 	///     Properly sequenced Guid array
@@ -386,7 +444,7 @@ public sealed class SequentialGuidTests
 	{
 		// Arrange
 		Guid id = new(input);
-		DateTime expected = new(year,1,1,0,0,0, DateTimeKind.Utc);
+		DateTime expected = new(year, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
 		// Act
 		var actual = id.ToDateTime();
