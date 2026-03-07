@@ -123,22 +123,22 @@ public abstract class SequentialGuidGeneratorBase<T> where T : SequentialGuidGen
 
 	internal virtual Guid NewGuid(long timestamp)
 	{
-		// only use low order 3 bytes
-		var increment = Interlocked.Increment(ref _increment) & 0x00ffffff;
+		// only use low order 22 bits
+		var increment = Interlocked.Increment(ref _increment) & 0x003fffff;
 		// RFC 9562 §B.1 UUIDv8 time-based layout:
 		//   custom_a [48 bits] = timestamp[59:12] → Guid.a (32 bits) + Guid.b (16 bits)
 		//   ver      [ 4 bits] = 0x8              → high nibble of Guid.c
 		//   custom_b [12 bits] = timestamp[11:0]  → low 12 bits of Guid.c
 		//   var      [ 2 bits] = 0b10             → top 2 bits of d[0]
-		//   custom_c [62 bits] = machinePid + increment → d[0] (lower 6 bits) + d[1..7]
+		//   custom_c [62 bits] = increment + machinePid → d[0] (lower 6 bits) + d[1..7]
 		return new(
 			(int)(timestamp >> 28),
 			(short)(timestamp >> 12),
 			(short)(0x8000 | (timestamp & 0x0FFF)),
 			[
-				(byte)((_machinePid[0] & 0x3F) | 0x80),
-				_machinePid[1], _machinePid[2], _machinePid[3], _machinePid[4],
-				(byte)(increment >> 16), (byte)(increment >> 8), (byte)increment
+				(byte)(((increment >> 16) & 0x3F) | 0x80),
+				(byte)(increment >> 8), (byte)increment,
+				_machinePid[0], _machinePid[1], _machinePid[2], _machinePid[3], _machinePid[4]
 			]
 		);
 	}
