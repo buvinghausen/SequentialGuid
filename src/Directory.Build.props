@@ -10,7 +10,7 @@
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageProjectUrl>https://github.com/buvinghausen/SequentialGuid/blob/master/README.md</PackageProjectUrl>
-		<PackageTags>Sequential UUID;MongoDB ObjectId</PackageTags>
+		<PackageTags>UUID;GUID;RFC9562;UUIDv4;UUIDv5;UUIDv7;UUIDv8;Sequential GUID;Sequential UUID;COMB GUID;Time-Ordered UUID;Primary Key;Database Key;Clustered Index;Idempotency;Timestamp;Monotonic;Deterministic UUID;Name-Based UUID;SQL Server;uniqueidentifier;MongoDB;MongoDB ObjectId</PackageTags>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<EmbedUntrackedSources>true</EmbedUntrackedSources>
