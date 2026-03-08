@@ -7,7 +7,7 @@
 		<Using Remove="System.Threading" />
 		<Using Remove="System.Threading.Tasks" />
 	</ItemGroup>
-	<ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' != 'net472'">
 		<PackageReference Include="NodaTime" Version="3.*" />
 	</ItemGroup>
 

@@ -23,16 +23,16 @@ public static class GuidV8Name
 	public static class Namespaces
 	{
 		/// <summary>Name string is a fully-qualified domain name.</summary>
-		public static readonly Guid Dns = new("6ba7b810-9dad-11d1-80b4-00c04fd430c8");
+		public static readonly Guid Dns = GuidNameBased.Namespaces.Dns;
 
 		/// <summary>Name string is a URL.</summary>
-		public static readonly Guid Url = new("6ba7b811-9dad-11d1-80b4-00c04fd430c8");
+		public static readonly Guid Url = GuidNameBased.Namespaces.Url;
 
 		/// <summary>Name string is an ISO OID.</summary>
-		public static readonly Guid Oid = new("6ba7b812-9dad-11d1-80b4-00c04fd430c8");
+		public static readonly Guid Oid = GuidNameBased.Namespaces.Oid;
 
 		/// <summary>Name string is an X.500 DN (in DER or a text output format).</summary>
-		public static readonly Guid X500 = new("6ba7b814-9dad-11d1-80b4-00c04fd430c8");
+		public static readonly Guid X500 = GuidNameBased.Namespaces.X500;
 	}
 
 	/// <summary>
@@ -50,33 +50,6 @@ public static class GuidV8Name
 	/// <param name="namespaceId">The namespace UUID.</param>
 	/// <param name="name">The raw name bytes within the namespace.</param>
 	/// <returns>A deterministic version 8 <see cref="Guid"/> derived from the namespace and name.</returns>
-	public static Guid Create(Guid namespaceId, byte[] name)
-	{
-#if NETFRAMEWORK
-		using var sha = SHA256.Create();
-		var nsBytes = namespaceId.ToByteArray().SwapByteOrder();
-		sha.TransformBlock(nsBytes, 0, 16, null, 0);
-		sha.TransformFinalBlock(name, 0, name.Length);
-		var digest = sha.Hash!;
-#else
-		using var hash = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
-		hash.AppendData(namespaceId
-#if NETSTANDARD
-			.ToByteArray().SwapByteOrder()
-#else
-			.ToByteArray(true)
-#endif
-		);
-		hash.AppendData(name);
-		var digest = hash.GetHashAndReset();
-#endif
-		digest.SetRfc9562Version(8);
-		digest.SetRfc9562Variant();
-		return
-#if NETFRAMEWORK || NETSTANDARD
-			new(digest.SwapByteOrder());
-#else
-			new(digest.AsSpan(0, 16), true);
-#endif
-	}
+	public static Guid Create(Guid namespaceId, byte[] name) =>
+		GuidNameBased.Create(namespaceId, name, HashAlgorithmName.SHA256, 8);
 }

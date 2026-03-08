@@ -7,31 +7,32 @@ namespace SequentialGuid;
 /// to produce time-ordered, monotonically increasing <see cref="Guid"/> values.
 /// </summary>
 /// <remarks>
-/// Implements RFC 9562 Section 6.2 Method 1 (Fixed Bit-Length Dedicated Counter): the 12-bit
-/// <c>rand_a</c> field immediately following the timestamp is used as a monotonic counter,
-/// guaranteeing sort order within the same millisecond. The counter is a process-global,
-/// ever-incrementing value advanced via <see cref="Interlocked.Increment(ref int)"/> and seeded
-/// randomly at startup, mirroring the approach used by <see cref="GuidV8Time"/>. This design is
-/// race-free: concurrent callers each claim a unique, strictly increasing counter slot regardless
-/// of the timestamp they supply. The counter wraps every 4096 increments; callers generating
-/// more than 4096 UUIDs within the same millisecond may observe out-of-order values at the
-/// wrap boundary.
+/// Implements RFC 9562 Section 6.2 Method 1 (Fixed Bit-Length Dedicated Counter): a 26-bit
+/// monotonic counter occupies the 12-bit <c>rand_a</c> field (upper 12 bits) and the first
+/// 14 bits of <c>rand_b</c> after the variant (lower 14 bits), guaranteeing sort order within
+/// the same millisecond. The counter is a process-global, ever-incrementing value advanced via
+/// <see cref="Interlocked.Increment(ref int)"/> and seeded randomly at startup, mirroring the
+/// approach used by <see cref="GuidV8Time"/>. This design is race-free: concurrent callers each
+/// claim a unique, strictly increasing counter slot regardless of the timestamp they supply.
+/// The counter wraps every 67,108,864 increments; callers generating more than 67,108,864 UUIDs
+/// within the same millisecond may observe out-of-order values at the wrap boundary.
 /// </remarks>
 public static class GuidV7
 {
 	// Process-global monotonic counter for RFC 9562 §6.2 Method 1 — Fixed Bit-Length Dedicated
-	// Counter. Advanced via Interlocked.Increment; low 12 bits are written to rand_a.
+	// Counter. Advanced via Interlocked.Increment; upper 12 bits written to rand_a, lower 14 bits
+	// to the first 14 bits of rand_b (after variant). Masked to 26 bits (0x3FFFFFF).
 	private static int s_counter;
 
 	static GuidV7()
 	{
-#if NETFRAMEWORK || NETSTANDARD2_0
+#if NET6_0_OR_GREATER
+		s_counter = RandomNumberGenerator
+#else
 		using var rng = RandomNumberGenerator.Create();
 		s_counter = rng
-#else
-		s_counter = RandomNumberGenerator
 #endif
-			.GetInt32(0x200); // seed in [0, 512) to leave ample headroom before the 12-bit wrap
+			.GetInt32(0x200); // seed in [0, 512) to leave ample headroom before the 26-bit wrap
 	}
 
 	/// <summary>
@@ -131,19 +132,18 @@ public static class GuidV7
 
 		// RFC 9562 §6.2 Method 1: claim a unique slot in the monotonic counter.
 		// Mirrors GuidV8Time.NewGuid: no timestamp-tracking state, no CAS loop.
-		var counter = Interlocked.Increment(ref s_counter) & 0xFFF;
+		var counter = Interlocked.Increment(ref s_counter) & 0x3FFFFFF; // 26-bit counter (12 rand_a + 14 rand_b)
 
 		// Build 16 bytes in network (big-endian) byte order per RFC 9562 Section 5.7
 		var bytes = new byte[16];
 
-		// Fill rand_b (octets 8-15) with random data
-#if NETFRAMEWORK || NETSTANDARD2_0
-		using var rng = RandomNumberGenerator.Create();
-		rng.GetBytes(bytes, 8, 8);
+		// Fill rand_b tail (octets 10-15) with random data; octets 8-9 hold the counter extension
+#if NET6_0_OR_GREATER
+		RandomNumberGenerator.Fill(bytes.AsSpan(10));
 #else
-		RandomNumberGenerator.Fill(bytes.AsSpan(8));
+		using var rng = RandomNumberGenerator.Create();
+		rng.GetBytes(bytes, 10, 6);
 #endif
-
 		// unix_ts_ms: 48-bit big-endian millisecond timestamp (octets 0-5)
 		bytes[0] = (byte)(unixMilliseconds >> 40);
 		bytes[1] = (byte)(unixMilliseconds >> 32);
@@ -152,19 +152,23 @@ public static class GuidV7
 		bytes[4] = (byte)(unixMilliseconds >> 8);
 		bytes[5] = (byte)unixMilliseconds;
 
-		// rand_a: 12-bit counter (octets 6-7)
-		bytes[6] = (byte)(counter >> 8);
-		bytes[7] = (byte)(counter & 0xFF);
+		// rand_a: upper 12 bits of 26-bit counter (octets 6-7)
+		bytes[6] = (byte)(counter >> 22);          // counter bits 25-22 (lower nibble; version takes upper)
+		bytes[7] = (byte)((counter >> 14) & 0xFF); // counter bits 21-14
+
+		// rand_b extension: lower 14 bits of counter (octets 8-9; variant takes upper 2 bits of octet 8)
+		bytes[8] = (byte)((counter >> 8) & 0x3F);  // counter bits 13-8
+		bytes[9] = (byte)(counter & 0xFF);          // counter bits 7-0
 
 		bytes.SetRfc9562Version(7);
 		bytes.SetRfc9562Variant();
 
 		// Swap from network byte order to .NET's mixed-endian Guid format
 		return
-#if NETFRAMEWORK || NETSTANDARD
-			new(bytes.SwapByteOrder());
-#else
+#if NET6_0_OR_GREATER
 			new(bytes, true);
+#else
+			new(bytes.SwapByteOrder());
 #endif
 	}
 }

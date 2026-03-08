@@ -27,13 +27,13 @@ public static class GuidV8Time
 
 	static GuidV8Time()
 	{
-#if NETFRAMEWORK || NETSTANDARD2_0
+#if NET6_0_OR_GREATER
+		// Use the RandomNumberGenerator static function where available
+		s_increment = RandomNumberGenerator
+#else
 		// Fall back to the old Random create function
 		using var rng = RandomNumberGenerator.Create();
 		s_increment = rng
-#else
-		// Use the RandomNumberGenerator static function where available
-		s_increment = RandomNumberGenerator
 #endif
 			.GetInt32(500000);
 		MachinePid = new byte[5];
@@ -159,21 +159,41 @@ public static class GuidV8Time
 	{
 		// only use low order 22 bits
 		var increment = Interlocked.Increment(ref s_increment) & 0x003fffff;
-		// RFC 9562 §B.1 UUIDv8 time-based layout:
-		//   custom_a [48 bits] = timestamp[59:12] → Guid.a (32 bits) + Guid.b (16 bits)
-		//   ver      [ 4 bits] = 0x8              → high nibble of Guid.c
-		//   custom_b [12 bits] = timestamp[11:0]  → low 12 bits of Guid.c
-		//   var      [ 2 bits] = 0b10             → top 2 bits of d[0]
-		//   custom_c [62 bits] = increment + machinePid → d[0] (lower 6 bits) + d[1..7]
-		return new(
-			(int)(timestamp >> 28),
-			(short)(timestamp >> 12),
-			(short)(0x8000 | (timestamp & 0x0FFF)),
-			[
-				(byte)(((increment >> 16) & 0x3F) | 0x80),
-				(byte)(increment >> 8), (byte)increment,
-				MachinePid[0], MachinePid[1], MachinePid[2], MachinePid[3], MachinePid[4]
-			]
-		);
+
+		// Build 16 bytes in network (big-endian) byte order per RFC 9562 Appendix B.1
+		var bytes = new byte[16];
+
+		// custom_a: timestamp bits [59:12] → octets 0-5
+		bytes[0] = (byte)(timestamp >> 52);
+		bytes[1] = (byte)(timestamp >> 44);
+		bytes[2] = (byte)(timestamp >> 36);
+		bytes[3] = (byte)(timestamp >> 28);
+		bytes[4] = (byte)(timestamp >> 20);
+		bytes[5] = (byte)(timestamp >> 12);
+
+		// custom_b: timestamp bits [11:0] → octets 6-7 (version takes upper nibble of octet 6)
+		bytes[6] = (byte)((timestamp >> 8) & 0x0F);
+		bytes[7] = (byte)timestamp;
+
+		// custom_c: increment[21:0] + MachinePid → octets 8-15 (variant takes upper 2 bits of octet 8)
+		bytes[8] = (byte)((increment >> 16) & 0x3F);
+		bytes[9] = (byte)(increment >> 8);
+		bytes[10] = (byte)increment;
+		bytes[11] = MachinePid[0];
+		bytes[12] = MachinePid[1];
+		bytes[13] = MachinePid[2];
+		bytes[14] = MachinePid[3];
+		bytes[15] = MachinePid[4];
+
+		bytes.SetRfc9562Version(8);
+		bytes.SetRfc9562Variant();
+
+		// Swap from network byte order to .NET's mixed-endian Guid format
+		return
+#if NET6_0_OR_GREATER
+			new(bytes, true);
+#else
+			new(bytes.SwapByteOrder());
+#endif
 	}
 }
