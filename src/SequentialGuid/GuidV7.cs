@@ -13,19 +13,17 @@ namespace SequentialGuid;
 /// generated within the same millisecond, guaranteeing sort order across high-frequency batches.
 /// When the provided timestamp is older than the last seen timestamp (e.g. historical test
 /// vectors or a clock rollback) the counter is bypassed and the field is filled with random data.
+/// <para>Monotonic state is maintained lock-free via a single <see cref="long"/> that packs the
+/// 48-bit timestamp into bits 63–12 and the 12-bit counter into bits 11–0, allowing atomic
+/// updates with <see cref="Interlocked.CompareExchange(ref long, long, long)"/>.</para>
 /// </remarks>
 public static class GuidV7
 {
-	// RFC 9562 §6.2 Method 1 — Fixed Bit-Length Dedicated Counter state
-	private static long s_lastTimestamp = long.MinValue;
-	private static int s_counter;
-	private static readonly
-#if NET9_0_OR_GREATER
-		Lock
-#else
-		object
-#endif
-		SyncRoot = new();
+	// Packed monotonic state for RFC 9562 §6.2 Method 1 — Fixed Bit-Length Dedicated Counter.
+	// bits 63-12: last unix-ms timestamp (arithmetic right-shift to extract)
+	// bits 11-0:  12-bit counter
+	// Initialized to long.MinValue so any valid (non-negative) timestamp reads as newer.
+	private static long s_state = long.MinValue;
 
 	/// <summary>
 	/// Creates a new UUID version 7 using the current UTC time, with byte ordering
@@ -136,6 +134,10 @@ public static class GuidV7
 
 		// RFC 9562 §6.2 Method 1: determine counter value and effective timestamp.
 		//
+		// s_state packs both pieces of monotonic state into a single long for lock-free CAS:
+		//   bits 63-12  unix-ms timestamp (recover with arithmetic right-shift by 12)
+		//   bits 11-0   12-bit counter
+		//
 		// Three cases:
 		//   new timestamp  > last → new tick: seed counter from random bytes, use provided timestamp
 		//   new timestamp == last → same tick: increment counter (advance timestamp on overflow)
@@ -145,39 +147,55 @@ public static class GuidV7
 		int counter;
 		bool useCounter;
 
-		lock (SyncRoot)
+		var current = Volatile.Read(ref s_state);
+		while (true)
 		{
-			if (unixMilliseconds > s_lastTimestamp)
+			var lastTimestamp = current >> 12;
+			long nextState;
+
+			if (unixMilliseconds > lastTimestamp)
 			{
-				s_lastTimestamp = unixMilliseconds;
-				// Seed: MSB (bit 11) = 0 as rollover guard; bits 10-0 from random bytes.
+				// New tick: seed counter; MSB (bit 11) = 0 as rollover guard; bits 10-0 from random bytes.
 				// bytes[6] bits 2-0 → counter bits 10-8; bytes[7] → counter bits 7-0.
-				s_counter = ((bytes[6] & 0x07) << 8) | bytes[7];
-				useCounter = true;
-				counter = s_counter;
+				var seed = ((bytes[6] & 0x07) << 8) | bytes[7];
+				nextState = (unixMilliseconds << 12) | (long)seed;
 				effectiveTimestamp = unixMilliseconds;
+				counter = seed;
+				useCounter = true;
 			}
-			else if (unixMilliseconds == s_lastTimestamp)
+			else if (unixMilliseconds == lastTimestamp)
 			{
-				if (++s_counter > 0xFFF)
+				var nextCounter = (int)(current & 0xFFF) + 1;
+				if (nextCounter > 0xFFF)
 				{
 					// Counter exhausted: borrow 1 ms from the future and reset.
-					s_lastTimestamp++;
-					s_counter = 0;
+					effectiveTimestamp = lastTimestamp + 1;
+					nextState = effectiveTimestamp << 12;
+					counter = 0;
+				}
+				else
+				{
+					effectiveTimestamp = lastTimestamp;
+					nextState = (lastTimestamp << 12) | (long)nextCounter;
+					counter = nextCounter;
 				}
 				useCounter = true;
-				counter = s_counter;
-				effectiveTimestamp = s_lastTimestamp;
 			}
 			else
 			{
 				// Provided timestamp is behind the internal clock (clock rollback or
-				// deliberate historical value).  Embed it as given with pure random rand_a
+				// deliberate historical value). Embed it as given with pure random rand_a
 				// so that callers receive exactly the timestamp they requested.
-				useCounter = false;
-				counter = 0;
 				effectiveTimestamp = unixMilliseconds;
+				counter = 0;
+				useCounter = false;
+				break;
 			}
+
+			var observed = Interlocked.CompareExchange(ref s_state, nextState, current);
+			if (observed == current)
+				break; // CAS succeeded
+			current = observed; // lost the race; retry with latest state
 		}
 
 		// unix_ts_ms: 48-bit big-endian millisecond timestamp (octets 0-5)

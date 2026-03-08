@@ -6,7 +6,7 @@ public sealed class SequentialGuidMongoTests
 	void VerifyGenerateId()
 	{
 		// Mongo must be able to publicly construct the generator
-		var generator = new MongoSequentialGuidGenerator();
+		MongoSequentialGuidGenerator generator = new();
 		var objId = generator.GenerateId(null!, null!);
 		if (objId is Guid id)
 		{
@@ -22,7 +22,7 @@ public sealed class SequentialGuidMongoTests
 	void VerifyIsEmpty()
 	{
 		// Mongo must be able to publicly construct the generator
-		var generator = new MongoSequentialGuidGenerator();
+		MongoSequentialGuidGenerator generator = new();
 		// Make sure null returns empty
 		generator.IsEmpty(null!).ShouldBeTrue();
 		// Make sure a new guid returns empty
