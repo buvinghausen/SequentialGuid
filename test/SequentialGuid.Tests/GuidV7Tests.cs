@@ -171,7 +171,7 @@ public sealed class GuidV7Tests
 	void TestSameTimestampBatchIsMonotonicallyOrdered()
 	{
 		// Arrange - use the current time so the counter path is exercised
-		// (RFC 9562 §6.2 Method 1: fixed bit-length dedicated counter in rand_a)
+		// (RFC 9562 §6.2 Method 1: fixed bit-length dedicated counter spanning rand_a and rand_b)
 		var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 		// Act - generate 100 UUIDs all sharing the same millisecond timestamp
 		Guid[] actual = [.. Enumerable.Range(0, 100).Select(_ => GuidV7.NewGuid(timestamp))];
