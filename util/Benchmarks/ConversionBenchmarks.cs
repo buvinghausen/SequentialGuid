@@ -1,4 +1,3 @@
-using System.Data.SqlTypes;
 using BenchmarkDotNet.Attributes;
 
 namespace SequentialGuid.Benchmarks;
@@ -13,7 +12,7 @@ public sealed class ConversionBenchmarks
 {
 	private Guid _guidV7;
 	private Guid _guidV8Time;
-	private SqlGuid _sqlGuid;
+	private Guid _sqlGuid;
 
 	[GlobalSetup]
 	public void Setup()
@@ -32,10 +31,10 @@ public sealed class ConversionBenchmarks
 		_guidV8Time.ToDateTime();
 
 	[Benchmark(Description = "Guid.ToSqlGuid")]
-	public SqlGuid GuidToSqlGuid() =>
+	public Guid GuidToSqlGuid() =>
 		_guidV7.ToSqlGuid();
 
-	[Benchmark(Description = "SqlGuid.ToGuid")]
+	[Benchmark(Description = "Guid.FromSqlGuid")]
 	public Guid SqlGuidToGuid() =>
-		_sqlGuid.ToGuid();
+		_sqlGuid.FromSqlGuid();
 }

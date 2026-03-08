@@ -15,11 +15,12 @@ internal static class GuidNameBased
 	internal static Guid Create(Guid namespaceId, byte[] name, HashAlgorithmName algorithmName, byte version)
 	{
 #if NETFRAMEWORK
-		using var sha = HashAlgorithm.Create(algorithmName.Name)!;
-		var nsBytes = namespaceId.ToByteArray().SwapByteOrder();
-		sha.TransformBlock(nsBytes, 0, 16, null, 0);
-		sha.TransformFinalBlock(name, 0, name.Length);
-		var digest = sha.Hash;
+		// Legacy .NET Framework does not support incremental hash so do the full-blown hash
+		// and set the resulting value to digest to match so the downstream bit setting and return work
+		using var hash = HashAlgorithm.Create(algorithmName.Name)!;
+		hash.TransformBlock(namespaceId.ToByteArray().SwapByteOrder(), 0, 16, null, 0);
+		hash.TransformFinalBlock(name, 0, name.Length);
+		var digest = hash.Hash;
 #else
 		using var hash = IncrementalHash.CreateHash(algorithmName);
 		hash.AppendData(namespaceId

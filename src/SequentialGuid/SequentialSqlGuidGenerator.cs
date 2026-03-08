@@ -12,7 +12,7 @@ public sealed class SequentialSqlGuidGenerator : SequentialGuidGeneratorBase<Seq
 	private SequentialSqlGuidGenerator() { }
 
 	internal override Guid NewGuid(long timestamp) =>
-		base.NewGuid(timestamp).ToSqlGuid().Value;
+		base.NewGuid(timestamp).ToSqlGuid();
 
 	/// <summary>
 	/// Generates a new sequential <see cref="SqlGuid"/> using the current UTC time as the timestamp.
@@ -20,7 +20,7 @@ public sealed class SequentialSqlGuidGenerator : SequentialGuidGeneratorBase<Seq
 	/// <returns>A new sequential <see cref="SqlGuid"/>.</returns>
 	public SqlGuid NewSqlGuid() =>
 		new(NewGuid());
-	
+
 	/// <summary>
 	/// Generates a new sequential <see cref="SqlGuid"/> using the specified timestamp.
 	/// </summary>

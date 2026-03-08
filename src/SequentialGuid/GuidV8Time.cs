@@ -74,7 +74,7 @@ public static class GuidV8Time
 	/// </summary>
 	/// <returns>A new time-ordered version 8 <see cref="Guid"/> with bytes in SQL Server sort order.</returns>
 	public static Guid NewSqlGuid() =>
-		NewGuid().ToSqlGuid().Value;
+		NewGuid().ToSqlGuid();
 
 	/// <summary>
 	/// Creates a new UUID version 8 from a <see cref="DateTime"/> timestamp, with byte ordering
@@ -90,7 +90,7 @@ public static class GuidV8Time
 	/// or when its value is outside the valid range.
 	/// </exception>
 	public static Guid NewSqlGuid(DateTime timestamp) =>
-		NewGuid(timestamp).ToSqlGuid().Value;
+		NewGuid(timestamp).ToSqlGuid();
 
 	/// <summary>
 	/// Creates a new UUID version 8 from a <see cref="DateTimeOffset"/> timestamp, with byte ordering
@@ -104,7 +104,7 @@ public static class GuidV8Time
 	/// Thrown when the UTC equivalent of <paramref name="timestamp"/> is outside the valid range.
 	/// </exception>
 	public static Guid NewSqlGuid(DateTimeOffset timestamp) =>
-		NewGuid(timestamp).ToSqlGuid().Value;
+		NewGuid(timestamp).ToSqlGuid();
 
 	/// <summary>
 	/// Creates a new UUID version 8 using the current UTC time.
@@ -135,11 +135,10 @@ public static class GuidV8Time
 		};
 
 		// run validation after tick conversion
-		if (!ticks.IsDateTime)
-			throw new ArgumentException("Timestamp must be between January 1st, 1970 UTC and now",
-				nameof(timestamp));
-
-		return NewGuid(ticks);
+		return !ticks.IsDateTime
+			? throw new ArgumentException("Timestamp must be between January 1st, 1970 UTC and now",
+				nameof(timestamp))
+			: NewGuid(ticks);
 	}
 
 	/// <summary>

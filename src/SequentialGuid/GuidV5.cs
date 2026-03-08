@@ -42,8 +42,6 @@ public static class GuidV5
 	/// <param name="namespaceId">The namespace UUID.</param>
 	/// <param name="name">The raw name bytes within the namespace.</param>
 	/// <returns>A deterministic version 5 <see cref="Guid"/> derived from the namespace and name.</returns>
-#pragma warning disable CA5350 // SHA-1 is required by RFC 9562 for UUID version 5
 	public static Guid Create(Guid namespaceId, byte[] name) =>
 		GuidNameBased.Create(namespaceId, name, HashAlgorithmName.SHA1, 5);
-#pragma warning restore CA5350
 }

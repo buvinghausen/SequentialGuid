@@ -93,16 +93,16 @@ public sealed class SequentialGuidTests
 		// Act
 		IList<SqlGuid> list = [rfc, legacy];
 		IList<SqlGuid> sorted = [.. list.OrderBy(x => x)];
-		var rfcTime = rfc.ToDateTime();
-		var legacyTime = legacy.ToDateTime();
+		var rfcTime = rfc.Value.ToDateTime();
+		var legacyTime = legacy.Value.ToDateTime();
 
 		// Assert
 		// Due to the SQL Server byte order being wonky the version is 4 in both
 		sorted.First().Value.Version.ShouldBe(4);
 		sorted.Last().Value.Version.ShouldBe(4);
 		// But we can shuffle the byte order back to normal and see they sort as expected too which is legacy first, then RFC
-		sorted.First().ToGuid().Version.ShouldBe(12); // The legacy algorithm didn't have a specific version bit but this instance is c which is 12 in hex
-		sorted.Last().ToGuid().Version.ShouldBe(8); // The RFC version will always be 8
+		sorted.First().Value.FromSqlGuid().Version.ShouldBe(12); // The legacy algorithm didn't have a specific version bit but this instance is c which is 12 in hex
+		sorted.Last().Value.FromSqlGuid().Version.ShouldBe(8); // The RFC version will always be 8
 		rfcTime.HasValue.ShouldBeTrue();
 		legacyTime.HasValue.ShouldBeTrue();
 		rfcTime.Value.Ticks.ShouldBe(TestTicks);
@@ -165,7 +165,7 @@ public sealed class SequentialGuidTests
 		id.Variant.ShouldBeInRange(8, 11);
 #endif
 		id.ToByteArray().VariantIsRfc9562().ShouldBeTrue();
-		sqlId.ToByteArray()!.SqlVariantIsRfc9562().ShouldBeTrue();
+		sqlId.ToByteArray().SqlVariantIsRfc9562().ShouldBeTrue();
 	}
 
 	[Fact]
@@ -214,7 +214,7 @@ public sealed class SequentialGuidTests
 	void TestSqlGuidToGuid()
 	{
 		// Act
-		IList<Guid> sqlList = [.. SortedSqlGuidList.Select(g => g.ToGuid())];
+		IList<Guid> sqlList = [.. SortedSqlGuidList.Select(g => g.Value.FromSqlGuid())];
 		// Assert
 		sqlList.ShouldBe(SortedGuidList);
 	}
@@ -223,7 +223,7 @@ public sealed class SequentialGuidTests
 	void TestGuidToSqlGuid()
 	{
 		// Act
-		IList<SqlGuid> guidList = [.. SortedGuidList.Select(g => g.ToSqlGuid())];
+		IList<SqlGuid> guidList = [.. SortedGuidList.Select(g => new SqlGuid(g.ToSqlGuid()))];
 		// Assert
 		guidList.ShouldBe(SortedSqlGuidList);
 	}
@@ -391,7 +391,7 @@ public sealed class SequentialGuidTests
 		// Arrange
 		var id = GuidV8Time.NewGuid();
 		// Act
-		var converted = id.ToSqlGuid().ToGuid();
+		var converted = id.ToSqlGuid().FromSqlGuid();
 		// Assert
 		converted.ShouldBe(id);
 	}
@@ -400,9 +400,9 @@ public sealed class SequentialGuidTests
 	void TestSqlGuidConversions()
 	{
 		// Arrange
-		var id = new SqlGuid(GuidV8Time.NewSqlGuid());
+		var id = GuidV8Time.NewSqlGuid();
 		// Act
-		var converted = id.ToGuid().ToSqlGuid();
+		var converted = id.FromSqlGuid().ToSqlGuid();
 		// Assert
 		converted.ShouldBe(id);
 	}
@@ -479,7 +479,7 @@ public sealed class SequentialGuidTests
 	void LegacySqlToDateTimeTests(string input, ushort year)
 	{
 		// Arrange
-		SqlGuid id = new(input);
+		Guid id = new(input);
 		DateTime expected = new(year, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
 		// Act
@@ -2502,7 +2502,7 @@ public sealed class SequentialGuidTests
 		{
 			var bytes = input.ToByteArray();
 			var sqlId = input.ToSqlGuid();
-			var sqlBytes = sqlId.ToByteArray()!;
+			var sqlBytes = sqlId.ToByteArray();
 			// As long as we hit the following flags we can render the timestamps
 			bytes.IsLegacy().ShouldBeTrue();
 			bytes.IsSqlLegacy().ShouldBeFalse();
