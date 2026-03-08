@@ -26,7 +26,17 @@ public static class SqlGuidExtensions
 		/// from SQL Server sorting order to standard .NET order.
 		/// </summary>
 		/// <returns>A <see cref="Guid"/> representation of the specified <see cref="SqlGuid"/>.</returns>
-		public Guid ToGuid() =>
-			new (sqlGuid.ToByteArray()!.FromSqlByteOrder());
+		public Guid ToGuid()
+		{
+#if !NETFRAMEWORK && !NETSTANDARD
+			Span<byte> src = stackalloc byte[16];
+			sqlGuid.Value.TryWriteBytes(src);
+			Span<byte> dst = stackalloc byte[16];
+			src.WriteFromSqlByteOrder(dst);
+			return new(dst);
+#else
+			return new(sqlGuid.ToByteArray()!.FromSqlByteOrder());
+#endif
+		}
 	}
 }

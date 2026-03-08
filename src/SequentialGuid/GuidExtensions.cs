@@ -23,13 +23,24 @@ public static class GuidExtensions
 		/// </returns>
 		public DateTime? ToDateTime()
 		{
+#if !NETFRAMEWORK && !NETSTANDARD
+			Span<byte> bytes = stackalloc byte[16];
+			id.TryWriteBytes(bytes);
+			var ticks = (bytes).ToTicks();
+#else
 			var bytes = id.ToByteArray();
 			var ticks = bytes.ToTicks();
+#endif
 			if (ticks is { IsDateTime: true })
 				return ticks.Value.ToDateTime();
-
 			// Could be sql guid so normalize byte order and re-run
+#if !NETFRAMEWORK && !NETSTANDARD
+			Span<byte> sqlBytes = stackalloc byte[16];
+			(bytes).WriteFromSqlByteOrder(sqlBytes);
+			ticks = (sqlBytes).ToTicks();
+#else
 			ticks = bytes.FromSqlByteOrder().ToTicks();
+#endif
 			return ticks is { IsDateTime: true }
 				? ticks.Value.ToDateTime()
 				: null;
@@ -40,10 +51,28 @@ public static class GuidExtensions
 		/// to match the sorting order used by SQL Server.
 		/// </summary>
 		/// <returns>A <see cref="SqlGuid"/> representation of the provided <see cref="Guid"/>.</returns>
-		public SqlGuid ToSqlGuid() =>
-			new(id.ToByteArray().ToSqlByteOrder());
+		public SqlGuid ToSqlGuid()
+		{
+#if !NETFRAMEWORK && !NETSTANDARD
+			Span<byte> src = stackalloc byte[16];
+			id.TryWriteBytes(src);
+			Span<byte> dst = stackalloc byte[16];
+			(src).WriteToSqlByteOrder(dst);
+			return new(new Guid(dst));
+#else
+			return new(id.ToByteArray().ToSqlByteOrder());
+#endif
+		}
 
-		internal long ToUnixMs() =>
-			id.ToByteArray().Rfc9562V7UnixMs;
+		internal long ToUnixMs()
+		{
+#if !NETFRAMEWORK && !NETSTANDARD
+			Span<byte> bytes = stackalloc byte[16];
+			id.TryWriteBytes(bytes);
+			return (bytes).Rfc9562V7UnixMs;
+#else
+			return id.ToByteArray().Rfc9562V7UnixMs;
+#endif
+		}
 	}
 }

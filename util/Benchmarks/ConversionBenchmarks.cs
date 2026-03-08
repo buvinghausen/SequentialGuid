@@ -9,7 +9,7 @@ namespace SequentialGuid.Benchmarks;
 /// Run with: dotnet run -c Release -- --filter *Conversion*
 /// </summary>
 [MemoryDiagnoser]
-public class ConversionBenchmarks
+public sealed class ConversionBenchmarks
 {
 	private Guid _guidV7;
 	private Guid _guidV8Time;

@@ -9,7 +9,7 @@ namespace SequentialGuid.Benchmarks;
 /// Run with: dotnet run -c Release -- --filter *Name*
 /// </summary>
 [MemoryDiagnoser]
-public class NameBenchmarks
+public sealed class NameBenchmarks
 {
 	[Params(
 		"https://example.com",

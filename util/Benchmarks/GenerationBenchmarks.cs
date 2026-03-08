@@ -7,7 +7,7 @@ namespace SequentialGuid.Benchmarks;
 /// Run with: dotnet run -c Release -- --filter *Generation*
 /// </summary>
 [MemoryDiagnoser]
-public class GenerationBenchmarks
+public sealed class GenerationBenchmarks
 {
 	[Benchmark(Baseline = true, Description = "Guid.NewGuid")]
 	public static Guid SystemGuidNewGuid() =>

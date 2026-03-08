@@ -81,4 +81,92 @@ internal static class ByteArrayExtensions
 			b.IsLegacy() ? b.LegacyTicks :
 			null;
 	}
+
+#if !NETFRAMEWORK && !NETSTANDARD
+	extension(ReadOnlySpan<byte> b)
+	{
+		internal bool VariantIsRfc9562() =>
+			(b[8] & 0xC0) == 0x80;
+
+		internal bool IsLegacy() =>
+			b[3] == 8 && !b.VariantIsRfc9562();
+
+		internal bool IsRfc9562Version(byte version) =>
+			b[7] >> 4 == version && b.VariantIsRfc9562();
+
+		internal long Rfc9562V7UnixMs =>
+			((long)b[3] << 40) |
+			((long)b[2] << 32) |
+			((long)b[1] << 24) |
+			((long)b[0] << 16) |
+			((long)b[5] << 8) |
+			b[4];
+
+		private long Rfc9562V8Ticks =>
+			((long)b[3] << 52) +
+			((long)b[2] << 44) +
+			((long)b[1] << 36) +
+			((long)b[0] << 28) +
+			((long)b[5] << 20) +
+			((long)b[4] << 12) +
+			(((long)b[7] & 0x0F) << 8) +
+			b[6];
+
+		private long LegacyTicks =>
+			((long)b[3] << 56) +
+			((long)b[2] << 48) +
+			((long)b[1] << 40) +
+			((long)b[0] << 32) +
+			((long)b[5] << 24) +
+			(b[4] << 16) +
+			(b[7] << 8) +
+			b[6];
+
+		internal long? ToTicks() =>
+			b.IsRfc9562Version(8) ? b.Rfc9562V8Ticks :
+			b.IsRfc9562Version(7) ? b.Rfc9562V7UnixMs.Rfc9562V7Ticks :
+			b.IsLegacy() ? b.LegacyTicks :
+			null;
+
+		internal void WriteToSqlByteOrder(Span<byte> dest)
+		{
+			dest[0] = b[12];
+			dest[1] = b[13];
+			dest[2] = b[14];
+			dest[3] = b[15];
+			dest[4] = b[10];
+			dest[5] = b[11];
+			dest[6] = b[8];
+			dest[7] = b[9];
+			dest[8] = b[7];
+			dest[9] = b[6];
+			dest[10] = b[3];
+			dest[11] = b[2];
+			dest[12] = b[1];
+			dest[13] = b[0];
+			dest[14] = b[5];
+			dest[15] = b[4];
+		}
+
+		internal void WriteFromSqlByteOrder(Span<byte> dest)
+		{
+			dest[0] = b[13];
+			dest[1] = b[12];
+			dest[2] = b[11];
+			dest[3] = b[10];
+			dest[4] = b[15];
+			dest[5] = b[14];
+			dest[6] = b[9];
+			dest[7] = b[8];
+			dest[8] = b[6];
+			dest[9] = b[7];
+			dest[10] = b[4];
+			dest[11] = b[5];
+			dest[12] = b[0];
+			dest[13] = b[1];
+			dest[14] = b[2];
+			dest[15] = b[3];
+		}
+	}
+#endif
 }
