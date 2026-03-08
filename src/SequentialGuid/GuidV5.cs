@@ -44,30 +44,33 @@ public static class GuidV5
 	/// <returns>A deterministic version 5 <see cref="Guid"/> derived from the namespace and name.</returns>
 	public static Guid Create(Guid namespaceId, byte[] name)
 	{
-		var buffer = new byte[16 + name.Length];
-		namespaceId
-#if NETFRAMEWORK || NETSTANDARD
+#pragma warning disable CA5350 // SHA-1 is required by RFC 9562 for UUID version 5
+#if NETFRAMEWORK
+		using var sha = SHA1.Create();
+		var nsBytes = namespaceId.ToByteArray().SwapByteOrder();
+		sha.TransformBlock(nsBytes, 0, 16, null, 0);
+		sha.TransformFinalBlock(name, 0, name.Length);
+		var digest = sha.Hash!;
+#else
+		using var hash = IncrementalHash.CreateHash(HashAlgorithmName.SHA1);
+		hash.AppendData(namespaceId
+#if NETSTANDARD
 			.ToByteArray().SwapByteOrder()
 #else
 			.ToByteArray(true)
 #endif
-			.CopyTo(buffer, 0);
-		name.CopyTo(buffer, 16);
-#pragma warning disable CA5350 // SHA-1 is required by RFC 9562 for UUID version 5
-#if NET6_0_OR_GREATER
-		var hash = SHA1.HashData(buffer);
-#else
-		using var sha1 = SHA1.Create();
-		var hash = sha1.ComputeHash(buffer);
+		);
+		hash.AppendData(name);
+		var digest = hash.GetHashAndReset();
 #endif
 #pragma warning restore CA5350
-		hash.SetRfc9562Version(5);
-		hash.SetRfc9562Variant();
+		digest.SetRfc9562Version(5);
+		digest.SetRfc9562Variant();
 		return
 #if NETFRAMEWORK || NETSTANDARD
-			new(hash.SwapByteOrder());
+			new(digest.SwapByteOrder());
 #else
-			new(hash.AsSpan(0, 16), true);
+			new(digest.AsSpan(0, 16), true);
 #endif
 	}
 }

@@ -52,28 +52,31 @@ public static class GuidV8Name
 	/// <returns>A deterministic version 8 <see cref="Guid"/> derived from the namespace and name.</returns>
 	public static Guid Create(Guid namespaceId, byte[] name)
 	{
-		var buffer = new byte[16 + name.Length];
-		namespaceId
-#if NETFRAMEWORK || NETSTANDARD
+#if NETFRAMEWORK
+		using var sha = SHA256.Create();
+		var nsBytes = namespaceId.ToByteArray().SwapByteOrder();
+		sha.TransformBlock(nsBytes, 0, 16, null, 0);
+		sha.TransformFinalBlock(name, 0, name.Length);
+		var digest = sha.Hash!;
+#else
+		using var hash = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
+		hash.AppendData(namespaceId
+#if NETSTANDARD
 			.ToByteArray().SwapByteOrder()
 #else
 			.ToByteArray(true)
 #endif
-			.CopyTo(buffer, 0);
-		name.CopyTo(buffer, 16);
-#if NET6_0_OR_GREATER
-		var hash = SHA256.HashData(buffer);
-#else
-		using var sha256 = SHA256.Create();
-		var hash = sha256.ComputeHash(buffer);
+		);
+		hash.AppendData(name);
+		var digest = hash.GetHashAndReset();
 #endif
-		hash.SetRfc9562Version(8);
-		hash.SetRfc9562Variant();
+		digest.SetRfc9562Version(8);
+		digest.SetRfc9562Variant();
 		return
 #if NETFRAMEWORK || NETSTANDARD
-			new(hash.SwapByteOrder());
+			new(digest.SwapByteOrder());
 #else
-			new(hash.AsSpan(0, 16), true);
+			new(digest.AsSpan(0, 16), true);
 #endif
 	}
 }
