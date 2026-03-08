@@ -25,11 +25,11 @@ public static class GuidV7
 
 	static GuidV7()
 	{
-#if NETFRAMEWORK || NETSTANDARD2_0
+#if NET6_0_OR_GREATER
+		s_counter = RandomNumberGenerator
+#else
 		using var rng = RandomNumberGenerator.Create();
 		s_counter = rng
-#else
-		s_counter = RandomNumberGenerator
 #endif
 			.GetInt32(0x200); // seed in [0, 512) to leave ample headroom before the 12-bit wrap
 	}
@@ -137,13 +137,12 @@ public static class GuidV7
 		var bytes = new byte[16];
 
 		// Fill rand_b (octets 8-15) with random data
-#if NETFRAMEWORK || NETSTANDARD2_0
+#if NET6_0_OR_GREATER
+		RandomNumberGenerator.Fill(bytes.AsSpan(8));
+#else
 		using var rng = RandomNumberGenerator.Create();
 		rng.GetBytes(bytes, 8, 8);
-#else
-		RandomNumberGenerator.Fill(bytes.AsSpan(8));
 #endif
-
 		// unix_ts_ms: 48-bit big-endian millisecond timestamp (octets 0-5)
 		bytes[0] = (byte)(unixMilliseconds >> 40);
 		bytes[1] = (byte)(unixMilliseconds >> 32);
@@ -161,10 +160,10 @@ public static class GuidV7
 
 		// Swap from network byte order to .NET's mixed-endian Guid format
 		return
-#if NETFRAMEWORK || NETSTANDARD
-			new(bytes.SwapByteOrder());
-#else
+#if NET6_0_OR_GREATER
 			new(bytes, true);
+#else
+			new(bytes.SwapByteOrder());
 #endif
 	}
 }

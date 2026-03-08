@@ -30,14 +30,14 @@ public static class SqlGuidExtensions
 		/// <returns>A <see cref="Guid"/> representation of the specified <see cref="SqlGuid"/>.</returns>
 		public Guid ToGuid()
 		{
-#if !NETFRAMEWORK && !NETSTANDARD
+#if NET6_0_OR_GREATER
 			Span<byte> src = stackalloc byte[16];
 			sqlGuid.Value.TryWriteBytes(src);
 			Span<byte> dst = stackalloc byte[16];
 			src.WriteFromSqlByteOrder(dst);
 			return new(dst);
 #else
-			return new(sqlGuid.ToByteArray()!.FromSqlByteOrder());
+			return new(sqlGuid.ToByteArray().FromSqlByteOrder());
 #endif
 		}
 	}

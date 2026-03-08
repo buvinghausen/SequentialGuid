@@ -1,4 +1,4 @@
-#if NETFRAMEWORK || NETSTANDARD2_0
+#if !NET6_0_OR_GREATER
 using System.Security.Cryptography;
 
 namespace SequentialGuid;

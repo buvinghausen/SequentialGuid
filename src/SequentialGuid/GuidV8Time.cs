@@ -27,13 +27,13 @@ public static class GuidV8Time
 
 	static GuidV8Time()
 	{
-#if NETFRAMEWORK || NETSTANDARD2_0
+#if NET6_0_OR_GREATER
+		// Use the RandomNumberGenerator static function where available
+		s_increment = RandomNumberGenerator
+#else
 		// Fall back to the old Random create function
 		using var rng = RandomNumberGenerator.Create();
 		s_increment = rng
-#else
-		// Use the RandomNumberGenerator static function where available
-		s_increment = RandomNumberGenerator
 #endif
 			.GetInt32(500000);
 		MachinePid = new byte[5];
