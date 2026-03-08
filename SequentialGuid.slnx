@@ -24,5 +24,6 @@
   <Project Path="test\SequentialGuid.Tests\SequentialGuid.Tests.csproj">
     <Configuration Solution="Release|*" Project="*|*|NoBuild" />
   </Project>
+  <Project Path="util/Benchmarks/SequentialGuid.Benchmarks.csproj" />
   <Project Path="util/Generator/SequentialGuid.Generator.csproj" />
 </Solution>
