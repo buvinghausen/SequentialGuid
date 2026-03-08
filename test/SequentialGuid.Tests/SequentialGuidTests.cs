@@ -1,4 +1,3 @@
-#pragma warning disable CS0618 // Type or member is obsolete
 using System.Data.SqlTypes;
 
 namespace SequentialGuid.Tests;
@@ -133,8 +132,7 @@ public sealed class SequentialGuidTests
 	void TestSequentialGuidNewGuid()
 	{
 		//Arrange
-		var generator = SequentialGuidGenerator.Instance;
-		var items = Enumerable.Range(0, 25).Select(i => new { Id = generator.NewGuid(), Sort = i }).ToArray();
+		var items = Enumerable.Range(0, 25).Select(i => new { Id = GuidV8Time.NewGuid(), Sort = i }).ToArray();
 		//Act
 		var sortedItems = items.OrderBy(x => x.Id).ToArray();
 		//Assert
@@ -149,7 +147,7 @@ public sealed class SequentialGuidTests
 	void TestVersion8Bits()
 	{
 		// Act
-		var id = SequentialGuidGenerator.Instance.NewGuid();
+		var id = GuidV8Time.NewGuid();
 		var bytes = id.ToByteArray();
 #if NET9_0_OR_GREATER
 		id.Version.ShouldBe(8);
@@ -161,7 +159,7 @@ public sealed class SequentialGuidTests
 	void TestVariantBits()
 	{
 		// Act
-		var id = SequentialGuidGenerator.Instance.NewGuid();
+		var id = GuidV8Time.NewGuid();
 		var bytes = id.ToByteArray();
 		var sqlBytes = bytes.ToSqlByteOrder();
 #if NET9_0_OR_GREATER
@@ -175,8 +173,7 @@ public sealed class SequentialGuidTests
 	void TestSequentialGuidNewSqlGuid()
 	{
 		//Arrange
-		var generator = SequentialSqlGuidGenerator.Instance;
-		var items = Enumerable.Range(0, 25).Select(i => new { Id = generator.NewSqlGuid(), Sort = i }).ToArray();
+		var items = Enumerable.Range(0, 25).Select(i => new { Id = new SqlGuid(GuidV8Time.NewSqlGuid()), Sort = i }).ToArray();
 		//Act
 		var sortedItems = items.OrderBy(x => x.Id).ToArray();
 		//Assert
@@ -192,7 +189,7 @@ public sealed class SequentialGuidTests
 	{
 		var localNow = DateTime.Now;
 		TestLocalDateIsUtcInGuidImpl(localNow,
-			SequentialGuidGenerator.Instance.NewGuid(localNow));
+			GuidV8Time.NewGuid(localNow));
 	}
 
 	[Fact]
@@ -200,7 +197,7 @@ public sealed class SequentialGuidTests
 	{
 		var localNow = DateTime.Now;
 		TestLocalDateIsUtcInGuidImpl(localNow,
-			SequentialSqlGuidGenerator.Instance.NewGuid(localNow));
+			GuidV8Time.NewGuid(localNow));
 	}
 
 	// ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
@@ -238,7 +235,7 @@ public sealed class SequentialGuidTests
 		//Arrange
 		var expectedDateTime = DateTime.UtcNow;
 		//Act
-		var dateTime = SequentialGuidGenerator.Instance
+		var dateTime = GuidV8Time
 			.NewGuid(expectedDateTime)
 			.ToDateTime()
 			.GetValueOrDefault();
@@ -253,7 +250,7 @@ public sealed class SequentialGuidTests
 		//Arrange
 		var expectedDateTime = DateTime.Now;
 		//Act
-		var dateTime = SequentialGuidGenerator.Instance
+		var dateTime = GuidV8Time
 			.NewGuid(expectedDateTime)
 			.ToDateTime()
 			.GetValueOrDefault();
@@ -275,19 +272,19 @@ public sealed class SequentialGuidTests
 
 	[Fact]
 	void TestUtcNowDoesNotThrowException() =>
-		SequentialGuidGenerator.Instance.NewGuid(DateTime.UtcNow);
+		GuidV8Time.NewGuid(DateTime.UtcNow);
 
 	[Fact]
 	void TestLocalNowDoesNotThrowException() =>
-		SequentialGuidGenerator.Instance.NewGuid(DateTime.Now);
+		GuidV8Time.NewGuid(DateTime.Now);
 
 	[Fact]
 	void TestUnixEpochDoesNotThrowException() =>
-		SequentialGuidGenerator.Instance.NewGuid(EpochTicks);
+		GuidV8Time.NewGuid(EpochTicks);
 
 	[Fact]
 	void TestBetweenUnixEpochAndNowDoesNotThrowException() =>
-		SequentialGuidGenerator.Instance.NewGuid(
+		GuidV8Time.NewGuid(
 			new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc));
 
 	[Fact]
@@ -314,8 +311,8 @@ public sealed class SequentialGuidTests
 	private static void TestReturnsNullDateTime(long ticks)
 	{
 		//Arrange
-		var guid = SequentialGuidGenerator.Instance.NewGuid(ticks);
-		var sqlGuid = SequentialSqlGuidGenerator.Instance.NewGuid(ticks);
+		var guid = GuidV8Time.NewGuid(ticks);
+		var sqlGuid = GuidV8Time.NewGuid(ticks);
 		//Act & Assert
 		guid.ToDateTime().ShouldBeNull();
 		sqlGuid.ToDateTime().ShouldBeNull();
@@ -323,7 +320,7 @@ public sealed class SequentialGuidTests
 
 	private static void TestThrowsArgumentException(DateTime timestamp) =>
 		Should.Throw<ArgumentException>(() =>
-			SequentialGuidGenerator.Instance.NewGuid(timestamp));
+			GuidV8Time.NewGuid(timestamp));
 
 	[Fact]
 	void TestSqlGuidToDateTime()
@@ -331,7 +328,7 @@ public sealed class SequentialGuidTests
 		//Arrange
 		var expectedDateTime = DateTime.UtcNow;
 		//Act
-		var dateTime = SequentialSqlGuidGenerator.Instance
+		var dateTime = GuidV8Time
 			.NewSqlGuid(expectedDateTime)
 			.ToDateTime()
 			.GetValueOrDefault();
@@ -346,7 +343,7 @@ public sealed class SequentialGuidTests
 		//Arrange
 		var expectedDateTime = DateTime.Now;
 		//Act
-		var dateTime = SequentialSqlGuidGenerator.Instance
+		var dateTime = GuidV8Time
 			.NewSqlGuid(expectedDateTime)
 			.ToDateTime()
 			.GetValueOrDefault();
@@ -359,12 +356,11 @@ public sealed class SequentialGuidTests
 	void TestGuidBigDateRange()
 	{
 		//Arrange
-		var generator = SequentialGuidGenerator.Instance;
 		IList<Guid> items = [];
 		//Act
 		for (var i = 1970; i < DateTime.Today.Year; i++)
 		{
-			items.Add(generator.NewGuid(new DateTime(i, 1, 1, 0, 0, 0,
+			items.Add(GuidV8Time.NewGuid(new DateTime(i, 1, 1, 0, 0, 0,
 				DateTimeKind.Local)));
 		}
 
@@ -377,12 +373,11 @@ public sealed class SequentialGuidTests
 	void TestSqlGuidBigDateRange()
 	{
 		//Arrange
-		var generator = SequentialSqlGuidGenerator.Instance;
 		IList<SqlGuid> items = [];
 		//Act
 		for (var i = 1970; i < DateTime.Today.Year; i++)
 		{
-			items.Add(generator.NewSqlGuid(new DateTime(i, 1, 1, 0, 0, 0,
+			items.Add(GuidV8Time.NewSqlGuid(new DateTime(i, 1, 1, 0, 0, 0,
 				DateTimeKind.Utc)));
 		}
 
@@ -395,7 +390,7 @@ public sealed class SequentialGuidTests
 	void TestGuidConversions()
 	{
 		// Arrange
-		var id = SequentialGuidGenerator.Instance.NewGuid();
+		var id = GuidV8Time.NewGuid();
 		// Act
 		var converted = id.ToSqlGuid().ToGuid();
 		// Assert
@@ -406,7 +401,7 @@ public sealed class SequentialGuidTests
 	void TestSqlGuidConversions()
 	{
 		// Arrange
-		var id = SequentialSqlGuidGenerator.Instance.NewSqlGuid();
+		var id = new SqlGuid(GuidV8Time.NewSqlGuid());
 		// Act
 		var converted = id.ToGuid().ToSqlGuid();
 		// Assert

@@ -1,9 +1,9 @@
 using System.Data.SqlTypes;
-using SequentialGuid;
+using NodaTime;
 
 #pragma warning disable IDE0130 // Namespace does not match folder structure
 // ReSharper disable once CheckNamespace
-namespace NodaTime;
+namespace SequentialGuid;
 #pragma warning restore IDE0130 // Namespace does not match folder structure
 
 /// <summary>

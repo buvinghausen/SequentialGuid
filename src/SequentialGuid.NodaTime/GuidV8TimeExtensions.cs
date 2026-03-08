@@ -32,7 +32,7 @@ public static class GuidV8TimeExtensions
 		/// <summary>
 		/// Creates a new UUID version 8 from a NodaTime <see cref="OffsetDateTime"/> timestamp.
 		/// </summary>
-		/// <param name="timestamp">The <see cref="Instant"/> to embed as the timestamp.</param>
+		/// <param name="timestamp">The <see cref="OffsetDateTime"/> to embed as the timestamp.</param>
 		/// <returns>A new time-ordered version 8 <see cref="Guid"/>.</returns>
 		public static Guid NewGuid(OffsetDateTime timestamp) =>
 			GuidV8Time.NewGuid(timestamp.ToInstant());
@@ -41,7 +41,7 @@ public static class GuidV8TimeExtensions
 		/// Creates a new UUID version 8 from a NodaTime <see cref="OffsetDateTime"/> timestamp, with byte ordering
 		/// suitable for storage in a SQL Server <c>uniqueidentifier</c> column.
 		/// </summary>
-		/// <param name="timestamp">The <see cref="Instant"/> to embed as the timestamp.</param>
+		/// <param name="timestamp">The <see cref="OffsetDateTime"/> to embed as the timestamp.</param>
 		/// <returns>A new time-ordered version 8 <see cref="Guid"/> with bytes in SQL Server sort order.</returns>
 		public static Guid NewSqlGuid(OffsetDateTime timestamp) =>
 			GuidV8Time.NewSqlGuid(timestamp.ToInstant());
@@ -49,7 +49,7 @@ public static class GuidV8TimeExtensions
 		/// <summary>
 		/// Creates a new UUID version 8 from a NodaTime <see cref="ZonedDateTime"/> timestamp.
 		/// </summary>
-		/// <param name="timestamp">The <see cref="Instant"/> to embed as the timestamp.</param>
+		/// <param name="timestamp">The <see cref="ZonedDateTime"/> to embed as the timestamp.</param>
 		/// <returns>A new time-ordered version 8 <see cref="Guid"/>.</returns>
 		public static Guid NewGuid(ZonedDateTime timestamp) =>
 			GuidV8Time.NewGuid(timestamp.ToDateTimeUtc());
@@ -58,7 +58,7 @@ public static class GuidV8TimeExtensions
 		/// Creates a new UUID version 8 from a NodaTime <see cref="ZonedDateTime"/> timestamp, with byte ordering
 		/// suitable for storage in a SQL Server <c>uniqueidentifier</c> column.
 		/// </summary>
-		/// <param name="timestamp">The <see cref="Instant"/> to embed as the timestamp.</param>
+		/// <param name="timestamp">The <see cref="ZonedDateTime"/> to embed as the timestamp.</param>
 		/// <returns>A new time-ordered version 8 <see cref="Guid"/> with bytes in SQL Server sort order.</returns>
 		public static Guid NewSqlGuid(ZonedDateTime timestamp) =>
 			GuidV8Time.NewSqlGuid(timestamp.ToDateTimeUtc());
