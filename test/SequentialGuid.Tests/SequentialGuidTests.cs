@@ -173,7 +173,7 @@ public sealed class SequentialGuidTests
 	void TestSequentialGuidNewSqlGuid()
 	{
 		//Arrange
-		var items = Enumerable.Range(0, 25).Select(i => new { Id = GuidV8Time.NewSqlGuid(), Sort = i }).ToArray();
+		var items = Enumerable.Range(0, 25).Select(i => new { Id = new SqlGuid(GuidV8Time.NewSqlGuid()), Sort = i }).ToArray();
 		//Act
 		var sortedItems = items.OrderBy(x => x.Id).ToArray();
 		//Assert
