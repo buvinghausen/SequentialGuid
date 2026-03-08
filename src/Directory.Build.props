@@ -3,7 +3,7 @@
 	<Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" Condition="'' != $([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
 	<PropertyGroup>
-		<TargetFrameworks>net8.0;net462;netstandard2.0</TargetFrameworks>
+		<TargetFrameworks>net10.0;net9.0;net8.0;net462;netstandard2.0</TargetFrameworks>
 		<Authors>Brian Buvinghausen</Authors>
 		<Company>Buvinghausen Solutions</Company>
 		<Copyright>Copyright © 2026 Brian Buvinghausen</Copyright>

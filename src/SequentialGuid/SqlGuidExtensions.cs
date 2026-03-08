@@ -1,4 +1,5 @@
 using System.Data.SqlTypes;
+using System.Runtime.CompilerServices;
 
 namespace SequentialGuid;
 
@@ -6,6 +7,7 @@ namespace SequentialGuid;
 /// Provides extension methods for working with <see cref="SqlGuid"/> objects,
 /// including conversions and operations related to timestamps.
 /// </summary>
+[SkipLocalsInit]
 public static class SqlGuidExtensions
 {
 	/// <param name="sqlGuid">The <see cref="SqlGuid"/> to extract the timestamp from.</param>

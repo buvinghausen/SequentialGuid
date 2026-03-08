@@ -1,4 +1,5 @@
 using System.Data.SqlTypes;
+using System.Runtime.CompilerServices;
 using SequentialGuid;
 
 #pragma warning disable IDE0130 // Namespace does not match folder structure
@@ -10,6 +11,7 @@ namespace System;
 /// Provides extension methods for working with <see cref="Guid"/> objects,
 /// including conversions and operations related to timestamps and SQL Server sorting order.
 /// </summary>
+[SkipLocalsInit]
 public static class GuidExtensions
 {
 	extension(Guid id)

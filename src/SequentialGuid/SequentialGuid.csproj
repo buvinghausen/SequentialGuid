@@ -3,6 +3,7 @@
 	<PropertyGroup>
 		<Title>SequentialGuid</Title>
 		<Description>RFC 9562 compliant UUID generation for .NET — time-ordered UUIDv7 (millisecond) and UUIDv8 (tick precision), deterministic UUIDv5/v8 name-based, and random UUIDv4, all with SQL Server sort-order support and embedded timestamp extraction.</Description>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
 	<ItemGroup>
