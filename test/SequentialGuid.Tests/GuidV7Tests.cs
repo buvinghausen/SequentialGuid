@@ -175,10 +175,10 @@ public sealed class GuidV7Tests
 		// (RFC 9562 §6.2 Method 1: fixed bit-length dedicated counter in rand_a)
 		var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 		// Act - generate 100 UUIDs all sharing the same millisecond timestamp
-		Guid[] guids = [.. Enumerable.Range(0, 100).Select(_ => GuidV7.NewGuid(timestamp))];
+		Guid[] actual = [.. Enumerable.Range(0, 100).Select(_ => GuidV7.NewGuid(timestamp))];
 		// Assert - the counter in rand_a ensures they are already in creation order
-		Guid[] sorted = [.. guids.OrderBy(x => x)];
-		sorted.ShouldBe(guids);
+		Guid[] expected = [.. actual.OrderBy(x => x)];
+		expected.ShouldBe(actual);
 	}
 
 	[Fact]
