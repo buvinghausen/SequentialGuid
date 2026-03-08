@@ -24,13 +24,12 @@ public sealed class GuidV7Tests
 	{
 		// Act
 		var id = GuidV7.NewGuid();
-		var bytes = id.ToByteArray();
-		var sqlBytes = bytes.ToSqlByteOrder();
+		var sqlId = id.ToSqlGuid();
 #if NET9_0_OR_GREATER
 		id.Variant.ShouldBeInRange(8, 11);
 #endif
-		bytes.VariantIsRfc9562().ShouldBeTrue();
-		sqlBytes.SqlVariantIsRfc9562().ShouldBeTrue();
+		id.ToByteArray().VariantIsRfc9562().ShouldBeTrue();
+		sqlId.ToByteArray()!.SqlVariantIsRfc9562().ShouldBeTrue();
 	}
 
 	[Fact]

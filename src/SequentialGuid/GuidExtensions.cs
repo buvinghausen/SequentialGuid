@@ -65,16 +65,5 @@ public static class GuidExtensions
 			return new(id.ToByteArray().ToSqlByteOrder());
 #endif
 		}
-
-		internal long ToUnixMs()
-		{
-#if NET6_0_OR_GREATER
-			Span<byte> bytes = stackalloc byte[16];
-			id.TryWriteBytes(bytes);
-			return bytes.Rfc9562V7UnixMs;
-#else
-			return id.ToByteArray().Rfc9562V7UnixMs;
-#endif
-		}
 	}
 }

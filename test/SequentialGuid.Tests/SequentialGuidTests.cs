@@ -160,13 +160,12 @@ public sealed class SequentialGuidTests
 	{
 		// Act
 		var id = GuidV8Time.NewGuid();
-		var bytes = id.ToByteArray();
-		var sqlBytes = bytes.ToSqlByteOrder();
+		var sqlId = id.ToSqlGuid();
 #if NET9_0_OR_GREATER
 		id.Variant.ShouldBeInRange(8, 11);
 #endif
-		bytes.VariantIsRfc9562().ShouldBeTrue();
-		sqlBytes.SqlVariantIsRfc9562().ShouldBeTrue();
+		id.ToByteArray().VariantIsRfc9562().ShouldBeTrue();
+		sqlId.ToByteArray()!.SqlVariantIsRfc9562().ShouldBeTrue();
 	}
 
 	[Fact]
@@ -2502,8 +2501,8 @@ public sealed class SequentialGuidTests
 		foreach (var input in legacy)
 		{
 			var bytes = input.ToByteArray();
-			var sqlBytes = bytes.ToSqlByteOrder();
-
+			var sqlId = input.ToSqlGuid();
+			var sqlBytes = sqlId.ToByteArray()!;
 			// As long as we hit the following flags we can render the timestamps
 			bytes.IsLegacy().ShouldBeTrue();
 			bytes.IsSqlLegacy().ShouldBeFalse();

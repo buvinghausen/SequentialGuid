@@ -11,10 +11,15 @@ internal static class ByteArrayExtensions
 		internal byte[] SwapByteOrder() =>
 			[b[3], b[2], b[1], b[0], b[5], b[4], b[7], b[6], b[8], b[9], b[10], b[11], b[12], b[13], b[14], b[15]];
 
+		//See: https://www.sqlbi.com/blog/alberto/2007/08/31/how-are-guids-sorted-by-sql-server/
+		//See: https://learn.microsoft.com/en-us/dotnet/framework/data/adonet/sql/comparing-guid-and-uniqueidentifier-values
+		internal byte[] ToSqlByteOrder() =>
+			[b[12], b[13], b[14], b[15], b[10], b[11], b[8], b[9], b[7], b[6], b[3], b[2], b[1], b[0], b[5], b[4]];
+
 		internal byte[] FromSqlByteOrder() =>
 			[b[13], b[12], b[11], b[10], b[15], b[14], b[9], b[8], b[6], b[7], b[4], b[5], b[0], b[1], b[2], b[3]];
 
-		internal long Rfc9562V7UnixMs =>
+		internal long Rfc9562V7UnixMs() =>
 			((long)b[3] << 40) |
 			((long)b[2] << 32) |
 			((long)b[1] << 24) |
@@ -44,15 +49,10 @@ internal static class ByteArrayExtensions
 
 		internal long? ToTicks() =>
 			b.IsRfc9562Version(8) ? b.Rfc9562V8Ticks :
-			b.IsRfc9562Version(7) ? b.Rfc9562V7UnixMs.Rfc9562V7Ticks :
+			b.IsRfc9562Version(7) ? b.Rfc9562V7UnixMs().Rfc9562V7Ticks :
 			b.IsLegacy() ? b.LegacyTicks :
 			null;
 #endif
-		//See: https://www.sqlbi.com/blog/alberto/2007/08/31/how-are-guids-sorted-by-sql-server/
-		//See: https://learn.microsoft.com/en-us/dotnet/framework/data/adonet/sql/comparing-guid-and-uniqueidentifier-values
-		internal byte[] ToSqlByteOrder() =>
-			[b[12], b[13], b[14], b[15], b[10], b[11], b[8], b[9], b[7], b[6], b[3], b[2], b[1], b[0], b[5], b[4]];
-
 		// The big endian lead byte was always 8 in the legacy calculation
 		internal bool IsLegacy() =>
 			b[3] == 8 && !b.VariantIsRfc9562();
@@ -86,7 +86,7 @@ internal static class ByteArrayExtensions
 		internal bool IsRfc9562Version(byte version) =>
 			b[7] >> 4 == version && b.VariantIsRfc9562();
 
-		internal long Rfc9562V7UnixMs =>
+		internal long Rfc9562V7UnixMs() =>
 			((long)b[3] << 40) |
 			((long)b[2] << 32) |
 			((long)b[1] << 24) |
@@ -116,7 +116,7 @@ internal static class ByteArrayExtensions
 
 		internal long? ToTicks() =>
 			b.IsRfc9562Version(8) ? b.Rfc9562V8Ticks :
-			b.IsRfc9562Version(7) ? b.Rfc9562V7UnixMs.Rfc9562V7Ticks :
+			b.IsRfc9562Version(7) ? b.Rfc9562V7UnixMs().Rfc9562V7Ticks :
 			b.IsLegacy() ? b.LegacyTicks :
 			null;
 
