@@ -7,6 +7,9 @@
 		<Using Remove="System.Threading" />
 		<Using Remove="System.Threading.Tasks" />
 	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="NodaTime" Version="3.*" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\src\SequentialGuid.NodaTime\SequentialGuid.NodaTime.csproj" />

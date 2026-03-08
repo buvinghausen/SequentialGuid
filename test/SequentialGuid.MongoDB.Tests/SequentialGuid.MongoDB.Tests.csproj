@@ -7,6 +7,9 @@
 		<Using Remove="System.Threading" />
 		<Using Remove="System.Threading.Tasks" />
 	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="MongoDB.Bson" Version="3.*" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\src\SequentialGuid.MongoDB\SequentialGuid.MongoDB.csproj" />

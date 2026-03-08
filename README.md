@@ -1,7 +1,10 @@
 
-SequentialGuid
-==============
-![Continuous Integration](https://github.com/buvinghausen/SequentialGuid/workflows/Continuous%20Integration/badge.svg)[![NuGet](https://img.shields.io/nuget/v/SequentialGuid.svg)](https://www.nuget.org/packages/SequentialGuid/)[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/buvinghausen/SequentialGuid/blob/master/LICENSE.txt)
+# SequentialGuid
+
+[![Continuous Integration](https://github.com/buvinghausen/SequentialGuid/workflows/Continuous%20Integration/badge.svg)](https://github.com/buvinghausen/SequentialGuid/actions)
+[![NuGet](https://img.shields.io/nuget/v/SequentialGuid.svg)](https://www.nuget.org/packages/SequentialGuid/)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/SequentialGuid.svg)](https://www.nuget.org/packages/SequentialGuid/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/buvinghausen/SequentialGuid/blob/master/LICENSE.txt)
 
 A dependency-free library for generating [RFC 9562](https://www.rfc-editor.org/rfc/rfc9562.html) compliant UUIDs in .NET. All five structs — `GuidV4`, `GuidV5`, `GuidV7`, `GuidV8Time`, and `GuidV8Name` — conform to the RFC 9562 specification with correct version nibble and variant bits. Time-based UUIDs embed the creation timestamp into the value, which typically results in lower clustered index fragmentation when used as database primary keys. You can generate IDs all the way up in WebAssembly or MAUI, pass them through your API, and store them in the database — helping with idempotency without requiring a trip to the database to generate the key.
 
