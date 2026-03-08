@@ -296,7 +296,7 @@ public sealed class SequentialGuidTests
 
 	[Fact]
 	void TestAfterNowReturnsNullDateTime() =>
-		TestReturnsNullDateTime(DateTime.UtcNow.AddSeconds(1).Ticks);
+		TestReturnsNullDateTime(DateTime.UtcNow.AddMinutes(1).Ticks);
 
 	[Fact]
 	void TestBeforeUnixEpochThrowsArgumentException() =>
@@ -311,7 +311,7 @@ public sealed class SequentialGuidTests
 	{
 		//Arrange
 		var guid = GuidV8Time.NewGuid(ticks);
-		var sqlGuid = GuidV8Time.NewGuid(ticks);
+		var sqlGuid = guid.ToSqlGuid();
 		//Act & Assert
 		guid.ToDateTime().ShouldBeNull();
 		sqlGuid.ToDateTime().ShouldBeNull();
