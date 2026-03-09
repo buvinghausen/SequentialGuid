@@ -1,4 +1,3 @@
-using System.Data.SqlTypes;
 using System.Runtime.CompilerServices;
 using SequentialGuid;
 
@@ -49,20 +48,40 @@ public static class GuidExtensions
 		}
 
 		/// <summary>
-		/// Converts a <see cref="Guid"/> to a <see cref="SqlGuid"/> by rearranging its byte order
-		/// to match the sorting order used by SQL Server.
+		/// Converts a <see cref="Guid"/> to its SQL Server byte order equivalent.
 		/// </summary>
-		/// <returns>A <see cref="SqlGuid"/> representation of the provided <see cref="Guid"/>.</returns>
-		public SqlGuid ToSqlGuid()
+		/// <returns>
+		/// A <see cref="Guid"/> with its bytes reordered to match SQL Server's internal sorting order.
+		/// </returns>
+		public Guid ToSqlGuid()
 		{
 #if NET6_0_OR_GREATER
 			Span<byte> src = stackalloc byte[16];
 			id.TryWriteBytes(src);
 			Span<byte> dst = stackalloc byte[16];
 			src.WriteToSqlByteOrder(dst);
-			return new(new Guid(dst));
+			return new(dst);
 #else
 			return new(id.ToByteArray().ToSqlByteOrder());
+#endif
+		}
+
+		/// <summary>
+		/// Converts a SQL Server byte order <see cref="Guid"/> back to its standard byte order equivalent.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="Guid"/> with its bytes reordered from SQL Server's internal sorting order to the standard ordering.
+		/// </returns>
+		public Guid FromSqlGuid()
+		{
+#if NET6_0_OR_GREATER
+			Span<byte> src = stackalloc byte[16];
+			id.TryWriteBytes(src);
+			Span<byte> dst = stackalloc byte[16];
+			src.WriteFromSqlByteOrder(dst);
+			return new(dst);
+#else
+			return new(id.ToByteArray().FromSqlByteOrder());
 #endif
 		}
 	}

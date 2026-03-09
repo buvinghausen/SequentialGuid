@@ -32,7 +32,7 @@ SequentialGuid is a zero-dependency .NET library that produces [RFC 9562](https:
 - **Zero allocations on modern .NET** — `stackalloc`, `Span<T>`, and `[SkipLocalsInit]` eliminate heap allocations on the hot path (.NET 8+)
 - **Broad platform support** — targets **.NET 10 / 9 / 8**, **.NET Framework 4.6.2**, and **.NET Standard 2.0**, with explicit `browser` platform support for Blazor WebAssembly
 - **Round-trip timestamp extraction** — call `.ToDateTime()` on any `Guid` (V7, V8, or legacy) to recover the embedded UTC timestamp — works on `SqlGuid` too
-- **SQL Server sort-order aware** — `NewSqlGuid()` and `.ToSqlGuid()` / `.ToGuid()` handle the byte-order shuffle so your UUIDs sort chronologically in `uniqueidentifier` columns
+- **SQL Server sort-order aware** — `NewSqlGuid()` and `.ToSqlGuid()` / `.FromSqlGuid()` handle the byte-order shuffle so your UUIDs sort chronologically in `uniqueidentifier` columns — the only uses of `System.Data.SqlTypes.SqlGuid` are in the obsolete legacy classes and test suite
 - **Built-in benchmarks** — a BenchmarkDotNet project is included so you can measure generation and conversion performance on your own hardware
 
 ### GuidV7 vs GuidV8Time — Which Should I Use?
@@ -110,12 +110,12 @@ DateTime? created = id.ToDateTime();
 // Works on GuidV7, GuidV8Time, legacy SequentialGuid, and even SqlGuid values
 ```
 
-### Convert between Guid and SqlGuid
+### Convert between Guid and SqlGuid byte order
 
 ```csharp
 var guid = GuidV7.NewGuid();
-var sqlGuid = guid.ToSqlGuid();  // reorder bytes for SQL Server
-var back = sqlGuid.ToGuid();     // restore standard byte order
+var sqlGuid = guid.ToSqlGuid();    // reorder bytes for SQL Server
+var back = sqlGuid.FromSqlGuid();  // restore standard byte order
 ```
 
 ### Stamp a timestamp from an existing DateTime / DateTimeOffset
@@ -162,7 +162,7 @@ SQL Server sorts `uniqueidentifier` values in a [non-obvious byte order](https:/
 * [Comparing GUID and uniqueidentifier Values](https://learn.microsoft.com/en-us/dotnet/framework/data/adonet/sql/comparing-guid-and-uniqueidentifier-values)
 * [How are GUIDs sorted by SQL Server?](https://www.sqlbi.com/blog/alberto/2007/08/31/how-are-guids-sorted-by-sql-server/)
 
-Use the `NewSqlGuid()` methods (or the `.ToSqlGuid()` extension) to produce UUIDs whose byte order aligns with SQL Server's comparison logic. The `.ToGuid()` extension on `SqlGuid` reverses the transformation.
+Use the `NewSqlGuid()` methods (or the `.ToSqlGuid()` extension) to produce UUIDs whose byte order aligns with SQL Server's comparison logic. The `.FromSqlGuid()` extension on `Guid` reverses the transformation — the name clearly conveys the intent of converting *from* SQL Server byte order back to the standard layout.
 
 ## Companion Packages
 
