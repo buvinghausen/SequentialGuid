@@ -56,8 +56,9 @@ internal static class ByteArrayExtensions
 			null;
 
 		// The big endian lead byte was always 8 in the legacy calculation
+		// Exclude SQL-ordered V7/V8 guids that share the same lead-byte pattern
 		internal bool IsLegacy() =>
-			b[3] == 8 && !b.VariantIsRfc9562();
+			b[3] == 8 && !b.VariantIsRfc9562() && !b.IsSqlRfc9562Version(7) && !b.IsSqlRfc9562Version(8);
 
 		// RFC 9562 variant: bits 7-6 of bytes[8] (Data4[0]) must be 10
 		internal bool VariantIsRfc9562() =>
@@ -66,6 +67,16 @@ internal static class ByteArrayExtensions
 		// version is in the high nibble of bytes[7] (Data3 high byte, little-endian)
 		internal bool IsRfc9562Version(byte version) =>
 			b[7] >> 4 == version && b.VariantIsRfc9562();
+
+		internal bool SqlVariantIsRfc9562() =>
+			(b[6] & 0xC0) == 0x80;
+
+		// In sql byte order the 11th byte was always 8
+		internal bool IsSqlLegacy() =>
+			b[10] == 8 && !b.SqlVariantIsRfc9562() && !b.IsRfc9562Version(7) && !b.IsRfc9562Version(8);
+
+		internal bool IsSqlRfc9562Version(byte version) =>
+			b[8] >> 4 == version && b.SqlVariantIsRfc9562();
 #endif
 		// There is no need to span these functions
 
@@ -85,11 +96,22 @@ internal static class ByteArrayExtensions
 		internal bool VariantIsRfc9562() =>
 			(b[8] & 0xC0) == 0x80;
 
+		// Exclude SQL-ordered V7/V8 guids that share the same lead-byte pattern
 		internal bool IsLegacy() =>
-			b[3] == 8 && !b.VariantIsRfc9562();
+			b[3] == 8 && !b.VariantIsRfc9562() && !b.IsSqlRfc9562Version(7) && !b.IsSqlRfc9562Version(8);
 
 		internal bool IsRfc9562Version(byte version) =>
 			b[7] >> 4 == version && b.VariantIsRfc9562();
+
+		internal bool SqlVariantIsRfc9562() =>
+			(b[6] & 0xC0) == 0x80;
+
+		// In sql byte order the 11th byte was always 8
+		internal bool IsSqlLegacy() =>
+			b[10] == 8 && !b.SqlVariantIsRfc9562() && !b.IsRfc9562Version(7) && !b.IsRfc9562Version(8);
+
+		internal bool IsSqlRfc9562Version(byte version) =>
+			b[8] >> 4 == version && b.SqlVariantIsRfc9562();
 
 		internal long Rfc9562V7UnixMs() =>
 			((long)b[3] << 40) |

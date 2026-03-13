@@ -1,10 +1,22 @@
 using SequentialGuid;
 
-const long ticks = 639084490271870091L;
+/*
+var min = DateTimeOffset.UnixEpoch.Ticks;
+var max = DateTimeOffset.UtcNow.Ticks;
 
-for (var i = 0; i < 100000; i++)
+for (var i = 0; i < 2000; i++)
 {
-	Console.WriteLine($"\"{GuidV8Time.NewGuid(new(ticks + 100 * i, DateTimeKind.Utc))}\",");
+	var ticks = Random.Shared.NextInt64(min, max);
+	Console.WriteLine($"[InlineData(\"{GuidV8Time.NewGuid(new(ticks, DateTimeKind.Utc))}\",{ticks})]");
+}
+*/
+
+var max = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+for (var i = 0; i < 2000; i++)
+{
+	var unixMs = Random.Shared.NextInt64(0, max);
+	Console.WriteLine($"[InlineData(\"{GuidV7.NewGuid(DateTimeOffset.FromUnixTimeMilliseconds(unixMs))}\",{unixMs})]");
 }
 
 Console.WriteLine("Press any key to continue...");
