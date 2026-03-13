@@ -49,16 +49,26 @@ internal static class ByteArrayExtensions
 			(b[7] << 8) +
 			b[6];
 
-		internal long? ToTicks() =>
-			b.IsRfc9562Version(8) ? b.Rfc9562V8Ticks :
-			b.IsRfc9562Version(7) ? b.Rfc9562V7UnixMs().Rfc9562V7Ticks :
-			b.IsLegacy() ? b.LegacyTicks :
-			null;
+		internal long? ToTicks()
+		{
+			if (b.VariantIsRfc9562())
+				return (b[7] >> 4) switch
+				{
+					8 => b.Rfc9562V8Ticks,
+					7 => b.Rfc9562V7UnixMs().Rfc9562V7Ticks,
+					_ => null
+				};
+			// Variant is not RFC 9562 — only legacy is possible
+			return b[3] == 8 && (!b.SqlVariantIsRfc9562() || b[8] >> 4 is not 7 and not 8)
+				? b.LegacyTicks
+				: null;
+		}
 
 		// The big endian lead byte was always 8 in the legacy calculation
 		// Exclude SQL-ordered V7/V8 guids that share the same lead-byte pattern
 		internal bool IsLegacy() =>
-			b[3] == 8 && !b.VariantIsRfc9562() && !b.IsSqlRfc9562Version(7) && !b.IsSqlRfc9562Version(8);
+			b[3] == 8 && !b.VariantIsRfc9562() &&
+			(!b.SqlVariantIsRfc9562() || b[8] >> 4 is not 7 and not 8);
 
 		// RFC 9562 variant: bits 7-6 of bytes[8] (Data4[0]) must be 10
 		internal bool VariantIsRfc9562() =>
@@ -73,7 +83,8 @@ internal static class ByteArrayExtensions
 
 		// In sql byte order the 11th byte was always 8
 		internal bool IsSqlLegacy() =>
-			b[10] == 8 && !b.SqlVariantIsRfc9562() && !b.IsRfc9562Version(7) && !b.IsRfc9562Version(8);
+			b[10] == 8 && !b.SqlVariantIsRfc9562() &&
+			(!b.VariantIsRfc9562() || b[7] >> 4 is not 7 and not 8);
 
 		internal bool IsSqlRfc9562Version(byte version) =>
 			b[8] >> 4 == version && b.SqlVariantIsRfc9562();
@@ -98,7 +109,8 @@ internal static class ByteArrayExtensions
 
 		// Exclude SQL-ordered V7/V8 guids that share the same lead-byte pattern
 		internal bool IsLegacy() =>
-			b[3] == 8 && !b.VariantIsRfc9562() && !b.IsSqlRfc9562Version(7) && !b.IsSqlRfc9562Version(8);
+			b[3] == 8 && !b.VariantIsRfc9562() &&
+			(!b.SqlVariantIsRfc9562() || b[8] >> 4 is not 7 and not 8);
 
 		internal bool IsRfc9562Version(byte version) =>
 			b[7] >> 4 == version && b.VariantIsRfc9562();
@@ -108,7 +120,8 @@ internal static class ByteArrayExtensions
 
 		// In sql byte order the 11th byte was always 8
 		internal bool IsSqlLegacy() =>
-			b[10] == 8 && !b.SqlVariantIsRfc9562() && !b.IsRfc9562Version(7) && !b.IsRfc9562Version(8);
+			b[10] == 8 && !b.SqlVariantIsRfc9562() &&
+			(!b.VariantIsRfc9562() || b[7] >> 4 is not 7 and not 8);
 
 		internal bool IsSqlRfc9562Version(byte version) =>
 			b[8] >> 4 == version && b.SqlVariantIsRfc9562();
@@ -141,11 +154,20 @@ internal static class ByteArrayExtensions
 			(b[7] << 8) +
 			b[6];
 
-		internal long? ToTicks() =>
-			b.IsRfc9562Version(8) ? b.Rfc9562V8Ticks :
-			b.IsRfc9562Version(7) ? b.Rfc9562V7UnixMs().Rfc9562V7Ticks :
-			b.IsLegacy() ? b.LegacyTicks :
-			null;
+		internal long? ToTicks()
+		{
+			if (b.VariantIsRfc9562())
+				return (b[7] >> 4) switch
+				{
+					8 => b.Rfc9562V8Ticks,
+					7 => b.Rfc9562V7UnixMs().Rfc9562V7Ticks,
+					_ => null
+				};
+			// Variant is not RFC 9562 — only legacy is possible
+			return b[3] == 8 && (!b.SqlVariantIsRfc9562() || b[8] >> 4 is not 7 and not 8)
+				? b.LegacyTicks
+				: null;
+		}
 
 		internal void WriteToSqlByteOrder(Span<byte> dest)
 		{
