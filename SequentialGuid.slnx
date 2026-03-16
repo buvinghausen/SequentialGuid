@@ -3,27 +3,27 @@
     <File Path=".editorconfig" />
     <File Path=".gitattributes" />
     <File Path=".gitignore" />
-    <File Path=".github\workflows\ci.yml" />
+    <File Path=".github/workflows/ci.yml" />
     <File Path="Directory.Build.props" />
     <File Path="global.json" />
     <File Path="LICENSE.txt" />
     <File Path="README.md" />
-    <File Path=".github\workflows\release.yml" />
+    <File Path=".github/workflows/release.yml" />
   </Folder>
   <Folder Name="/Solution Items/src/">
-    <File Path="src\Directory.Build.props" />
+    <File Path="src/Directory.Build.props" />
   </Folder>
   <Folder Name="/Solution Items/test/">
-    <File Path="test\Directory.Build.props" />
+    <File Path="test/Directory.Build.props" />
   </Folder>
-  <Project Path="src\SequentialGuid.MongoDB\SequentialGuid.MongoDB.csproj" />
-  <Project Path="src\SequentialGuid.NodaTime\SequentialGuid.NodaTime.csproj" />
-  <Project Path="src\SequentialGuid\SequentialGuid.csproj" />
-  <Project Path="test\SequentialGuid.MongoDB.Tests\SequentialGuid.MongoDB.Tests.csproj" />
-  <Project Path="test\SequentialGuid.NodaTime.Tests\SequentialGuid.NodaTime.Tests.csproj" />
-  <Project Path="test\SequentialGuid.Tests\SequentialGuid.Tests.csproj">
-    <Configuration Solution="Release|*" Project="*|*|NoBuild" />
-  </Project>
+  <Project Path="src/SequentialGuid.EntityFrameworkCore/SequentialGuid.EntityFrameworkCore.csproj" />
+  <Project Path="src/SequentialGuid.MongoDB/SequentialGuid.MongoDB.csproj" />
+  <Project Path="src/SequentialGuid.NodaTime/SequentialGuid.NodaTime.csproj" />
+  <Project Path="src/SequentialGuid/SequentialGuid.csproj" />
+  <Project Path="test/SequentialGuid.EntityFrameworkCore.Tests/SequentialGuid.EntityFrameworkCore.Tests.csproj" />
+  <Project Path="test/SequentialGuid.MongoDB.Tests/SequentialGuid.MongoDB.Tests.csproj" />
+  <Project Path="test/SequentialGuid.NodaTime.Tests/SequentialGuid.NodaTime.Tests.csproj" />
+  <Project Path="test/SequentialGuid.Tests/SequentialGuid.Tests.csproj" />
   <Project Path="util/Benchmarks/SequentialGuid.Benchmarks.csproj" />
   <Project Path="util/Generator/SequentialGuid.Generator.csproj" />
 </Solution>

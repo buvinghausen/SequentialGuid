@@ -6,7 +6,10 @@ namespace SequentialGuid;
 /// Represents an immutable sequential <see cref="Guid"/> value with an associated timestamp.
 /// </summary>
 [SkipLocalsInit]
-public readonly record struct SequentialGuid
+public readonly record struct SequentialGuid : IComparable<SequentialGuid>, IComparable
+#if NET8_0_OR_GREATER
+	, ISequentialGuid<SequentialGuid>
+#endif
 {
 	/// <summary>Gets the underlying <see cref="Guid"/> value.</summary>
 	public Guid Value { get; }
@@ -70,6 +73,7 @@ public readonly record struct SequentialGuid
 				"Guid must be a version 7, version 8, or legacy sequential guid in standard or SQL Server byte order.",
 				nameof(value));
 		}
+
 		Timestamp = Value.ToDateTime().GetValueOrDefault();
 	}
 
@@ -78,4 +82,54 @@ public readonly record struct SequentialGuid
 	/// <exception cref="FormatException">Thrown when <paramref name="value"/> is not in a recognised GUID format.</exception>
 	/// <exception cref="ArgumentException">Thrown when the parsed GUID is not a recognised sequential GUID.</exception>
 	public SequentialGuid(string value) : this(Guid.Parse(value)) { }
+
+	/// <summary>Compares the current instance with another <see cref="SequentialGuid"/> by comparing the underlying <see cref="Value"/>.</summary>
+	public int CompareTo(SequentialGuid other) =>
+		Value.CompareTo(other.Value);
+
+	/// <summary>Compares the current instance with another object.</summary>
+	/// <exception cref="ArgumentException">Thrown when <paramref name="obj"/> is not a <see cref="SequentialGuid"/>.</exception>
+	public int CompareTo(object? obj) => obj is SequentialGuid other ? CompareTo(other) : throw new ArgumentException($"Object must be of type {nameof(SequentialGuid)}", nameof(obj));
+
+	/// <summary>Implicitly converts a <see cref="SequentialGuid"/> to its underlying <see cref="Guid"/>.</summary>
+	public static implicit operator Guid(SequentialGuid sequentialGuid) =>
+		sequentialGuid.Value;
+
+	/// <summary>Implicitly converts a <see cref="Guid"/> to a <see cref="SequentialGuid"/>.</summary>
+	public static implicit operator SequentialGuid(Guid value) =>
+		new(value);
+
+	/// <summary>Implicitly converts a <see cref="SequentialGuid"/> to its <see cref="string"/> representation.</summary>
+	public static implicit operator string(SequentialGuid sequentialGuid) =>
+		sequentialGuid.Value.ToString();
+
+	/// <summary>Implicitly converts a <see cref="string"/> to a <see cref="SequentialGuid"/>.</summary>
+	public static implicit operator SequentialGuid(string value) =>
+		new(value);
+
+	/// <summary>Implicitly converts a <see cref="SequentialSqlGuid"/> to a <see cref="SequentialGuid"/>.</summary>
+	public static implicit operator SequentialGuid(SequentialSqlGuid sequentialSqlGuid) =>
+		new(sequentialSqlGuid.Value);
+
+#if NET8_0_OR_GREATER
+	/// <inheritdoc />
+	static SequentialGuid ISequentialGuid<SequentialGuid>.Create(Guid value) => new(value);
+#endif
+
+	/// <summary>Determines whether <paramref name="left"/> is less than <paramref name="right"/>.</summary>
+	public static bool operator <(SequentialGuid left, SequentialGuid right) =>
+		left.CompareTo(right) < 0;
+
+	/// <summary>Determines whether <paramref name="left"/> is greater than <paramref name="right"/>.</summary>
+	public static bool operator >(SequentialGuid left, SequentialGuid right) =>
+		left.CompareTo(right) > 0;
+
+	/// <summary>Determines whether <paramref name="left"/> is less than or equal to <paramref name="right"/>.</summary>
+	public static bool operator <=(SequentialGuid left, SequentialGuid right) =>
+		left.CompareTo(right) <= 0;
+
+	/// <summary>Determines whether <paramref name="left"/> is greater than or equal to <paramref name="right"/>.</summary>
+	public static bool operator >=(SequentialGuid left, SequentialGuid right) =>
+		left.CompareTo(right) >= 0;
 }
+
