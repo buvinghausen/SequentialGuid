@@ -67,14 +67,14 @@ public sealed class SequentialGuidMongoTests
 	static T Roundtrip<T>(IBsonSerializer<T> serializer, T value)
 	{
 		BsonDocument document = [];
-		BsonDocumentWriter writer = new(document);
+		using BsonDocumentWriter writer = new(document);
 		var writeContext = BsonSerializationContext.CreateRoot(writer);
 		writer.WriteStartDocument();
 		writer.WriteName("v");
 		serializer.Serialize(writeContext, default, value);
 		writer.WriteEndDocument();
 
-		BsonDocumentReader reader = new(document);
+		using BsonDocumentReader reader = new(document);
 		var readContext = BsonDeserializationContext.CreateRoot(reader);
 		reader.ReadStartDocument();
 		reader.ReadName();

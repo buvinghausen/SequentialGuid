@@ -4,7 +4,7 @@ using SeqSqlGuid = SequentialGuid.SequentialSqlGuid;
 
 namespace SequentialGuid.EntityFrameworkCore.Tests;
 
-sealed record TestEntity(int Id, SeqGuid SequentialGuid, SeqSqlGuid SequentialSqlGuid);
+sealed record TestEntity(int Id, SeqGuid SequentialGuid, SeqSqlGuid SequentialSqlGuid, SeqGuid? NullableSequentialGuid, SeqSqlGuid? NullableSequentialSqlGuid);
 
 sealed class TestDbContext(DbContextOptions<TestDbContext> options) : DbContext(options)
 {
@@ -112,6 +112,83 @@ public sealed class ValueConverterTests
 		result.ShouldBe(seqSqlGuid);
 	}
 
+	void SequentialGuidNullableConverterIsRegisteredWithGuidProviderType()
+	{
+		using var db = new TestDbContext(CreateOptions(nameof(SequentialGuidNullableConverterIsRegisteredWithGuidProviderType)));
+		var converter = db.Model
+			.FindEntityType(typeof(TestEntity))!
+			.FindProperty(nameof(TestEntity.NullableSequentialGuid))!
+			.GetValueConverter();
+		converter.ShouldNotBeNull();
+		converter!.ModelClrType.ShouldBe(typeof(SeqGuid));
+		converter.ProviderClrType.ShouldBe(typeof(Guid));
+	}
+
+	[Fact]
+	void SequentialSqlGuidNullableConverterIsRegisteredWithGuidProviderType()
+	{
+		using var db = new TestDbContext(CreateOptions(nameof(SequentialSqlGuidNullableConverterIsRegisteredWithGuidProviderType)));
+		var converter = db.Model
+			.FindEntityType(typeof(TestEntity))!
+			.FindProperty(nameof(TestEntity.NullableSequentialSqlGuid))!
+			.GetValueConverter();
+		converter.ShouldNotBeNull();
+		converter!.ModelClrType.ShouldBe(typeof(SeqSqlGuid));
+		converter.ProviderClrType.ShouldBe(typeof(Guid));
+	}
+
+	[Fact]
+	void SequentialGuidNullableConvertToProviderAllowsNull()
+	{
+		using var db = new TestDbContext(CreateOptions(nameof(SequentialGuidNullableConvertToProviderAllowsNull)));
+		var converter = db.Model
+			.FindEntityType(typeof(TestEntity))!
+			.FindProperty(nameof(TestEntity.NullableSequentialGuid))!
+			.GetValueConverter()!;
+		SeqGuid? seqGuid = null;
+		var result = converter.ConvertToProvider(seqGuid);
+		result.ShouldBeNull();
+	}
+
+	[Fact]
+	void SequentialGuidNullableConvertFromProviderAllowsNull()
+	{
+		using var db = new TestDbContext(CreateOptions(nameof(SequentialGuidNullableConvertFromProviderAllowsNull)));
+		var converter = db.Model
+			.FindEntityType(typeof(TestEntity))!
+			.FindProperty(nameof(TestEntity.NullableSequentialGuid))!
+			.GetValueConverter()!;
+		Guid? guid = null;
+		var result = converter.ConvertFromProvider(guid);
+		result.ShouldBeNull();
+	}
+
+	[Fact]
+	void SequentialSqlGuidNullableConvertToProviderAllowsNull()
+	{
+		using var db = new TestDbContext(CreateOptions(nameof(SequentialSqlGuidNullableConvertToProviderAllowsNull)));
+		var converter = db.Model
+			.FindEntityType(typeof(TestEntity))!
+			.FindProperty(nameof(TestEntity.NullableSequentialSqlGuid))!
+			.GetValueConverter()!;
+		SeqSqlGuid? seqSqlGuid = null;
+		var result = converter.ConvertToProvider(seqSqlGuid);
+		result.ShouldBeNull();
+	}
+
+	[Fact]
+	void SequentialSqlGuidNullableConvertFromProviderAllowsNull()
+	{
+		using var db = new TestDbContext(CreateOptions(nameof(SequentialSqlGuidNullableConvertFromProviderAllowsNull)));
+		var converter = db.Model
+			.FindEntityType(typeof(TestEntity))!
+			.FindProperty(nameof(TestEntity.NullableSequentialSqlGuid))!
+			.GetValueConverter()!;
+		Guid? guid = null;
+		var result = converter.ConvertFromProvider(guid);
+		result.ShouldBeNull();
+	}
+
 	[Fact]
 	void SequentialGuidRoundTrips()
 	{
@@ -121,7 +198,8 @@ public sealed class ValueConverterTests
 
 		using (var db = new TestDbContext(options))
 		{
-			db.TestEntities.Add(new TestEntity(1, seqGuid, seqSqlGuid));
+			db.TestEntities.Add(new TestEntity(1, seqGuid, seqSqlGuid, null, null));
+			db.TestEntities.Add(new TestEntity(2, seqGuid, seqSqlGuid, seqGuid, seqSqlGuid));
 			db.SaveChanges();
 		}
 
@@ -130,6 +208,11 @@ public sealed class ValueConverterTests
 			var loaded = db.TestEntities.Find(1)!;
 			loaded.SequentialGuid.ShouldBe(seqGuid);
 			loaded.SequentialSqlGuid.ShouldBe(seqSqlGuid);
+			loaded.NullableSequentialGuid.ShouldBeNull();
+			loaded.NullableSequentialSqlGuid.ShouldBeNull();
+			loaded = db.TestEntities.Find(2)!;
+			loaded.NullableSequentialGuid.ShouldBe(seqGuid);
+			loaded.NullableSequentialSqlGuid.ShouldBe(seqSqlGuid);
 		}
 	}
 }

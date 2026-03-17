@@ -1,6 +1,6 @@
 using SequentialGuid.EntityFrameworkCore;
 using SeqGuid = SequentialGuid.SequentialGuid;
-using SequentialSqlGuid = SequentialGuid.SequentialSqlGuid;
+using SeqSqlGuid = SequentialGuid.SequentialSqlGuid;
 
 // ReSharper disable once CheckNamespace
 #pragma warning disable IDE0130 // Namespace does not match folder structure
@@ -15,7 +15,7 @@ public static class ModelConfigurationBuilderExtensions
 	extension(ModelConfigurationBuilder configurationBuilder)
 	{
 		/// <summary>
-		/// Registers value converters for <see cref="SequentialGuid"/> and <see cref="SequentialSqlGuid"/>
+		/// Registers value converters for <see cref="SeqGuid"/> and <see cref="SeqSqlGuid"/>
 		/// so that Entity Framework Core can automatically convert these types to and from <see cref="Guid"/>.
 		/// </summary>
 		public void AddSequentialGuidValueConverters()
@@ -24,8 +24,8 @@ public static class ModelConfigurationBuilderExtensions
 				.Properties<SeqGuid>()
 				.HaveConversion<SequentialGuidValueConverter<SeqGuid>>();
 			configurationBuilder
-				.Properties<SequentialSqlGuid>()
-				.HaveConversion<SequentialGuidValueConverter<SequentialSqlGuid>>();
+				.Properties<SeqSqlGuid>()
+				.HaveConversion<SequentialGuidValueConverter<SeqSqlGuid>>();
 		}
 	}
 }
