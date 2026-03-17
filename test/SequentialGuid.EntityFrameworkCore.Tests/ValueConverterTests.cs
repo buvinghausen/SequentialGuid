@@ -214,6 +214,18 @@ public sealed class ValueConverterTests
 			loaded = db.TestEntities.Find(2)!;
 			loaded.NullableSequentialGuid.ShouldBe(seqGuid);
 			loaded.NullableSequentialSqlGuid.ShouldBe(seqSqlGuid);
+			loaded = db.TestEntities.FirstOrDefault(e => e.SequentialGuid == seqGuid);
+			loaded.ShouldNotBeNull();
+			loaded = db.TestEntities.FirstOrDefault(e => e.SequentialSqlGuid == seqSqlGuid);
+			loaded.ShouldNotBeNull();
+			loaded = db.TestEntities.SingleOrDefault(e => e.NullableSequentialGuid == seqGuid);
+			loaded.ShouldNotBeNull();
+			loaded = db.TestEntities.SingleOrDefault(e => e.NullableSequentialSqlGuid == seqSqlGuid);
+			loaded.ShouldNotBeNull();
+			loaded = db.TestEntities.SingleOrDefault(e => e.NullableSequentialGuid == null);
+			loaded.ShouldNotBeNull();
+			loaded = db.TestEntities.SingleOrDefault(e => e.NullableSequentialSqlGuid == null);
+			loaded.ShouldNotBeNull();
 		}
 	}
 }

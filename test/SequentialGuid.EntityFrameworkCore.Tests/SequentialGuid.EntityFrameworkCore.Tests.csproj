@@ -8,7 +8,6 @@
 	<ItemGroup>
 		<Using Remove="System.Collections.Generic" />
 		<Using Remove="System.IO" />
-		<Using Remove="System.Linq" />
 		<Using Remove="System.Net.Http" />
 		<Using Remove="System.Threading" />
 		<Using Remove="System.Threading.Tasks" />
