@@ -6,9 +6,9 @@ namespace SequentialGuid;
 /// Represents an immutable sequential <see cref="Guid"/> value stored in SQL Server byte order with an associated timestamp.
 /// </summary>
 [SkipLocalsInit]
-public readonly record struct SequentialSqlGuid : IComparable<SequentialSqlGuid>, IComparable
+public readonly record struct SequentialSqlGuid
 #if NET8_0_OR_GREATER
-	, ISequentialGuid<SequentialSqlGuid>
+	: ISequentialGuid<SequentialSqlGuid>
 #endif
 {
 	/// <summary>Gets the underlying <see cref="Guid"/> value in SQL Server byte order.</summary>
@@ -64,13 +64,11 @@ public readonly record struct SequentialSqlGuid : IComparable<SequentialSqlGuid>
 			Value = new(bytes.ToSqlByteOrder());
 #endif
 		}
-		else if (bytes.IsSqlRfc9562Version(7) || bytes.IsSqlRfc9562Version(8) || bytes.IsSqlLegacy())
-		{
-			Value = value;
-		}
 		else
 		{
-			throw new ArgumentException(
+			Value = bytes.IsSqlRfc9562Version(7) || bytes.IsSqlRfc9562Version(8) || bytes.IsSqlLegacy()
+				? value
+				: throw new ArgumentException(
 				"Guid must be a version 7, version 8, or legacy sequential guid in standard or SQL Server byte order.",
 				nameof(value));
 		}
@@ -85,55 +83,9 @@ public readonly record struct SequentialSqlGuid : IComparable<SequentialSqlGuid>
 		this(Guid.Parse(value))
 	{ }
 
-	/// <summary>Compares the current instance with another <see cref="SequentialSqlGuid"/> by comparing the underlying <see cref="Value"/>.</summary>
-	public int CompareTo(SequentialSqlGuid other) =>
-		Value.CompareTo(other.Value);
-
-	/// <summary>Compares the current instance with another object.</summary>
-	/// <exception cref="ArgumentException">Thrown when <paramref name="obj"/> is not a <see cref="SequentialSqlGuid"/>.</exception>
-	public int CompareTo(object? obj) =>
-		obj is SequentialSqlGuid other ?
-			CompareTo(other) :
-			throw new ArgumentException($"Object must be of type {nameof(SequentialSqlGuid)}", nameof(obj));
-
-	/// <summary>Implicitly converts a <see cref="SequentialSqlGuid"/> to its underlying <see cref="Guid"/>.</summary>
-	public static implicit operator Guid(SequentialSqlGuid sequentialSqlGuid) =>
-		sequentialSqlGuid.Value;
-
-	/// <summary>Implicitly converts a <see cref="Guid"/> to a <see cref="SequentialSqlGuid"/>.</summary>
-	public static implicit operator SequentialSqlGuid(Guid value) =>
-		new(value);
-
-	/// <summary>Implicitly converts a <see cref="SequentialSqlGuid"/> to its <see cref="string"/> representation.</summary>
-	public static implicit operator string(SequentialSqlGuid sequentialSqlGuid) =>
-		sequentialSqlGuid.Value.ToString();
-
-	/// <summary>Implicitly converts a <see cref="string"/> to a <see cref="SequentialSqlGuid"/>.</summary>
-	public static implicit operator SequentialSqlGuid(string value) =>
-		new(value);
-
-	/// <summary>Implicitly converts a <see cref="SequentialGuid"/> to a <see cref="SequentialSqlGuid"/>.</summary>
-	public static implicit operator SequentialSqlGuid(SequentialGuid sequentialGuid) =>
-		new(sequentialGuid.Value);
-
 #if NET8_0_OR_GREATER
 	/// <inheritdoc />
-	static SequentialSqlGuid ISequentialGuid<SequentialSqlGuid>.Create(Guid value) => new(value);
+	static SequentialSqlGuid ISequentialGuid<SequentialSqlGuid>.Create(Guid value) =>
+		new(value);
 #endif
-
-	/// <summary>Determines whether <paramref name="left"/> is less than <paramref name="right"/>.</summary>
-	public static bool operator <(SequentialSqlGuid left, SequentialSqlGuid right) =>
-		left.CompareTo(right) < 0;
-
-	/// <summary>Determines whether <paramref name="left"/> is greater than <paramref name="right"/>.</summary>
-	public static bool operator >(SequentialSqlGuid left, SequentialSqlGuid right) =>
-		left.CompareTo(right) > 0;
-
-	/// <summary>Determines whether <paramref name="left"/> is less than or equal to <paramref name="right"/>.</summary>
-	public static bool operator <=(SequentialSqlGuid left, SequentialSqlGuid right) =>
-		left.CompareTo(right) <= 0;
-
-	/// <summary>Determines whether <paramref name="left"/> is greater than or equal to <paramref name="right"/>.</summary>
-	public static bool operator >=(SequentialSqlGuid left, SequentialSqlGuid right) =>
-		left.CompareTo(right) >= 0;
 }

@@ -8,10 +8,6 @@
 		<Using Remove="System.Threading.Tasks" />
 	</ItemGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' != 'net472'">
-		<PackageReference Include="MongoDB.Bson" Version="3.*" />
-	</ItemGroup>
-
 	<ItemGroup>
 		<ProjectReference Include="..\..\src\SequentialGuid.MongoDB\SequentialGuid.MongoDB.csproj" />
 	</ItemGroup>
