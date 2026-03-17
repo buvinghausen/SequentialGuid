@@ -1,4 +1,4 @@
-namespace SequentialGuid;
+namespace SequentialGuid.Extensions;
 
 internal static class ByteArrayExtensions
 {

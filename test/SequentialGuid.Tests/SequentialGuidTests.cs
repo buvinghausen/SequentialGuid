@@ -1,4 +1,5 @@
 using System.Data.SqlTypes;
+using SequentialGuid.Extensions;
 
 namespace SequentialGuid.Tests;
 

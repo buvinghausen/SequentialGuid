@@ -1,4 +1,8 @@
+using SequentialGuid.Extensions;
+
+#pragma warning disable IDE0130
 namespace SequentialGuid;
+#pragma warning restore IDE0130
 
 /// <summary>
 /// Provides a base implementation for generating RFC 9562 UUID Version 8 (time-based) values

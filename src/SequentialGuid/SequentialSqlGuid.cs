@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using SequentialGuid.Extensions;
 
 namespace SequentialGuid;
 

@@ -1,7 +1,7 @@
 #if !NET6_0_OR_GREATER
 using System.Security.Cryptography;
 
-namespace SequentialGuid;
+namespace SequentialGuid.Extensions;
 
 static class RandomNumberGeneratorExtensions
 {

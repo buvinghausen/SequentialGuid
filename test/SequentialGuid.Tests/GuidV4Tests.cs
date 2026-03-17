@@ -1,3 +1,5 @@
+using SequentialGuid.Extensions;
+
 namespace SequentialGuid.Tests;
 
 public sealed class GuidV4Tests
