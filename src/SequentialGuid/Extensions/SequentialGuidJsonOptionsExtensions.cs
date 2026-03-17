@@ -26,10 +26,7 @@ public static class SequentialGuidJsonOptionsExtensions
 			// Register each SequentialGuid converter if it's not already present.
 			foreach (var converter in JsonConverters.All)
 			{
-				var converterType = converter.GetType();
-				bool alreadyRegistered = options.Converters.Any(c => c.GetType() == converterType);
-
-				if (!alreadyRegistered)
+				if (options.Converters.All(c => c.GetType() != converter.GetType()))
 				{
 					options.Converters.Add(converter);
 				}
