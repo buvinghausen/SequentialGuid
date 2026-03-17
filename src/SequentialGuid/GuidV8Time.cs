@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Security;
 using System.Security.Cryptography;
 using System.Text;
+using SequentialGuid.Extensions;
 
 namespace SequentialGuid;
 

@@ -1,4 +1,6 @@
+#pragma warning disable IDE0130
 namespace SequentialGuid;
+#pragma warning restore IDE0130
 
 /// <summary>
 /// Generates sequential <see cref="Guid"/> values that are ordered by their embedded timestamp,

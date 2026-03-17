@@ -1,3 +1,5 @@
+using SequentialGuid.Extensions;
+
 namespace SequentialGuid.Tests;
 
 internal static class GuidExtensions

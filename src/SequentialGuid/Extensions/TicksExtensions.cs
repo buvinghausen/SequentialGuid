@@ -1,4 +1,4 @@
-namespace SequentialGuid;
+namespace SequentialGuid.Extensions;
 
 /// <summary>
 /// Provides internal extension methods for working with <see cref="long"/> tick values,

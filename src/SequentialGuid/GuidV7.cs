@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using SequentialGuid.Extensions;
 
 namespace SequentialGuid;
 
