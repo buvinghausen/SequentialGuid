@@ -112,6 +112,7 @@ public sealed class ValueConverterTests
 		result.ShouldBe(seqSqlGuid);
 	}
 
+	[Fact]
 	void SequentialGuidNullableConverterIsRegisteredWithGuidProviderType()
 	{
 		using var db = new TestDbContext(CreateOptions(nameof(SequentialGuidNullableConverterIsRegisteredWithGuidProviderType)));
@@ -120,7 +121,7 @@ public sealed class ValueConverterTests
 			.FindProperty(nameof(TestEntity.NullableSequentialGuid))!
 			.GetValueConverter();
 		converter.ShouldNotBeNull();
-		converter!.ModelClrType.ShouldBe(typeof(SeqGuid));
+		converter.ModelClrType.ShouldBe(typeof(SeqGuid));
 		converter.ProviderClrType.ShouldBe(typeof(Guid));
 	}
 
@@ -133,7 +134,7 @@ public sealed class ValueConverterTests
 			.FindProperty(nameof(TestEntity.NullableSequentialSqlGuid))!
 			.GetValueConverter();
 		converter.ShouldNotBeNull();
-		converter!.ModelClrType.ShouldBe(typeof(SeqSqlGuid));
+		converter.ModelClrType.ShouldBe(typeof(SeqSqlGuid));
 		converter.ProviderClrType.ShouldBe(typeof(Guid));
 	}
 
