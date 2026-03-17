@@ -23,7 +23,7 @@ sealed class SequentialGuidSerializer : SequentialGuidSerializerBase<SequentialG
 {
 	private SequentialGuidSerializer() { }
 
-	public static SequentialGuidSerializer Instance = new();
+	public static SequentialGuidSerializer Instance { get; } = new();
 
 	protected override SequentialGuid FromGuid(Guid value) =>
 		new(value);
@@ -36,7 +36,7 @@ sealed class SequentialSqlGuidSerializer : SequentialGuidSerializerBase<Sequenti
 {
 	private SequentialSqlGuidSerializer() { }
 
-	public static SequentialSqlGuidSerializer Instance = new();
+	public static SequentialSqlGuidSerializer Instance { get; } = new();
 
 	protected override SequentialSqlGuid FromGuid(Guid value) =>
 		new(value);

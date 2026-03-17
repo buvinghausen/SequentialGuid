@@ -6,10 +6,7 @@ namespace SequentialGuid;
 /// Represents an immutable sequential <see cref="Guid"/> value with an associated timestamp.
 /// </summary>
 [SkipLocalsInit]
-public readonly record struct SequentialGuid
-#if NET8_0_OR_GREATER
-	: ISequentialGuid<SequentialGuid>
-#endif
+public readonly record struct SequentialGuid : ISequentialGuid<SequentialGuid>
 {
 	/// <summary>Gets the underlying <see cref="Guid"/> value.</summary>
 	public Guid Value { get; }
@@ -83,8 +80,7 @@ public readonly record struct SequentialGuid
 	/// <exception cref="ArgumentException">Thrown when the parsed GUID is not a recognised sequential GUID.</exception>
 	public SequentialGuid(string value) : this(Guid.Parse(value)) { }
 
-#if NET8_0_OR_GREATER
 	/// <inheritdoc />
-	static SequentialGuid ISequentialGuid<SequentialGuid>.Create(Guid value) => new(value);
-#endif
+	public static SequentialGuid Create(Guid value) =>
+		new(value);
 }

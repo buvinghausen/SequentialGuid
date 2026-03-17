@@ -6,10 +6,7 @@ namespace SequentialGuid;
 /// Represents an immutable sequential <see cref="Guid"/> value stored in SQL Server byte order with an associated timestamp.
 /// </summary>
 [SkipLocalsInit]
-public readonly record struct SequentialSqlGuid
-#if NET8_0_OR_GREATER
-	: ISequentialGuid<SequentialSqlGuid>
-#endif
+public readonly record struct SequentialSqlGuid : ISequentialGuid<SequentialSqlGuid>
 {
 	/// <summary>Gets the underlying <see cref="Guid"/> value in SQL Server byte order.</summary>
 	public Guid Value { get; }
@@ -83,9 +80,7 @@ public readonly record struct SequentialSqlGuid
 		this(Guid.Parse(value))
 	{ }
 
-#if NET8_0_OR_GREATER
 	/// <inheritdoc />
-	static SequentialSqlGuid ISequentialGuid<SequentialSqlGuid>.Create(Guid value) =>
+	public static SequentialSqlGuid Create(Guid value) =>
 		new(value);
-#endif
 }
