@@ -1,3 +1,8 @@
+using MongoDB.Bson;
+using MongoDB.Bson.IO;
+using MongoDB.Bson.Serialization;
+using SequentialGuid.MongoDB.Serializers;
+
 namespace SequentialGuid.MongoDB.Tests;
 
 public sealed class SequentialGuidMongoTests
@@ -39,5 +44,42 @@ public sealed class SequentialGuidMongoTests
 		Guid? nullableWithValue = Guid.NewGuid();
 		// Make sure a hydrated nullable guid returns not empty
 		generator.IsEmpty(nullableWithValue).ShouldBeFalse();
+	}
+
+	[Fact]
+	void SequentialGuidBsonSerializerRoundTrip()
+	{
+		SequentialGuid seqGuid = new();
+		var result = Roundtrip(SequentialGuidSerializer.Instance, seqGuid);
+		result.Value.ShouldBe(seqGuid.Value);
+		result.Timestamp.ShouldBe(seqGuid.Timestamp);
+	}
+
+	[Fact]
+	void SequentialSqlGuidBsonSerializerRoundTrip()
+	{
+		SequentialSqlGuid seqSqlGuid = new();
+		var result = Roundtrip(SequentialSqlGuidSerializer.Instance, seqSqlGuid);
+		result.Value.ShouldBe(seqSqlGuid.Value);
+		result.Timestamp.ShouldBe(seqSqlGuid.Timestamp);
+	}
+
+	static T Roundtrip<T>(IBsonSerializer<T> serializer, T value)
+	{
+		BsonDocument document = [];
+		using BsonDocumentWriter writer = new(document);
+		var writeContext = BsonSerializationContext.CreateRoot(writer);
+		writer.WriteStartDocument();
+		writer.WriteName("v");
+		serializer.Serialize(writeContext, default, value);
+		writer.WriteEndDocument();
+
+		using BsonDocumentReader reader = new(document);
+		var readContext = BsonDeserializationContext.CreateRoot(reader);
+		reader.ReadStartDocument();
+		reader.ReadName();
+		var result = serializer.Deserialize(readContext, default);
+		reader.ReadEndDocument();
+		return result;
 	}
 }

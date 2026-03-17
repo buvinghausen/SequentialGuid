@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<!-- .NET 8 & 9 end on November 10, 2026 -->
+		<TargetFrameworks>net10.0;net9.0;net8.0</TargetFrameworks>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Using Remove="System.Collections.Generic" />
+		<Using Remove="System.IO" />
+		<Using Remove="System.Linq" />
+		<Using Remove="System.Net.Http" />
+		<Using Remove="System.Threading" />
+		<Using Remove="System.Threading.Tasks" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.0" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.0" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.10" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\SequentialGuid.EntityFrameworkCore\SequentialGuid.EntityFrameworkCore.csproj" />
+	</ItemGroup>
+</Project>

@@ -14,8 +14,9 @@
 		<Using Remove="System.Threading.Tasks" />
 	</ItemGroup>
 
+	<!-- Version 2.29 is the lowest level version that supports MongoDB 8.1 -->
 	<ItemGroup>
-		<PackageReference Include="MongoDB.Bson" Version="2.19.0" />
+		<PackageReference Include="MongoDB.Bson" Version="2.29.0" />
 	</ItemGroup>
 
 	<ItemGroup>
