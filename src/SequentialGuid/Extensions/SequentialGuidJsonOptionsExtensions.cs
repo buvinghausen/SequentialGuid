@@ -23,17 +23,17 @@ public static class SequentialGuidJsonOptionsExtensions
 		{
 			ArgumentNullException.ThrowIfNull(options);
 
-			// Guard: don't double-register if the caller calls this more than once.
-			bool alreadyRegistered = options.Converters
-				.Any(c => c is SequentialGuidJsonConverter<SequentialGuid>); // sentinel check
-
-			if (alreadyRegistered)
-			{
-				return options; // fluent — callers can chain further configuration
-			}
-
+			// Register each SequentialGuid converter if it's not already present.
 			foreach (var converter in JsonConverters.All)
-				options.Converters.Add(converter);
+			{
+				var converterType = converter.GetType();
+				bool alreadyRegistered = options.Converters.Any(c => c.GetType() == converterType);
+
+				if (!alreadyRegistered)
+				{
+					options.Converters.Add(converter);
+				}
+			}
 
 			return options; // fluent — callers can chain further configuration
 		}
