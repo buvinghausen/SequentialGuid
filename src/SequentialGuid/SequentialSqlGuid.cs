@@ -84,4 +84,8 @@ public readonly record struct SequentialSqlGuid : ISequentialGuid<SequentialSqlG
 	/// <inheritdoc />
 	public static SequentialSqlGuid Create(Guid value) =>
 		new(value);
+
+	/// <inheritdoc />
+	public override string ToString() =>
+		Value.ToString();
 }

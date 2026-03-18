@@ -24,6 +24,10 @@
   <Project Path="test/SequentialGuid.MongoDB.Tests/SequentialGuid.MongoDB.Tests.csproj" />
   <Project Path="test/SequentialGuid.NodaTime.Tests/SequentialGuid.NodaTime.Tests.csproj" />
   <Project Path="test/SequentialGuid.Tests/SequentialGuid.Tests.csproj" />
-  <Project Path="util/Benchmarks/SequentialGuid.Benchmarks.csproj" />
-  <Project Path="util/Generator/SequentialGuid.Generator.csproj" />
+  <Project Path="util/Benchmarks/SequentialGuid.Benchmarks.csproj">
+    <Build Solution="Release|*" Project="false" />
+  </Project>
+  <Project Path="util/Generator/SequentialGuid.Generator.csproj">
+    <Build Solution="Release|*" Project="false" />
+  </Project>
 </Solution>

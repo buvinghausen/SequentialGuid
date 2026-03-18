@@ -92,4 +92,15 @@ public sealed class SequentialSqlGuidStructTests
 		a.ShouldNotBe(b);
 		(a != b).ShouldBeTrue();
 	}
+
+	[Fact]
+	void ToStringShouldMatchGuid()
+	{
+		// Act
+		SequentialSqlGuid id = new();
+		var expected = id.Value.ToString();
+
+		// Assert
+		id.ToString().ShouldBe(expected);
+	}
 }
