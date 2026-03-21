@@ -115,11 +115,11 @@ public readonly record struct SequentialSqlGuid : ISequentialGuid<SequentialSqlG
 
 	/// <inheritdoc/>
 	public bool Equals(SequentialSqlGuid other) =>
-		new SqlGuid(Value).Equals(new SqlGuid(other.Value));
+		Value.Equals(other.Value);
 
 	/// <inheritdoc />
 	public override int GetHashCode() =>
-		new SqlGuid(Value).GetHashCode();
+		Value.GetHashCode();
 
 	/// <inheritdoc cref="IComparable{T}"/>
 	public static bool operator <(SequentialSqlGuid left, SequentialSqlGuid right) =>
