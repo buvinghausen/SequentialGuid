@@ -4,7 +4,22 @@ namespace SequentialGuid;
 /// Defines the common shape shared by <see cref="SequentialGuid"/> and <see cref="SequentialSqlGuid"/>.
 /// </summary>
 /// <typeparam name="TSelf">The implementing type.</typeparam>
-public interface ISequentialGuid<out TSelf>
+public interface ISequentialGuid<TSelf> :
+#if NET6_0_OR_GREATER
+	ISpanFormattable,
+#else
+	IFormattable,
+#endif
+#if NET7_0_OR_GREATER
+	ISpanParsable<TSelf>,
+#endif
+#if NET10_0_OR_GREATER
+	IUtf8SpanFormattable,
+	IUtf8SpanParsable<TSelf>,
+#endif
+	IComparable,
+	IComparable<TSelf>,
+	IEquatable<TSelf>
 	where TSelf : struct, ISequentialGuid<TSelf>
 {
 	/// <summary>Gets the underlying <see cref="Guid"/> value.</summary>

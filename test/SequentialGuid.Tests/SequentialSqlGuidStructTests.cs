@@ -1,3 +1,6 @@
+#if NET10_0_OR_GREATER
+using System.Text;
+#endif
 using SequentialGuid.Extensions;
 
 namespace SequentialGuid.Tests;
@@ -103,4 +106,190 @@ public sealed class SequentialSqlGuidStructTests
 		// Assert
 		id.ToString().ShouldBe(expected);
 	}
+
+#if NET7_0_OR_GREATER
+	[Fact]
+	void ParseStringReturnsMatchingSequentialSqlGuid()
+	{
+		// Arrange
+		var sqlGuid = GuidV7.NewSqlGuid();
+		// Act
+		var id = SequentialSqlGuid.Parse(sqlGuid.ToString(), null);
+		// Assert
+		id.Value.ShouldBe(sqlGuid);
+	}
+
+	[Fact]
+	void ParseStringThrowsFormatExceptionForInvalidInput()
+	{
+		Should.Throw<FormatException>(() => SequentialSqlGuid.Parse("not-a-guid", null));
+	}
+
+	[Fact]
+	void ParseStringThrowsArgumentExceptionForNonSequentialGuid()
+	{
+		Should.Throw<ArgumentException>(() => SequentialSqlGuid.Parse("919108f7-52d1-4320-9bac-f847db4148a8", null));
+	}
+
+	[Fact]
+	void TryParseStringReturnsTrueForValidSequentialSqlGuid()
+	{
+		// Arrange
+		var sqlGuid = GuidV7.NewSqlGuid();
+		// Act
+		var success = SequentialSqlGuid.TryParse(sqlGuid.ToString(), null, out var id);
+		// Assert
+		success.ShouldBeTrue();
+		id.Value.ShouldBe(sqlGuid);
+	}
+
+	[Fact]
+	void TryParseStringReturnsFalseForInvalidInput()
+	{
+		SequentialSqlGuid.TryParse("not-a-guid", null, out _).ShouldBeFalse();
+	}
+
+	[Fact]
+	void TryParseStringReturnsFalseForNonSequentialGuid()
+	{
+		SequentialSqlGuid.TryParse("919108f7-52d1-4320-9bac-f847db4148a8", null, out _).ShouldBeFalse();
+	}
+
+	[Fact]
+	void TryParseStringReturnsFalseForNull()
+	{
+		string? val = null;
+		SequentialSqlGuid.TryParse(val, null, out _).ShouldBeFalse();
+	}
+
+	[Fact]
+	void ParseSpanReturnsMatchingSequentialSqlGuid()
+	{
+		// Arrange
+		var sqlGuid = GuidV7.NewSqlGuid();
+		// Act
+		var id = SequentialSqlGuid.Parse(sqlGuid.ToString().AsSpan(), null);
+		// Assert
+		id.Value.ShouldBe(sqlGuid);
+	}
+
+	[Fact]
+	void ParseSpanThrowsFormatExceptionForInvalidInput()
+	{
+		Should.Throw<FormatException>(() => SequentialSqlGuid.Parse("not-a-guid".AsSpan(), null));
+	}
+
+	[Fact]
+	void ParseSpanThrowsArgumentExceptionForNonSequentialGuid()
+	{
+		Should.Throw<ArgumentException>(() => SequentialSqlGuid.Parse("919108f7-52d1-4320-9bac-f847db4148a8".AsSpan(), null));
+	}
+
+	[Fact]
+	void TryParseSpanReturnsTrueForValidSequentialSqlGuid()
+	{
+		// Arrange
+		var sqlGuid = GuidV7.NewSqlGuid();
+		// Act
+		var success = SequentialSqlGuid.TryParse(sqlGuid.ToString().AsSpan(), null, out var id);
+		// Assert
+		success.ShouldBeTrue();
+		id.Value.ShouldBe(sqlGuid);
+	}
+
+	[Fact]
+	void TryParseSpanReturnsFalseForInvalidInput()
+	{
+		SequentialSqlGuid.TryParse("not-a-guid".AsSpan(), null, out _).ShouldBeFalse();
+	}
+
+	[Fact]
+	void TryParseSpanReturnsFalseForNonSequentialGuid()
+	{
+		SequentialSqlGuid.TryParse("919108f7-52d1-4320-9bac-f847db4148a8".AsSpan(), null, out _).ShouldBeFalse();
+	}
+#endif
+
+#if NET6_0_OR_GREATER
+	[Fact]
+	void TryFormatCharSpanWritesGuidString()
+	{
+		// Arrange
+		SequentialSqlGuid id = new();
+		Span<char> buffer = stackalloc char[36];
+		// Act
+		var success = id.TryFormat(buffer, out var charsWritten, default, null);
+		// Assert
+		success.ShouldBeTrue();
+		charsWritten.ShouldBe(36);
+		new string(buffer).ShouldBe(id.Value.ToString());
+	}
+#endif
+
+#if NET10_0_OR_GREATER
+	[Fact]
+	void TryFormatUtf8SpanWritesGuidBytes()
+	{
+		// Arrange
+		SequentialSqlGuid id = new();
+		Span<byte> buffer = stackalloc byte[36];
+		// Act
+		var success = id.TryFormat(buffer, out var bytesWritten, default, null);
+		// Assert
+		success.ShouldBeTrue();
+		bytesWritten.ShouldBe(36);
+		Encoding.UTF8.GetString(buffer).ShouldBe(id.Value.ToString());
+	}
+
+	[Fact]
+	void ParseUtf8SpanReturnsMatchingSequentialSqlGuid()
+	{
+		// Arrange
+		var sqlGuid = GuidV7.NewSqlGuid();
+		var utf8 = Encoding.UTF8.GetBytes(sqlGuid.ToString());
+		// Act
+		var id = SequentialSqlGuid.Parse(utf8, null);
+		// Assert
+		id.Value.ShouldBe(sqlGuid);
+	}
+
+	[Fact]
+	void ParseUtf8SpanThrowsFormatExceptionForInvalidInput()
+	{
+		var bytes = "not-a-guid"u8.ToArray();
+		Should.Throw<FormatException>(() => SequentialSqlGuid.Parse(bytes, null));
+	}
+
+	[Fact]
+	void ParseUtf8SpanThrowsArgumentExceptionForNonSequentialGuid()
+	{
+		var bytes = "919108f7-52d1-4320-9bac-f847db4148a8"u8.ToArray();
+		Should.Throw<ArgumentException>(() => SequentialSqlGuid.Parse(bytes, null));
+	}
+
+	[Fact]
+	void TryParseUtf8SpanReturnsTrueForValidSequentialSqlGuid()
+	{
+		// Arrange
+		var sqlGuid = GuidV7.NewSqlGuid();
+		var utf8 = Encoding.UTF8.GetBytes(sqlGuid.ToString());
+		// Act
+		var success = SequentialSqlGuid.TryParse(utf8, null, out var id);
+		// Assert
+		success.ShouldBeTrue();
+		id.Value.ShouldBe(sqlGuid);
+	}
+
+	[Fact]
+	void TryParseUtf8SpanReturnsFalseForInvalidInput()
+	{
+		SequentialSqlGuid.TryParse("not-a-guid"u8, null, out _).ShouldBeFalse();
+	}
+
+	[Fact]
+	void TryParseUtf8SpanReturnsFalseForNonSequentialGuid()
+	{
+		SequentialSqlGuid.TryParse("919108f7-52d1-4320-9bac-f847db4148a8"u8, null, out _).ShouldBeFalse();
+	}
+#endif
 }

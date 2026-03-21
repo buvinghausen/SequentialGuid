@@ -88,4 +88,152 @@ public readonly record struct SequentialSqlGuid : ISequentialGuid<SequentialSqlG
 	/// <inheritdoc />
 	public override string ToString() =>
 		Value.ToString();
+
+	/// <inheritdoc/>
+	public string ToString(string? format, IFormatProvider? formatProvider) =>
+		Value.ToString(format, formatProvider);
+
+	/// <inheritdoc/>
+	public int CompareTo(object? obj) =>
+		obj switch
+		{
+			null => 1,
+			SequentialSqlGuid otherSequential => CompareTo(otherSequential),
+			Guid otherGuid => Value.CompareTo(otherGuid),
+			_ => throw new ArgumentException($"Object must be of type {nameof(SequentialSqlGuid)} or {nameof(Guid)}.", nameof(obj))
+		};
+
+	/// <inheritdoc/>
+	public int CompareTo(SequentialSqlGuid other) =>
+		Value.CompareTo(other.Value);
+
+	/// <inheritdoc/>
+	public bool Equals(SequentialSqlGuid other) =>
+		Value.Equals(other.Value);
+
+	/// <inheritdoc />
+	public override int GetHashCode() =>
+		Value.GetHashCode();
+
+	/// <inheritdoc cref="IComparable{T}"/>
+	public static bool operator <(SequentialSqlGuid left, SequentialSqlGuid right) =>
+		left.CompareTo(right) < 0;
+
+	/// <inheritdoc cref="IComparable{T}"/>
+	public static bool operator <=(SequentialSqlGuid left, SequentialSqlGuid right) =>
+		left.CompareTo(right) <= 0;
+
+	/// <inheritdoc cref="IComparable{T}"/>
+	public static bool operator >(SequentialSqlGuid left, SequentialSqlGuid right) =>
+		left.CompareTo(right) > 0;
+
+	/// <inheritdoc cref="IComparable{T}"/>
+	public static bool operator >=(SequentialSqlGuid left, SequentialSqlGuid right) =>
+		left.CompareTo(right) >= 0;
+
+	/// <summary>Implicitly converts a <see cref="SequentialSqlGuid"/> to its underlying <see cref="Guid"/> value.</summary>
+	public static implicit operator Guid(SequentialSqlGuid sequentialSqlGuid) =>
+		sequentialSqlGuid.Value;
+
+	/// <summary>Implicitly converts a <see cref="Guid"/> to a <see cref="SequentialSqlGuid"/>.</summary>
+	public static implicit operator SequentialSqlGuid(Guid value) =>
+		new(value);
+
+	/// <summary>Implicitly converts a <see cref="SequentialSqlGuid"/> to its <see cref="string"/> representation.</summary>
+	public static implicit operator string(SequentialSqlGuid sequentialSqlGuid) =>
+		sequentialSqlGuid.ToString();
+
+	/// <summary>Implicitly converts a <see cref="string"/> to a <see cref="SequentialSqlGuid"/>.</summary>
+	public static implicit operator SequentialSqlGuid(string value) =>
+		new(value);
+
+	/// <inheritdoc/>
+	public static SequentialSqlGuid Parse(string s
+#if NET6_0_OR_GREATER
+		, IFormatProvider? provider
+#endif
+	) =>
+		new(Guid.Parse(s
+#if NET6_0_OR_GREATER
+			, provider
+#endif
+		));
+
+	/// <inheritdoc/>
+	public static bool TryParse(string? s
+#if NET6_0_OR_GREATER
+		, IFormatProvider? provider
+#endif
+		, out SequentialSqlGuid result)
+	{
+		if (Guid.TryParse(s
+#if NET6_0_OR_GREATER
+				, provider
+#endif
+			    , out var guid))
+		{
+			try
+			{
+				result = new(guid);
+				return true;
+			}
+			catch (ArgumentException) { }
+		}
+		result = default;
+		return false;
+	}
+
+#if NET6_0_OR_GREATER
+	/// <inheritdoc/>
+	public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider) =>
+		Value.TryFormat(destination, out charsWritten, format);
+#endif
+
+#if NET7_0_OR_GREATER
+	/// <inheritdoc/>
+	public static SequentialSqlGuid Parse(ReadOnlySpan<char> s, IFormatProvider? provider) =>
+		new(Guid.Parse(s, provider));
+
+	/// <inheritdoc/>
+	public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, out SequentialSqlGuid result)
+	{
+		if (Guid.TryParse(s, provider, out var guid))
+		{
+			try
+			{
+				result = new(guid);
+				return true;
+			}
+			catch (ArgumentException) { }
+		}
+		result = default;
+		return false;
+	}
+#endif
+
+#if NET10_0_OR_GREATER
+	/// <inheritdoc/>
+	public bool TryFormat(Span<byte> utf8Destination, out int bytesWritten, ReadOnlySpan<char> format, IFormatProvider? provider) =>
+		Value.TryFormat(utf8Destination, out bytesWritten, format);
+
+	/// <inheritdoc/>
+	public static SequentialSqlGuid Parse(ReadOnlySpan<byte> utf8Text, IFormatProvider? provider) =>
+		new(Guid.Parse(utf8Text, provider));
+
+	/// <inheritdoc/>
+	public static bool TryParse(ReadOnlySpan<byte> utf8Text, IFormatProvider? provider, out SequentialSqlGuid result)
+	{
+		if (Guid.TryParse(utf8Text, provider, out var guid))
+		{
+			try
+			{
+				result = new(guid);
+				return true;
+			}
+			catch (ArgumentException) { }
+		}
+		result = default;
+		return false;
+	}
+#endif
 }

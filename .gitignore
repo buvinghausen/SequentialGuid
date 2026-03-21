@@ -159,3 +159,4 @@ coverage.*.xml
 
 
 .fake
+*.*nupkg
