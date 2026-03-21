@@ -233,7 +233,7 @@ public sealed class SequentialGuidTests
 	void TestGuidToDateTimeIsUtc()
 	{
 		//Arrange
-		var expectedDateTime = DateTime.UtcNow;
+		var expectedDateTime = GuidV8Time.Timestamp;
 		//Act
 		var dateTime = GuidV8Time
 			.NewGuid(expectedDateTime)
@@ -272,7 +272,7 @@ public sealed class SequentialGuidTests
 
 	[Fact]
 	void TestUtcNowDoesNotThrowException() =>
-		GuidV8Time.NewGuid(DateTime.UtcNow);
+		GuidV8Time.NewGuid(GuidV8Time.Timestamp);
 
 	[Fact]
 	void TestLocalNowDoesNotThrowException() =>
@@ -293,11 +293,11 @@ public sealed class SequentialGuidTests
 
 	[Fact]
 	void TestAfterNowThrowsArgumentException() =>
-		TestThrowsArgumentException(DateTime.UtcNow.AddSeconds(1));
+		TestThrowsArgumentException(GuidV8Time.Timestamp.AddSeconds(1));
 
 	[Fact]
 	void TestAfterNowReturnsNullDateTime() =>
-		TestReturnsNullDateTime(DateTime.UtcNow.AddMinutes(1).Ticks);
+		TestReturnsNullDateTime(GuidV8Time.Timestamp.AddMinutes(1).Ticks);
 
 	[Fact]
 	void TestBeforeUnixEpochThrowsArgumentException() =>
@@ -326,7 +326,7 @@ public sealed class SequentialGuidTests
 	void TestSqlGuidToDateTime()
 	{
 		//Arrange
-		var expectedDateTime = DateTime.UtcNow;
+		var expectedDateTime = GuidV8Time.Timestamp;
 		//Act
 		var dateTime = GuidV8Time
 			.NewSqlGuid(expectedDateTime)

@@ -100,14 +100,14 @@ public sealed class GuidV7Tests
 	void TestCurrentTimestampIsEmbedded()
 	{
 		// Arrange
-		var before = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+		var before = GuidV7.Timestamp;
 		// Act
-		var guid = GuidV7.NewGuid();
-		var after = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-		var ms = guid.ToUnixMs();
+		var actual = GuidV7.NewGuid().ToDateTime().GetValueOrDefault();
+		var after = GuidV7.Timestamp;
+
 		// Assert
-		ms.ShouldBeGreaterThanOrEqualTo(before);
-		ms.ShouldBeLessThanOrEqualTo(after);
+		actual.ShouldBeGreaterThanOrEqualTo(before);
+		actual.ShouldBeLessThanOrEqualTo(after);
 	}
 
 	[Fact]
@@ -174,7 +174,7 @@ public sealed class GuidV7Tests
 	{
 		// Arrange - use the current time so the counter path is exercised
 		// (RFC 9562 §6.2 Method 1: fixed bit-length dedicated counter spanning rand_a and rand_b)
-		var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+		var timestamp = GuidV7.Timestamp;
 		// Act - generate 100 UUIDs all sharing the same millisecond timestamp
 		Guid[] actual = [.. Enumerable.Range(0, 100).Select(_ => GuidV7.NewGuid(timestamp))];
 		// Assert - the counter in rand_a ensures they are already in creation order
@@ -186,12 +186,11 @@ public sealed class GuidV7Tests
 	void TestGuidToDateTime()
 	{
 		// Arrange
-		var utcNow = DateTimeOffset.UtcNow;
 		// Guid V7 only keeps time to the millisecond so strip off additional precision
-		var expected = utcNow.DateTime.AddTicks(-(utcNow.Ticks % TimeSpan.TicksPerMillisecond));
+		var expected = GuidV7.Timestamp;
 
 		// Act
-		var actual = GuidV7.NewGuid(utcNow).ToDateTime();
+		var actual = GuidV7.NewGuid(expected).ToDateTime();
 
 		// Assert
 		actual.ShouldBe(expected);
@@ -201,12 +200,10 @@ public sealed class GuidV7Tests
 	void TestSqlGuidToDateTime()
 	{
 		// Arrange
-		var utcNow = DateTimeOffset.UtcNow;
-		// Guid V7 only keeps time to the millisecond so strip off additional precision
-		var expected = utcNow.DateTime.AddTicks(-(utcNow.Ticks % TimeSpan.TicksPerMillisecond));
+		var expected = GuidV7.Timestamp;
 
 		// Act
-		var actual = GuidV7.NewSqlGuid(utcNow).ToDateTime();
+		var actual = GuidV7.NewSqlGuid(expected).ToDateTime();
 
 		// Assert
 		actual.ShouldBe(expected);

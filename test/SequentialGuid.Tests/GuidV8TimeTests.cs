@@ -36,21 +36,20 @@ public sealed class GuidV8TimeTests
 	void TestCurrentTimestampIsEmbedded()
 	{
 		// Arrange
-		var before = DateTime.UtcNow;
+		var before = GuidV8Time.Timestamp;
 		// Act
-		var id = GuidV8Time.NewGuid();
-		var after = DateTime.UtcNow;
-		var dateTime = id.ToDateTime().GetValueOrDefault();
+		var actual = GuidV8Time.NewGuid().ToDateTime().GetValueOrDefault();
+		var after = GuidV8Time.Timestamp;
 		// Assert
-		dateTime.ShouldBeGreaterThanOrEqualTo(before);
-		dateTime.ShouldBeLessThanOrEqualTo(after);
+		actual.ShouldBeGreaterThanOrEqualTo(before);
+		actual.ShouldBeLessThanOrEqualTo(after);
 	}
 
 	[Fact]
 	void TestUtcDateTimeOverload()
 	{
 		// Arrange
-		var expected = DateTime.UtcNow;
+		var expected = GuidV8Time.Timestamp;
 		// Act
 		var dateTime = GuidV8Time.NewGuid(expected).ToDateTime().GetValueOrDefault();
 		// Assert
@@ -100,7 +99,7 @@ public sealed class GuidV8TimeTests
 
 	[Fact]
 	void TestUtcNowDoesNotThrowException() =>
-		GuidV8Time.NewGuid(DateTime.UtcNow);
+		GuidV8Time.NewGuid(GuidV8Time.Timestamp);
 
 	[Fact]
 	void TestLocalNowDoesNotThrowException() =>
@@ -112,7 +111,7 @@ public sealed class GuidV8TimeTests
 
 	[Fact]
 	void TestAfterNowThrowsArgumentException() =>
-		Should.Throw<ArgumentException>(() => GuidV8Time.NewGuid(DateTime.UtcNow.AddSeconds(1)));
+		Should.Throw<ArgumentException>(() => GuidV8Time.NewGuid(GuidV8Time.Timestamp.AddSeconds(1)));
 
 	[Fact]
 	void TestBeforeUnixEpochThrowsArgumentException() =>
