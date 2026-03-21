@@ -23,15 +23,15 @@ public readonly record struct SequentialGuid : ISequentialGuid<SequentialGuid>
 	/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="type"/> is not a recognised <see cref="SequentialGuidType"/> value.</exception>
 	public SequentialGuid(SequentialGuidType type = SequentialGuidType.Rfc9562V7)
 	{
+		Timestamp = DateTime.UtcNow;
 		Value = type switch
 		{
 			SequentialGuidType.Rfc9562V7 =>
-				GuidV7.NewGuid(),
+				GuidV7.NewGuid(Timestamp),
 			SequentialGuidType.Rfc9562V8Custom =>
-				GuidV8Time.NewGuid(),
+				GuidV8Time.NewGuid(Timestamp),
 			_ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
 		};
-		Timestamp = Value.ToDateTime().GetValueOrDefault();
 	}
 
 	/// <summary>Initializes a <see cref="SequentialGuid"/> from an existing sequential <see cref="Guid"/>.</summary>
