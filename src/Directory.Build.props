@@ -26,7 +26,7 @@
 
 	<ItemGroup>
 		<None Include="../../LICENSE.txt" Pack="true" PackagePath="$(PackageLicenseFile)" />
-		<None Include="../../README.md" Pack="true" PackagePath="$(PackageReadmeFile)" />
+		<None Include="README.md" Pack="true" PackagePath="$(PackageReadmeFile)" />
 	</ItemGroup>
 
 	<ItemGroup>

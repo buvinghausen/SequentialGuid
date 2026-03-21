@@ -164,12 +164,95 @@ SQL Server sorts `uniqueidentifier` values in a [non-obvious byte order](https:/
 
 Use the `NewSqlGuid()` methods (or the `.ToSqlGuid()` extension) to produce UUIDs whose byte order aligns with SQL Server's comparison logic. The `.FromSqlGuid()` extension on `Guid` reverses the transformation — the name clearly conveys the intent of converting *from* SQL Server byte order back to the standard layout.
 
+## Strongly-Typed Struct Wrappers
+
+The library ships two `readonly record struct` types — `SequentialGuid` and `SequentialSqlGuid` — that wrap a `Guid` and **guarantee at construction time** that the value is a valid sequential UUID. They both implement `ISequentialGuid<TSelf>` which provides `IComparable`, `IComparable<Guid>`, `IEquatable<Guid>`, `IFormattable` / `ISpanFormattable` / `ISpanParsable<T>` / `IUtf8SpanFormattable` / `IUtf8SpanParsable<T>` (where available), and comparison operators.
+
+| Struct | Byte Order | Use When |
+|---|---|---|
+| `SequentialGuid` | Standard (RFC) | Your database uses standard GUID sorting (PostgreSQL, MySQL, SQLite, Cosmos DB, MongoDB, etc.) |
+| `SequentialSqlGuid` | SQL Server | Your database is SQL Server, which sorts `uniqueidentifier` in a [non-obvious byte order](https://www.sqlbi.com/blog/alberto/2007/08/31/how-are-guids-sorted-by-sql-server/) |
+
+### Creating struct instances
+
+```csharp
+using SequentialGuid;
+
+// Generate a new V7 UUID (default)
+var id = new SequentialGuid();
+
+// Generate a new V8 UUID
+var id = new SequentialGuid(SequentialGuidType.Rfc9562V8Custom);
+
+// Wrap an existing Guid (validates it is a sequential UUID)
+var id = new SequentialGuid(existingGuid);
+
+// Parse from a string
+var id = new SequentialGuid("01234567-89ab-7def-8000-0123456789ab");
+```
+
+SQL Server variant:
+
+```csharp
+var sqlId = new SequentialSqlGuid();
+var sqlId = new SequentialSqlGuid(SequentialGuidType.Rfc9562V8Custom);
+var sqlId = new SequentialSqlGuid(existingGuid); // auto-detects byte order
+```
+
+### Properties
+
+```csharp
+Guid raw     = id.Value;     // the underlying Guid
+DateTime utc = id.Timestamp; // the embedded UTC timestamp
+```
+
+### Comparison & equality
+
+The structs support `<`, `<=`, `>`, `>=`, `==`, and `!=` operators, plus `CompareTo` and `Equals`:
+
+```csharp
+var a = new SequentialGuid();
+var b = new SequentialGuid();
+bool isNewer = b > a; // true — b was created after a
+
+// Also comparable directly against Guid
+bool same = a.Equals(a.Value); // true
+```
+
+### JSON serialization (System.Text.Json)
+
+On .NET 7+ the library includes built-in `JsonConverter<T>` support. Register the converters once:
+
+```csharp
+using SequentialGuid.Extensions;
+
+var options = new JsonSerializerOptions();
+options.AddSequentialGuidConverters();
+
+// Now SequentialGuid / SequentialSqlGuid serialize as GUID strings automatically
+var json = JsonSerializer.Serialize(new SequentialGuid(), options);
+```
+
+### Parsing
+
+```csharp
+// Parse (throws on invalid input)
+var id = SequentialGuid.Parse("01234567-89ab-7def-8000-0123456789ab");
+
+// TryParse (returns false on invalid input)
+if (SequentialGuid.TryParse(input, out var parsed))
+{
+    // use parsed
+}
+```
+
 ## Companion Packages
 
-| Package | Purpose |
-|---|---|
-| [**SequentialGuid.NodaTime**](https://www.nuget.org/packages/SequentialGuid.NodaTime/) | Extension methods for `Instant`, `OffsetDateTime`, and `ZonedDateTime` — generate and extract timestamps using NodaTime types |
-| [**SequentialGuid.MongoDB**](https://www.nuget.org/packages/SequentialGuid.MongoDB/) | Drop-in `IIdGenerator` for the MongoDB C# driver — register once and every inserted document gets a sequential `Guid` ID |
+| Package | Purpose | Docs |
+|---|---|---|
+| [**SequentialGuid.EntityFrameworkCore**](https://www.nuget.org/packages/SequentialGuid.EntityFrameworkCore/) | Value converters so EF Core can persist `SequentialGuid` / `SequentialSqlGuid` properties as `Guid` columns | [README](src/SequentialGuid.EntityFrameworkCore/README.md) |
+| [**SequentialGuid.MongoDB**](https://www.nuget.org/packages/SequentialGuid.MongoDB/) | Drop-in `IIdGenerator` + BSON serializers for the MongoDB C# driver | [README](src/SequentialGuid.MongoDB/README.md) |
+| [**SequentialGuid.NodaTime**](https://www.nuget.org/packages/SequentialGuid.NodaTime/) | Extension methods for `Instant`, `OffsetDateTime`, and `ZonedDateTime` — generate and extract timestamps using NodaTime types | [README](src/SequentialGuid.NodaTime/README.md) |
 
 ## Performance
 
