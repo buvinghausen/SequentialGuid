@@ -25,6 +25,9 @@ public interface ISequentialGuid<TSelf> :
 	/// <summary>Gets the underlying <see cref="Guid"/> value.</summary>
 	Guid Value { get; }
 
+	/// <summary>Gets the UTC timestamp encoded in the <see cref="Value"/>.</summary>
+	DateTime Timestamp { get; }
+
 #if NET7_0_OR_GREATER
 	/// <summary>Creates an instance from an existing <see cref="Guid"/>.</summary>
 	/// <param name="value">A sequential GUID value.</param>
