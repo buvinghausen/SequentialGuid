@@ -326,15 +326,15 @@ public sealed class SequentialGuidTests
 	void TestSqlGuidToDateTime()
 	{
 		//Arrange
-		var expectedDateTime = GuidV8Time.Timestamp;
+		var expected = GuidV8Time.Timestamp;
 		//Act
-		var dateTime = GuidV8Time
-			.NewSqlGuid(expectedDateTime)
+		var actual = GuidV8Time
+			.NewSqlGuid(expected)
 			.ToDateTime()
 			.GetValueOrDefault();
 		//Assert
-		dateTime.Ticks.ShouldBe(expectedDateTime.Ticks);
-		dateTime.Kind.ShouldBe(expectedDateTime.Kind);
+		actual.Ticks.ShouldBe(expected.Ticks);
+		actual.Kind.ShouldBe(expected.Kind);
 	}
 
 	[Fact]

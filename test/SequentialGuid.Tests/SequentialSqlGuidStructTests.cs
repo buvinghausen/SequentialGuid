@@ -107,6 +107,107 @@ public sealed class SequentialSqlGuidStructTests
 		id.ToString().ShouldBe(expected);
 	}
 
+	// --- Timestamp tests ---
+
+	[Fact]
+	void DefaultConstructorTimestampIsUtcAndCurrent()
+	{
+		// Arrange
+		var before = GuidV7.Timestamp;
+		// Act
+		SequentialSqlGuid id = new();
+		var after = GuidV7.Timestamp;
+		// Assert
+		id.Timestamp.Kind.ShouldBe(DateTimeKind.Utc);
+		id.Timestamp.ShouldBeGreaterThanOrEqualTo(before);
+		id.Timestamp.ShouldBeLessThanOrEqualTo(after);
+	}
+
+	[Fact]
+	void GuidConstructorPreservesTimestamp()
+	{
+		// Arrange
+		SequentialSqlGuid original = new();
+		// Act
+		SequentialSqlGuid reconstructed = new(original.Value);
+		// Assert
+		reconstructed.Timestamp.ShouldBe(original.Timestamp);
+	}
+
+	// --- V8Custom constructor tests ---
+
+	[Fact]
+	void V8CustomConstructorCreatesVersion8SqlGuid()
+	{
+		// Act
+		SequentialSqlGuid id = new(SequentialGuidType.Rfc9562V8Custom);
+		// The SQL guid, after converting back to regular byte order, should be version 8
+		var bytes = id.Value.FromSqlGuid().ToByteArray();
+		// Assert
+		bytes.IsRfc9562Version(8).ShouldBeTrue();
+	}
+
+	[Fact]
+	void V8CustomConstructorTimestampIsUtcAndCurrent()
+	{
+		// Arrange
+		var before = GuidV8Time.Timestamp;
+		// Act
+		SequentialSqlGuid id = new(SequentialGuidType.Rfc9562V8Custom);
+		var after = GuidV8Time.Timestamp;
+		// Assert
+		id.Timestamp.Kind.ShouldBe(DateTimeKind.Utc);
+		id.Timestamp.ShouldBeGreaterThanOrEqualTo(before);
+		id.Timestamp.ShouldBeLessThanOrEqualTo(after);
+	}
+
+	[Fact]
+	void V8CustomConstructorProducesUniqueValues()
+	{
+		// Act
+		SequentialSqlGuid
+			first = new(SequentialGuidType.Rfc9562V8Custom),
+			second = new(SequentialGuidType.Rfc9562V8Custom);
+		// Assert
+		first.ShouldNotBe(second);
+	}
+
+	// --- Comparison operator tests ---
+
+	[Fact]
+	void ComparisonOperatorsAreConsistent()
+	{
+		// Arrange — two distinct SQL guids
+		SequentialSqlGuid
+			a = new(),
+			b = new();
+		// Act — determine ordering
+		var cmp = a.CompareTo(b);
+		// Assert — operators agree with CompareTo
+		(a < b).ShouldBe(cmp < 0);
+		(a <= b).ShouldBe(cmp <= 0);
+		(a > b).ShouldBe(cmp > 0);
+		(a >= b).ShouldBe(cmp >= 0);
+		// Antisymmetry
+		(b < a).ShouldBe(cmp > 0);
+		(b > a).ShouldBe(cmp < 0);
+	}
+
+	[Fact]
+	void ComparisonOperatorsOnEqualValues()
+	{
+		// Arrange
+		var sqlGuid = GuidV7.NewSqlGuid();
+		SequentialSqlGuid
+			a = new(sqlGuid),
+			b = new(sqlGuid);
+		// Assert
+		(a <= b).ShouldBeTrue();
+		(a >= b).ShouldBeTrue();
+		(a < b).ShouldBeFalse();
+		(a > b).ShouldBeFalse();
+	}
+
 #if NET7_0_OR_GREATER
 	[Fact]
 	void ParseStringReturnsMatchingSequentialSqlGuid()

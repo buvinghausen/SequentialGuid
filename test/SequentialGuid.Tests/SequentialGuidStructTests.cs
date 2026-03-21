@@ -138,6 +138,124 @@ public sealed class SequentialGuidStructTests
 		id.ToString().ShouldBe(expected);
 	}
 
+	// --- Timestamp tests ---
+
+	[Fact]
+	void DefaultConstructorTimestampIsUtcAndCurrent()
+	{
+		// Arrange
+		var before = GuidV7.Timestamp;
+		// Act
+		SequentialGuid id = new();
+		var after = GuidV7.Timestamp;
+		// Assert
+		id.Timestamp.Kind.ShouldBe(DateTimeKind.Utc);
+		id.Timestamp.ShouldBeGreaterThanOrEqualTo(before);
+		id.Timestamp.ShouldBeLessThanOrEqualTo(after);
+	}
+
+	[Fact]
+	void GuidConstructorPreservesTimestamp()
+	{
+		// Arrange
+		SequentialGuid original = new();
+		// Act
+		SequentialGuid reconstructed = new(original.Value);
+		// Assert
+		reconstructed.Timestamp.ShouldBe(original.Timestamp);
+	}
+
+	// --- V8Custom constructor tests ---
+
+	[Fact]
+	void V8CustomConstructorCreatesVersion8()
+	{
+		// Act
+		SequentialGuid id = new(SequentialGuidType.Rfc9562V8Custom);
+		var bytes = id.Value.ToByteArray();
+		// Assert
+		bytes.IsRfc9562Version(8).ShouldBeTrue();
+	}
+
+	[Fact]
+	void V8CustomConstructorTimestampIsUtcAndCurrent()
+	{
+		// Arrange
+		var before = GuidV8Time.Timestamp;
+		// Act
+		SequentialGuid id = new(SequentialGuidType.Rfc9562V8Custom);
+		var after = GuidV8Time.Timestamp;
+		// Assert
+		id.Timestamp.Kind.ShouldBe(DateTimeKind.Utc);
+		id.Timestamp.ShouldBeGreaterThanOrEqualTo(before);
+		id.Timestamp.ShouldBeLessThanOrEqualTo(after);
+	}
+
+	[Fact]
+	void V8CustomConstructorProducesUniqueValues()
+	{
+		// Act
+		SequentialGuid
+			first = new(SequentialGuidType.Rfc9562V8Custom),
+			second = new(SequentialGuidType.Rfc9562V8Custom);
+		// Assert
+		first.ShouldNotBe(second);
+	}
+
+	// --- Comparison operator tests ---
+
+	[Fact]
+	void LessThanOperator()
+	{
+		// Arrange — timestamps 1 s apart guarantee ordering
+		var earlier = new SequentialGuid(GuidV7.NewGuid(1000L));
+		var later = new SequentialGuid(GuidV7.NewGuid(2000L));
+		// Assert
+		(earlier < later).ShouldBeTrue();
+		(later < earlier).ShouldBeFalse();
+	}
+
+	[Fact]
+	void LessThanOrEqualOperator()
+	{
+		// Arrange
+		var v7 = GuidV7.NewGuid();
+		SequentialGuid
+			a = new(v7),
+			b = new(v7);
+		var later = new SequentialGuid(GuidV7.NewGuid(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + 60_000));
+		// Assert
+		(a <= b).ShouldBeTrue();  // equal
+		(a <= later).ShouldBeTrue();  // less
+		(later <= a).ShouldBeFalse();
+	}
+
+	[Fact]
+	void GreaterThanOperator()
+	{
+		// Arrange
+		var earlier = new SequentialGuid(GuidV7.NewGuid(1000L));
+		var later = new SequentialGuid(GuidV7.NewGuid(2000L));
+		// Assert
+		(later > earlier).ShouldBeTrue();
+		(earlier > later).ShouldBeFalse();
+	}
+
+	[Fact]
+	void GreaterThanOrEqualOperator()
+	{
+		// Arrange
+		var v7 = GuidV7.NewGuid();
+		SequentialGuid
+			a = new(v7),
+			b = new(v7);
+		var later = new SequentialGuid(GuidV7.NewGuid(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + 60_000));
+		// Assert
+		(a >= b).ShouldBeTrue();  // equal
+		(later >= a).ShouldBeTrue();  // greater
+		(a >= later).ShouldBeFalse();
+	}
+
 #if NET7_0_OR_GREATER
 	[Fact]
 	void ParseStringReturnsMatchingSequentialGuid()
