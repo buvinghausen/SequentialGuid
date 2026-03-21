@@ -250,9 +250,9 @@ if (SequentialGuid.TryParse(input, out var parsed))
 
 | Package | Purpose | Docs |
 |---|---|---|
-| [**SequentialGuid.EntityFrameworkCore**](https://www.nuget.org/packages/SequentialGuid.EntityFrameworkCore/) | Value converters so EF Core can persist `SequentialGuid` / `SequentialSqlGuid` properties as `Guid` columns | [README](src/SequentialGuid.EntityFrameworkCore/README.md) |
-| [**SequentialGuid.MongoDB**](https://www.nuget.org/packages/SequentialGuid.MongoDB/) | Drop-in `IIdGenerator` + BSON serializers for the MongoDB C# driver | [README](src/SequentialGuid.MongoDB/README.md) |
-| [**SequentialGuid.NodaTime**](https://www.nuget.org/packages/SequentialGuid.NodaTime/) | Extension methods for `Instant`, `OffsetDateTime`, and `ZonedDateTime` — generate and extract timestamps using NodaTime types | [README](src/SequentialGuid.NodaTime/README.md) |
+| [**SequentialGuid.EntityFrameworkCore**](https://www.nuget.org/packages/SequentialGuid.EntityFrameworkCore/) | Value converters so EF Core can persist `SequentialGuid` / `SequentialSqlGuid` properties as `Guid` columns | [README](../SequentialGuid.EntityFrameworkCore/README.md) |
+| [**SequentialGuid.MongoDB**](https://www.nuget.org/packages/SequentialGuid.MongoDB/) | Drop-in `IIdGenerator` + BSON serializers for the MongoDB C# driver | [README](../SequentialGuid.MongoDB/README.md) |
+| [**SequentialGuid.NodaTime**](https://www.nuget.org/packages/SequentialGuid.NodaTime/) | Extension methods for `Instant`, `OffsetDateTime`, and `ZonedDateTime` — generate and extract timestamps using NodaTime types | [README](../SequentialGuid.NodaTime/README.md) |
 
 ## Performance
 
