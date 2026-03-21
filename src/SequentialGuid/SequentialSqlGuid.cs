@@ -1,3 +1,4 @@
+using System.Data.SqlTypes;
 using System.Runtime.CompilerServices;
 using SequentialGuid.Extensions;
 
@@ -103,21 +104,22 @@ public readonly record struct SequentialSqlGuid : ISequentialGuid<SequentialSqlG
 		{
 			null => 1,
 			SequentialSqlGuid otherSequential => CompareTo(otherSequential),
-			Guid otherGuid => Value.CompareTo(otherGuid),
-			_ => throw new ArgumentException($"Object must be of type {nameof(SequentialSqlGuid)} or {nameof(Guid)}.", nameof(obj))
+			Guid otherGuid => new SqlGuid(Value).CompareTo(new SqlGuid(otherGuid)),
+			SqlGuid sqlGuid => new SqlGuid(Value).CompareTo(sqlGuid),
+			_ => throw new ArgumentException($"Object must be of type {nameof(SequentialSqlGuid)} or {nameof(Guid)} or {nameof(SqlGuid)}.", nameof(obj))
 		};
 
 	/// <inheritdoc/>
 	public int CompareTo(SequentialSqlGuid other) =>
-		Value.CompareTo(other.Value);
+		new SqlGuid(Value).CompareTo(new SqlGuid(other.Value));
 
 	/// <inheritdoc/>
 	public bool Equals(SequentialSqlGuid other) =>
-		Value.Equals(other.Value);
+		new SqlGuid(Value).Equals(new SqlGuid(other.Value));
 
 	/// <inheritdoc />
 	public override int GetHashCode() =>
-		Value.GetHashCode();
+		new SqlGuid(Value).GetHashCode();
 
 	/// <inheritdoc cref="IComparable{T}"/>
 	public static bool operator <(SequentialSqlGuid left, SequentialSqlGuid right) =>
