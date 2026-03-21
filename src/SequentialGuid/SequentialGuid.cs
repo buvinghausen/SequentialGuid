@@ -26,11 +26,11 @@ public readonly record struct SequentialGuid : ISequentialGuid<SequentialGuid>
 		switch (type)
 		{
 			case SequentialGuidType.Rfc9562V7:
-				Timestamp = DateTimeOffset.FromUnixTimeMilliseconds(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()).UtcDateTime;
+				Timestamp = GuidV7.Timestamp;
 				Value = GuidV7.NewGuid(Timestamp);
 				break;
 			case SequentialGuidType.Rfc9562V8Custom:
-				Timestamp = DateTime.UtcNow;
+				Timestamp = GuidV8Time.Timestamp;
 				Value = GuidV8Time.NewGuid(Timestamp);
 				break;
 			default:

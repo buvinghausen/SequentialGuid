@@ -37,6 +37,14 @@ public static class GuidV7
 	}
 
 	/// <summary>
+	/// Gets the current date and time in Coordinated Universal Time (UTC).
+	/// </summary>
+	/// <remarks>This property provides the current UTC date and time with millisecond precision. The value is based
+	/// on the system clock and may be affected by system time changes.</remarks>
+	public static DateTime Timestamp =>
+		DateTimeOffset.FromUnixTimeMilliseconds(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()).UtcDateTime;
+
+	/// <summary>
 	/// Creates a new UUID version 7 using the current UTC time, with byte ordering
 	/// suitable for storage in a SQL Server <c>uniqueidentifier</c> column.
 	/// </summary>
