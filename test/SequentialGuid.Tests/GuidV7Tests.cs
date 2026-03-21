@@ -7,6 +7,65 @@ public sealed class GuidV7Tests
 	// RFC 9562 Appendix A.6 test vector: Tuesday, February 22, 2022 2:22:22.00 PM GMT-05:00
 	// Unix Epoch milliseconds: 1645557742000 = 0x017F22E279B0
 	const long RfcTestVectorMs = 1645557742000L;
+	const long EpochTicks = 621355968000000000L;
+
+	/// <summary>
+	///     Properly sequenced v7 Guid array with UnixEpoch (0 ms) timestamp, version 7, and variant bits set
+	/// </summary>
+	static IReadOnlyList<SequentialGuid> SortedGuidList { get; } =
+	[
+		new("00000000-0000-7000-8000-000000000001"),
+		new("00000000-0000-7000-8000-000000000100"),
+		new("00000000-0000-7000-8000-000000010000"),
+		new("00000000-0000-7000-8000-000001000000"),
+		new("00000000-0000-7000-8000-000100000000"),
+		new("00000000-0000-7000-8000-010000000000"),
+		new("00000000-0000-7000-8001-000000000000"),
+		new("00000000-0000-7000-8100-000000000000")
+	];
+
+	/// <summary>
+	///     Properly sequenced v7 SqlGuid array with UnixEpoch (0 ms) timestamp, version 7, and variant bits set
+	/// </summary>
+	private static IReadOnlyList<SequentialSqlGuid> SortedSqlGuidList { get; } =
+	[
+		new("01000000-0000-0080-7000-000000000000"),
+		new("00010000-0000-0080-7000-000000000000"),
+		new("00000100-0000-0080-7000-000000000000"),
+		new("00000001-0000-0080-7000-000000000000"),
+		new("00000000-0100-0080-7000-000000000000"),
+		new("00000000-0001-0080-7000-000000000000"),
+		new("00000000-0000-0180-7000-000000000000"),
+		new("00000000-0000-0081-7000-000000000000"),
+	];
+
+	[Fact]
+	void TestSortedGuidList()
+	{
+		// Act
+		IReadOnlyList<SequentialGuid> sortedList = [.. SortedGuidList.OrderBy(x => x)];
+		// Assert
+		sortedList.ShouldBe(SortedGuidList, ignoreOrder: false);
+		// Make sure everything but the entropy bytes checks out
+		foreach (var actual in SortedGuidList.Select(v => v.Timestamp.Ticks))
+		{
+			actual.ShouldBe(EpochTicks);
+		}
+	}
+
+	[Fact]
+	void TestSortedSqlGuidList()
+	{
+		// Act
+		IReadOnlyList<SequentialSqlGuid> sortedSqlList = [.. SortedSqlGuidList.OrderBy(x => x)];
+		// Assert
+		sortedSqlList.ShouldBe(SortedSqlGuidList, ignoreOrder: false);
+		// Make sure everything but the entropy bytes checks out
+		foreach (var actual in SortedSqlGuidList.Select(v => v.Timestamp.Ticks))
+		{
+			actual.ShouldBe(EpochTicks);
+		}
+	}
 
 	[Fact]
 	void TestVersion7Bits()
