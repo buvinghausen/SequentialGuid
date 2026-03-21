@@ -166,7 +166,7 @@ Use the `NewSqlGuid()` methods (or the `.ToSqlGuid()` extension) to produce UUID
 
 ## Strongly-Typed Struct Wrappers
 
-The library ships two `readonly record struct` types — `SequentialGuid` and `SequentialSqlGuid` — that wrap a `Guid` and **guarantee at construction time** that the value is a valid sequential UUID. They both implement `ISequentialGuid<TSelf>` which provides `IComparable`, `IComparable<Guid>`, `IEquatable<Guid>`, `IFormattable` / `ISpanFormattable` / `ISpanParsable<T>` / `IUtf8SpanFormattable` / `IUtf8SpanParsable<T>` (where available), and comparison operators.
+The library ships two `readonly record struct` types — `SequentialGuid` and `SequentialSqlGuid` — that wrap a `Guid` and **guarantee at construction time** that the value is a valid sequential UUID. They both implement `ISequentialGuid<TSelf>` which provides `IComparable`, `IComparable<TSelf>`, `IEquatable<TSelf>`, `IFormattable` / `ISpanFormattable` / `ISpanParsable<T>` / `IUtf8SpanFormattable` / `IUtf8SpanParsable<T>` (where available), and comparison operators.
 
 | Struct | Byte Order | Use When |
 |---|---|---|
