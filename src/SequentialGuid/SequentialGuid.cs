@@ -93,9 +93,27 @@ public readonly record struct SequentialGuid : ISequentialGuid<SequentialGuid>
 		Value.ToString(format, formatProvider);
 
 	/// <inheritdoc/>
-	public int CompareTo(object? obj) =>
-		Value.CompareTo(obj);
+	public int CompareTo(object? obj)
+	{
+		if (obj is null)
+		{
+			return 1;
+		}
 
+		if (obj is SequentialGuid otherSequential)
+		{
+			return CompareTo(otherSequential);
+		}
+
+		if (obj is Guid otherGuid)
+		{
+			return Value.CompareTo(otherGuid);
+		}
+
+		throw new ArgumentException(
+			$"Object must be of type {nameof(SequentialGuid)} or {nameof(Guid)}.",
+			nameof(obj));
+	}
 	/// <inheritdoc/>
 	public int CompareTo(SequentialGuid other) =>
 		Value.CompareTo(other.Value);
