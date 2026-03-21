@@ -117,19 +117,19 @@ public readonly record struct SequentialSqlGuid : ISequentialGuid<SequentialSqlG
 
 	/// <inheritdoc cref="IComparable{T}"/>
 	public static bool operator <(SequentialSqlGuid left, SequentialSqlGuid right) =>
-		left.Value.CompareTo(right.Value) < 0;
+		left.CompareTo(right) < 0;
 
 	/// <inheritdoc cref="IComparable{T}"/>
 	public static bool operator <=(SequentialSqlGuid left, SequentialSqlGuid right) =>
-		left.Value.CompareTo(right.Value) <= 0;
+		left.CompareTo(right) <= 0;
 
 	/// <inheritdoc cref="IComparable{T}"/>
 	public static bool operator >(SequentialSqlGuid left, SequentialSqlGuid right) =>
-		left.Value.CompareTo(right.Value) > 0;
+		left.CompareTo(right) > 0;
 
 	/// <inheritdoc cref="IComparable{T}"/>
 	public static bool operator >=(SequentialSqlGuid left, SequentialSqlGuid right) =>
-		left.Value.CompareTo(right.Value) >= 0;
+		left.CompareTo(right) >= 0;
 
 	/// <summary>Implicitly converts a <see cref="SequentialSqlGuid"/> to its underlying <see cref="Guid"/> value.</summary>
 	public static implicit operator Guid(SequentialSqlGuid sequentialSqlGuid) =>
