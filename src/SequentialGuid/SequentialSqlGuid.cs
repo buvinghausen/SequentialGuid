@@ -104,7 +104,7 @@ public readonly record struct SequentialSqlGuid : ISequentialGuid<SequentialSqlG
 		{
 			null => 1,
 			SequentialSqlGuid otherSequential => CompareTo(otherSequential),
-			Guid otherGuid => Value.CompareTo(otherGuid),
+			Guid otherGuid => new SqlGuid(Value).CompareTo(new SqlGuid(otherGuid)),
 			SqlGuid sqlGuid => new SqlGuid(Value).CompareTo(sqlGuid),
 			_ => throw new ArgumentException($"Object must be of type {nameof(SequentialSqlGuid)} or {nameof(Guid)} or {nameof(SqlGuid)}.", nameof(obj))
 		};
