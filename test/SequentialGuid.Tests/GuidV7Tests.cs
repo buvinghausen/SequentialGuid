@@ -119,7 +119,7 @@ public sealed class GuidV7Tests
 		// Act
 		Guid[] sorted = [.. guids.OrderBy(x => x)];
 		// Assert - different timestamp ms values always sort in creation order
-		sorted.ShouldBe(guids);
+		sorted.ShouldBe(guids, ignoreOrder: false);
 	}
 
 	[Fact]

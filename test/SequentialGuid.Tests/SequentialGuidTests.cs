@@ -12,7 +12,7 @@ public sealed class SequentialGuidTests
 	/// <summary>
 	///     Properly sequenced Guid array
 	/// </summary>
-	IList<Guid> SortedGuidList { get; } =
+	static IReadOnlyList<Guid> SortedGuidList { get; } =
 	[
 		new("00000000-0000-0000-0000-000000000001"),
 		new("00000000-0000-0000-0000-000000000100"),
@@ -36,7 +36,7 @@ public sealed class SequentialGuidTests
 	///     Properly sequenced SqlGuid array
 	/// </summary>
 	/// See: https://www.sqlbi.com/blog/alberto/2007/08/31/how-are-guids-sorted-by-sql-server/
-	IList<SqlGuid> SortedSqlGuidList { get; } =
+	static IReadOnlyList<SqlGuid> SortedSqlGuidList { get; } =
 	[
 		new("01000000-0000-0000-0000-000000000000"),
 		new("00010000-0000-0000-0000-000000000000"),
@@ -115,18 +115,18 @@ public sealed class SequentialGuidTests
 	void TestGuidSorting()
 	{
 		//Act
-		IList<Guid> sortedList = [.. SortedGuidList.OrderBy(x => x)];
+		IReadOnlyList<Guid> sortedList = [.. SortedGuidList.OrderBy(x => x)];
 		//Assert
-		sortedList.ShouldBe(SortedGuidList);
+		sortedList.ShouldBe(SortedGuidList, ignoreOrder: false);
 	}
 
 	[Fact]
 	void TestSqlGuidSorting()
 	{
 		//Act
-		IList<SqlGuid> sortedList = [.. SortedSqlGuidList.OrderBy(x => x)];
+		IReadOnlyList<SqlGuid> sortedList = [.. SortedSqlGuidList.OrderBy(x => x)];
 		//Assert
-		sortedList.ShouldBe(SortedSqlGuidList);
+		sortedList.ShouldBe(SortedSqlGuidList, ignoreOrder: false);
 	}
 
 	[Fact]
@@ -366,7 +366,7 @@ public sealed class SequentialGuidTests
 
 		IList<Guid> sortedItems = [.. items.OrderBy(x => x)];
 		//Assert
-		sortedItems.ShouldBe(items);
+		sortedItems.ShouldBe(items, ignoreOrder: false);
 	}
 
 	[Fact]
@@ -383,7 +383,7 @@ public sealed class SequentialGuidTests
 
 		IList<SqlGuid> sortedItems = [.. items.OrderBy(x => x)];
 		//Assert
-		sortedItems.ShouldBe(items);
+		sortedItems.ShouldBe(items, ignoreOrder: false);
 	}
 
 	[Fact]

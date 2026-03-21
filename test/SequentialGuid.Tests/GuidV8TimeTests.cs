@@ -6,6 +6,64 @@ public sealed class GuidV8TimeTests
 {
 	const long EpochTicks = 621355968000000000L;
 
+	/// <summary>
+	///     Properly sequenced v8 Guid array with UnixEpoch timestamp, version 8, and variant bits set
+	/// </summary>
+	static IReadOnlyList<SequentialGuid> SortedGuidList { get; } =
+	[
+		new("89f7ff5f-7b58-8000-8000-000000000001"),
+		new("89f7ff5f-7b58-8000-8000-000000000100"),
+		new("89f7ff5f-7b58-8000-8000-000000010000"),
+		new("89f7ff5f-7b58-8000-8000-000001000000"),
+		new("89f7ff5f-7b58-8000-8000-000100000000"),
+		new("89f7ff5f-7b58-8000-8000-010000000000"),
+		new("89f7ff5f-7b58-8000-8001-000000000000"),
+		new("89f7ff5f-7b58-8000-8100-000000000000")
+	];
+
+	/// <summary>
+	///     Properly sequenced v8 SqlGuid array with UnixEpoch timestamp, version 8, and variant bits set
+	/// </summary>
+	private static IReadOnlyList<SequentialSqlGuid> SortedSqlGuidList { get; } =
+	[
+		new("01000000-0000-0080-8000-89f7ff5f7b58"),
+		new("00010000-0000-0080-8000-89f7ff5f7b58"),
+		new("00000100-0000-0080-8000-89f7ff5f7b58"),
+		new("00000001-0000-0080-8000-89f7ff5f7b58"),
+		new("00000000-0100-0080-8000-89f7ff5f7b58"),
+		new("00000000-0001-0080-8000-89f7ff5f7b58"),
+		new("00000000-0000-0180-8000-89f7ff5f7b58"),
+		new("00000000-0000-0081-8000-89f7ff5f7b58"),
+	];
+
+	[Fact]
+	void TestSortedGuidList()
+	{
+		// Act
+		IReadOnlyList<SequentialGuid> sortedList = [.. SortedGuidList.OrderBy(x => x)];
+		// Assert
+		sortedList.ShouldBe(SortedGuidList, ignoreOrder: false);
+		// Make sure everything but the entropy bytes checks out
+		foreach (var actual in SortedGuidList.Select(v => v.Timestamp.Ticks))
+		{
+			actual.ShouldBe(EpochTicks);
+		}
+	}
+
+	[Fact]
+	void TestSortedSqlGuidList()
+	{
+		// Act
+		IReadOnlyList<SequentialSqlGuid> sortedSqlList = [.. SortedSqlGuidList.OrderBy(x => x)];
+		// Assert
+		sortedSqlList.ShouldBe(SortedSqlGuidList, ignoreOrder: false);
+		// Make sure everything but the entropy bytes checks out
+		foreach (var actual in SortedSqlGuidList.Select(v => v.Timestamp.Ticks))
+		{
+			actual.ShouldBe(EpochTicks);
+		}
+	}
+
 	[Fact]
 	void TestVersion8Bits()
 	{
@@ -90,7 +148,7 @@ public sealed class GuidV8TimeTests
 		// Act
 		Guid[] sorted = [.. guids.OrderBy(x => x)];
 		// Assert - different timestamp tick values always sort in creation order
-		sorted.ShouldBe(guids);
+		sorted.ShouldBe(guids, ignoreOrder: false);
 	}
 
 	[Fact]
