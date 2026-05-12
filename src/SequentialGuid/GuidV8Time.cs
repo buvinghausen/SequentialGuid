@@ -1,6 +1,7 @@
 #if !NET6_0_OR_GREATER
 using System.Diagnostics;
 #endif
+using System.Runtime.CompilerServices;
 using System.Security;
 using System.Security.Cryptography;
 using System.Text;
@@ -155,6 +156,7 @@ public static class GuidV8Time
 	public static Guid NewGuid(DateTimeOffset timestamp) =>
 		NewGuid(timestamp.UtcDateTime);
 
+	[SkipLocalsInit]
 	internal static Guid NewGuid(long timestamp)
 	{
 		// only use low order 22 bits

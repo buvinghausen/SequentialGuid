@@ -2,6 +2,7 @@
 using System.Buffers;
 #endif
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using SequentialGuid.Extensions;
 
@@ -17,6 +18,7 @@ internal static class GuidNameBased
 		internal static readonly Guid X500 = new("6ba7b814-9dad-11d1-80b4-00c04fd430c8");
 	}
 
+	[SkipLocalsInit]
 	[SuppressMessage("Security", "CA5350:Do Not Use Weak Cryptographic Algorithms",
 		Justification = "RFC 9562 §A.4 mandates SHA-1 for UUIDv5 name-based identifiers; this is a specification requirement, not a security primitive.")]
 	internal static Guid Create(Guid namespaceId, byte[] name, HashAlgorithmName algorithmName, byte version)
