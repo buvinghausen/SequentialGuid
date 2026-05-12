@@ -263,17 +263,6 @@ cd util/Benchmarks
 dotnet run -c Release -- --filter *Generation*
 ```
 
-## Upgrade Guide
-
-Upgrading from the legacy `SequentialGuidGenerator` / `SequentialSqlGuidGenerator` API is straightforward — replace the obsolete singleton calls with the new static methods:
-
-| Before (legacy) | After |
-|---|---|
-| `SequentialGuidGenerator.Instance.NewGuid()` | `GuidV8Time.NewGuid()` |
-| `SequentialSqlGuidGenerator.Instance.NewSqlGuid()` | `GuidV8Time.NewSqlGuid()` |
-
-The legacy classes are still available (marked `[Obsolete]`) so your code will continue to compile, but you should migrate at your convenience.
-
 ## Backwards Compatibility
 
 The new RFC 9562 algorithm is **fully backwards compatible** with previously generated Guids:
