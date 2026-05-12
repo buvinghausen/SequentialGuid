@@ -53,6 +53,20 @@ public static class GuidExtensions
 				: null;
 		}
 
+		/// <summary>Try-pattern variant of <see cref="ToDateTime"/>.</summary>
+		/// <param name="timestamp">When this method returns <see langword="true"/>, the embedded UTC timestamp; otherwise <c>default</c>.</param>
+		/// <returns><see langword="true"/> if the GUID contains a valid embedded timestamp; otherwise <see langword="false"/>.</returns>
+		public bool TryToDateTime(out DateTime timestamp)
+		{
+			if (id.ToDateTime() is { } dt)
+			{
+				timestamp = dt;
+				return true;
+			}
+			timestamp = default;
+			return false;
+		}
+
 		/// <summary>
 		/// Converts a <see cref="Guid"/> to its SQL Server byte order equivalent.
 		/// </summary>
