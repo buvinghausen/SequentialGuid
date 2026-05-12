@@ -25,3 +25,8 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build /p:CollectCoverage=true /p:CoverletOutput='../../' /p:CoverletOutputFormat=opencover /p:Threshold=22 /p:SkipAutoProps=true /p:UseSourceLink=true
+    - name: AOT smoke test
+      run: |
+        dotnet publish test/SequentialGuid.AotSmokeTest -c Release -r win-x64 -o aot-out
+        .\aot-out\SequentialGuid.AotSmokeTest.exe
+      shell: pwsh
