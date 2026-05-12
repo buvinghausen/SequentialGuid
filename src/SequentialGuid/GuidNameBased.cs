@@ -34,7 +34,7 @@ internal static class GuidNameBased
 		return new(digest.SwapByteOrder());
 #elif NET6_0_OR_GREATER
 		const int StackThreshold = 256;
-		var totalLen = 16 + name.Length;
+		var totalLen = checked(16 + name.Length);
 
 		Span<byte> stackBuf = stackalloc byte[StackThreshold];
 		byte[]? rented = null;
