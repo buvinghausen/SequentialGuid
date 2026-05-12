@@ -14,8 +14,13 @@ namespace System;
 [SkipLocalsInit]
 public static class GuidExtensions
 {
+	private static readonly Guid s_maxValue = new("ffffffff-ffff-ffff-ffff-ffffffffffff");
+
 	extension(Guid id)
 	{
+		/// <summary>Gets the RFC 9562 §5.10 max UUID — all bits set to 1.</summary>
+		public static Guid MaxValue => s_maxValue;
+
 		/// <summary>
 		/// Converts a <see cref="Guid"/> to a <see cref="DateTime"/> if the <see cref="Guid"/> contains a valid timestamp.
 		/// </summary>
