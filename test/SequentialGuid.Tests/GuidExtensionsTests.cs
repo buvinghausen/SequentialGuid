@@ -45,4 +45,41 @@ public sealed class GuidExtensionsTests
 		success.ShouldBeFalse();
 		timestamp.ShouldBe(default(DateTime));
 	}
+
+	[Fact]
+	void ToDateTimeOffsetReturnsUtcOffsetForSequentialGuid()
+	{
+		// Arrange
+		var v7 = GuidV7.NewGuid();
+		// Act
+		var dto = v7.ToDateTimeOffset();
+		// Assert
+		dto.ShouldNotBeNull();
+		dto.Value.Offset.ShouldBe(TimeSpan.Zero);
+	}
+
+	[Fact]
+	void ToDateTimeOffsetReturnsNullForRandomV4()
+	{
+		var v4 = new Guid("919108f7-52d1-4320-9bac-f847db4148a8");
+		v4.ToDateTimeOffset().ShouldBeNull();
+	}
+
+	[Fact]
+	void TryToDateTimeOffsetReturnsTrueForSequentialGuid()
+	{
+		var v7 = GuidV7.NewGuid();
+		var success = v7.TryToDateTimeOffset(out var dto);
+		success.ShouldBeTrue();
+		dto.Offset.ShouldBe(TimeSpan.Zero);
+	}
+
+	[Fact]
+	void TryToDateTimeOffsetReturnsFalseForRandomV4()
+	{
+		var v4 = new Guid("919108f7-52d1-4320-9bac-f847db4148a8");
+		var success = v4.TryToDateTimeOffset(out var dto);
+		success.ShouldBeFalse();
+		dto.ShouldBe(default(DateTimeOffset));
+	}
 }
