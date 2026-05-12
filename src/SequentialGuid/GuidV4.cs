@@ -21,22 +21,19 @@ public static class GuidV4
 	public static Guid NewGuid()
 	{
 		// Build 16 bytes in network (big-endian) byte order per RFC 9562 Section 5.4
-		var bytes = new byte[16];
 #if NET6_0_OR_GREATER
+		Span<byte> bytes = stackalloc byte[16];
 		RandomNumberGenerator.Fill(bytes);
-#else
-		using var rng = RandomNumberGenerator.Create();
-		rng.GetBytes(bytes);
-#endif
 		bytes.SetRfc9562Version(4);
 		bytes.SetRfc9562Variant();
-
-		// Swap from network byte order to .NET's mixed-endian Guid format
-		return
-#if NET6_0_OR_GREATER
-			new(bytes, true);
+		return new(bytes, bigEndian: true);
 #else
-			new(bytes.SwapByteOrder());
+		var bytes = new byte[16];
+		using var rng = RandomNumberGenerator.Create();
+		rng.GetBytes(bytes);
+		bytes.SetRfc9562Version(4);
+		bytes.SetRfc9562Variant();
+		return new(bytes.SwapByteOrder());
 #endif
 	}
 }
