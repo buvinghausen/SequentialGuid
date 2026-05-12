@@ -76,18 +76,6 @@ All generation methods accept these NodaTime types:
 | `OffsetDateTime` | Converted to `Instant` (for V8) or `DateTimeOffset` (for V7) |
 | `ZonedDateTime` | Converted to `Instant` (for V8) or `DateTimeOffset` (for V7) |
 
-## Legacy API
-
-The package also includes extension methods for the deprecated `SequentialGuidGenerator` and `SequentialSqlGuidGenerator` classes. These are marked `[Obsolete]` and will forward to `GuidV8Time` under the hood:
-
-```csharp
-// Deprecated - use GuidV7/GuidV8Time directly instead
-#pragma warning disable CS0618
-var id = SequentialGuidGenerator.Instance.NewGuid(instant);
-var sqlId = SequentialSqlGuidGenerator.Instance.NewSqlGuid(instant);
-#pragma warning restore CS0618
-```
-
 ## Further Reading
 
 See the [main SequentialGuid README](https://github.com/buvinghausen/SequentialGuid/blob/master/README.md) for full documentation on UUID generation, timestamp extraction, and SQL Server byte-order handling.
