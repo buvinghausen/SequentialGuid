@@ -38,15 +38,19 @@ public static class GuidV8Time
 #endif
 			.GetInt32(500000);
 		MachinePid = new byte[5];
+		// SHA-1 is used only as a non-cryptographic fingerprint of the machine name to derive a
+		// 3-byte identity tag inside the UUIDv8 custom layout. It is not a security boundary.
+#pragma warning disable CA5350 // Do Not Use Weak Cryptographic Algorithms
 #if NET6_0_OR_GREATER
 		// For newer frameworks use the preferred static function
-		var hash = SHA512.HashData
+		var hash = SHA1.HashData
 #else
 		// For older frameworks use the old algorithm create function
-		using var algorithm = SHA512.Create();
+		using var algorithm = SHA1.Create();
 		var hash = algorithm.ComputeHash
 #endif
 			(Encoding.UTF8.GetBytes(Environment.MachineName));
+#pragma warning restore CA5350
 		for (var i = 0; i < 3; i++)
 			MachinePid[i] = hash[i];
 		try
