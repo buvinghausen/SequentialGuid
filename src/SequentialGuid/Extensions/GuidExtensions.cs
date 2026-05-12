@@ -86,6 +86,10 @@ public static class GuidExtensions
 			return false;
 		}
 
+		/// <summary>Returns true if <paramref name="id"/> is a recognised sequential GUID (V7, V8, or legacy format) in either standard or SQL Server byte order.</summary>
+		public bool IsSequentialGuid() =>
+			SequentialGuidByteOrder.TryDetect(id, out _);
+
 		/// <summary>
 		/// Converts a <see cref="Guid"/> to its SQL Server byte order equivalent.
 		/// </summary>
