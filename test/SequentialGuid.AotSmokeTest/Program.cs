@@ -75,6 +75,18 @@ var json = JsonSerializer.Serialize(sg, typeInfo);
 var roundTripped = JsonSerializer.Deserialize(json, typeInfo);
 Check("JSON roundtrip preserves Value", roundTripped.Value == sg.Value);
 
+// v6.1 ergonomic extensions
+Check("Guid.MaxValue non-empty", Guid.MaxValue != Guid.Empty);
+
+Check("v7 TryToDateTime true", v7.TryToDateTime(out var v7Dt) && v7Dt > DateTime.MinValue);
+Check("v4 TryToDateTime false", !v4.TryToDateTime(out _));
+
+Check("v7 ToDateTimeOffset Utc", v7.ToDateTimeOffset() is { Offset.Ticks: 0 });
+Check("v4 ToDateTimeOffset null", v4.ToDateTimeOffset() is null);
+
+Check("v7 IsSequentialGuid true", v7.IsSequentialGuid());
+Check("v4 IsSequentialGuid false", !v4.IsSequentialGuid());
+
 if (failures.Count == 0)
 {
 	Console.WriteLine("AOT smoke test: PASS");
