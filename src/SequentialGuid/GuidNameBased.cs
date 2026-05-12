@@ -1,3 +1,7 @@
+#if NET6_0_OR_GREATER
+using System.Buffers;
+#endif
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 using SequentialGuid.Extensions;
 
@@ -13,6 +17,8 @@ internal static class GuidNameBased
 		internal static readonly Guid X500 = new("6ba7b814-9dad-11d1-80b4-00c04fd430c8");
 	}
 
+	[SuppressMessage("Security", "CA5350:Do Not Use Weak Cryptographic Algorithms",
+		Justification = "RFC 9562 §A.4 mandates SHA-1 for UUIDv5 name-based identifiers; this is a specification requirement, not a security primitive.")]
 	internal static Guid Create(Guid namespaceId, byte[] name, HashAlgorithmName algorithmName, byte version)
 	{
 #if NETFRAMEWORK
@@ -24,30 +30,51 @@ internal static class GuidNameBased
 		digest.SetRfc9562Version(version);
 		digest.SetRfc9562Variant();
 		return new(digest.SwapByteOrder());
+#elif NET6_0_OR_GREATER
+		const int StackThreshold = 256;
+		var totalLen = 16 + name.Length;
+
+		Span<byte> stackBuf = stackalloc byte[StackThreshold];
+		byte[]? rented = null;
+		var input = totalLen <= StackThreshold
+			? stackBuf[..totalLen]
+			: (rented = ArrayPool<byte>.Shared.Rent(totalLen)).AsSpan(0, totalLen);
+		try
+		{
+#if NET8_0_OR_GREATER
+			namespaceId.TryWriteBytes(input[..16], bigEndian: true, out _);
 #else
-		using var hash = IncrementalHash.CreateHash(algorithmName);
-		hash.AppendData(namespaceId
-#if NETSTANDARD
-			.ToByteArray().SwapByteOrder()
-#else
-			.ToByteArray(true)
+			// NET6/7: TryWriteBytes(span, bigEndian) doesn't exist; write native order then swap in-place
+			namespaceId.TryWriteBytes(input[..16]);
+			input[..16].SwapGuidBytesInPlace();
 #endif
-		);
-		hash.AppendData(name);
-#if NET6_0_OR_GREATER
-		// SHA-256 is the widest digest we use (32 bytes); SHA-1 fills the first 20.
-		Span<byte> digest = stackalloc byte[32];
-		hash.TryGetHashAndReset(digest, out _);
-		var head = digest[..16];
-		head.SetRfc9562Version(version);
-		head.SetRfc9562Variant();
-		return new(head, bigEndian: true);
+			name.AsSpan().CopyTo(input.Slice(16, name.Length));
+
+			// SHA-256 is the widest digest we use (32 bytes); SHA-1 fills the first 20.
+			Span<byte> digest = stackalloc byte[32];
+			if (algorithmName == HashAlgorithmName.SHA1)
+				SHA1.HashData(input, digest);
+			else
+				SHA256.HashData(input, digest);
+
+			var head = digest[..16];
+			head.SetRfc9562Version(version);
+			head.SetRfc9562Variant();
+			return new(head, bigEndian: true);
+		}
+		finally
+		{
+			if (rented is not null) ArrayPool<byte>.Shared.Return(rented);
+		}
 #else
+		// netstandard2.0 — TryGetHashAndReset(Span<byte>, out int) is .NET 5+ / netstandard 2.1+
+		using var hash = IncrementalHash.CreateHash(algorithmName);
+		hash.AppendData(namespaceId.ToByteArray().SwapByteOrder());
+		hash.AppendData(name);
 		var digest = hash.GetHashAndReset();
 		digest.SetRfc9562Version(version);
 		digest.SetRfc9562Variant();
 		return new(digest.SwapByteOrder());
-#endif
 #endif
 	}
 }
