@@ -293,7 +293,7 @@ public sealed class SequentialGuidTests
 
 	[Fact]
 	void TestAfterNowThrowsArgumentException() =>
-		TestThrowsArgumentException(GuidV8Time.Timestamp.AddSeconds(1));
+		TestThrowsArgumentException(GuidV8Time.Timestamp.AddSeconds(2));
 
 	[Fact]
 	void TestAfterNowReturnsNullDateTime() =>

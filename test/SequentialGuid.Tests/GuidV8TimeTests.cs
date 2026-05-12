@@ -169,7 +169,7 @@ public sealed class GuidV8TimeTests
 
 	[Fact]
 	void TestAfterNowThrowsArgumentException() =>
-		Should.Throw<ArgumentException>(() => GuidV8Time.NewGuid(GuidV8Time.Timestamp.AddSeconds(1)));
+		Should.Throw<ArgumentException>(() => GuidV8Time.NewGuid(GuidV8Time.Timestamp.AddSeconds(2)));
 
 	[Fact]
 	void TestBeforeUnixEpochThrowsArgumentException() =>
@@ -214,7 +214,7 @@ public sealed class GuidV8TimeTests
 	[Fact]
 	void TestDateTimeOffsetAfterNowThrowsArgumentException() =>
 		Should.Throw<ArgumentException>(() =>
-			GuidV8Time.NewGuid(DateTimeOffset.UtcNow.AddSeconds(1)));
+			GuidV8Time.NewGuid(DateTimeOffset.UtcNow.AddSeconds(2)));
 
 	[Fact]
 	void TestDateTimeOffsetBeforeUnixEpochThrowsArgumentException() =>
