@@ -9,4 +9,10 @@ internal static class GuidExtensions
 		internal long ToUnixMs() =>
 			id.ToByteArray().Rfc9562V7UnixMs();
 	}
+
+	extension(DateTime dt)
+	{
+		internal DateTime TruncateToMs() =>
+			new(dt.Ticks - dt.Ticks % TimeSpan.TicksPerMillisecond, dt.Kind);
+	}
 }

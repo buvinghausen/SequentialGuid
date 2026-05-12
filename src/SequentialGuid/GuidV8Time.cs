@@ -70,12 +70,6 @@ public static class GuidV8Time
 	}
 
 	/// <summary>
-	/// Gets the current date and time in Coordinated Universal Time (UTC).
-	/// </summary>
-	public static DateTime Timestamp =>
-		DateTime.UtcNow;
-
-	/// <summary>
 	/// Creates a new UUID version 8 using the current UTC time, with byte ordering
 	/// suitable for storage in a SQL Server <c>uniqueidentifier</c> column.
 	/// </summary>
