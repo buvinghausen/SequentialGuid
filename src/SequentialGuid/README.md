@@ -29,7 +29,7 @@ SequentialGuid is a zero-dependency .NET library that produces [RFC 9562](https:
 - **RFC 9562 compliant** — correct version nibble and variant bits on every UUID, every time
 - **Monotonically increasing** — `GuidV7` and `GuidV8Time` both use a process-global `Interlocked.Increment` counter so IDs generated on the same timestamp are still strictly ordered, even under heavy concurrency
 - **Zero dependencies** — the core package references nothing outside the BCL
-- **Zero allocations on modern .NET** — `stackalloc`, `Span<T>`, and `[SkipLocalsInit]` eliminate heap allocations on the hot path (.NET 8+)
+- **Zero allocations on modern .NET** — `stackalloc`, `Span<T>`, and `[SkipLocalsInit]` eliminate heap allocations on **every** generation path (.NET 6+), including the deterministic v5/v8 name-based generators
 - **Broad platform support** — targets **.NET 10 / 9 / 8**, **.NET Framework 4.6.2**, and **.NET Standard 2.0**, with explicit `browser` platform support and Native AOT compatibility for Blazor WebAssembly
 - **Native AOT compatible** — declares `IsAotCompatible=true` and is verified end-to-end with a published AOT smoke test in CI
 - **Round-trip timestamp extraction** — call `.ToDateTime()` on any `Guid` (V7, V8, or legacy) to recover the embedded UTC timestamp — works on `SqlGuid` too
@@ -109,6 +109,25 @@ var id = GuidV8Name.Create(GuidV8Name.Namespaces.Url, "https://example.com");
 ```csharp
 DateTime? created = id.ToDateTime();
 // Works on GuidV7, GuidV8Time, legacy SequentialGuid, and even SqlGuid values
+```
+
+### Helpers for common timestamp & predicate scenarios
+
+```csharp
+// Try-pattern variant — useful when you want to branch without nullable handling
+if (id.TryToDateTime(out var created))
+{
+    Console.WriteLine($"Created at {created:O}");
+}
+
+// DateTimeOffset variant — explicit UTC offset
+DateTimeOffset? created = id.ToDateTimeOffset();
+
+// Predicate — "is this a recognised sequential GUID at all?"
+bool isOurs = someGuid.IsSequentialGuid();
+
+// RFC 9562 §5.10 max UUID constant — useful for range-scan upper bounds
+Guid upper = Guid.MaxValue;
 ```
 
 ### Convert between Guid and SqlGuid byte order
