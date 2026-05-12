@@ -8,9 +8,6 @@
 
 	<ItemGroup>
 		<SupportedPlatform Include="browser" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<Using Remove="System.Collections.Generic" />
 		<Using Remove="System.IO" />
 		<Using Remove="System.Net.Http" />

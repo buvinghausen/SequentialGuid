@@ -160,3 +160,9 @@ coverage.*.xml
 
 .fake
 *.*nupkg
+
+# Local agent + benchmark artifacts
+.claude/
+BenchmarkDotNet.Artifacts/
+aot-out/
+bench-*.txt

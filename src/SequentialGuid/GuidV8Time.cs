@@ -40,10 +40,10 @@ public static class GuidV8Time
 		MachinePid = new byte[5];
 #if NET6_0_OR_GREATER
 		// For newer frameworks use the preferred static function
-		var hash = SHA512.HashData
+		var hash = SHA256.HashData
 #else
 		// For older frameworks use the old algorithm create function
-		using var algorithm = SHA512.Create();
+		using var algorithm = SHA256.Create();
 		var hash = algorithm.ComputeHash
 #endif
 			(Encoding.UTF8.GetBytes(Environment.MachineName));
@@ -68,12 +68,6 @@ public static class GuidV8Time
 		{
 		}
 	}
-
-	/// <summary>
-	/// Gets the current date and time in Coordinated Universal Time (UTC).
-	/// </summary>
-	public static DateTime Timestamp =>
-		DateTime.UtcNow;
 
 	/// <summary>
 	/// Creates a new UUID version 8 using the current UTC time, with byte ordering
@@ -166,9 +160,11 @@ public static class GuidV8Time
 		// only use low order 22 bits
 		var increment = Interlocked.Increment(ref s_increment) & 0x003fffff;
 
-		// Build 16 bytes in network (big-endian) byte order per RFC 9562 Appendix B.1
+#if NET6_0_OR_GREATER
+		Span<byte> bytes = stackalloc byte[16];
+#else
 		var bytes = new byte[16];
-
+#endif
 		// custom_a: timestamp bits [59:12] → octets 0-5
 		bytes[0] = (byte)(timestamp >> 52);
 		bytes[1] = (byte)(timestamp >> 44);
@@ -194,12 +190,10 @@ public static class GuidV8Time
 		bytes.SetRfc9562Version(8);
 		bytes.SetRfc9562Variant();
 
-		// Swap from network byte order to .NET's mixed-endian Guid format
-		return
 #if NET6_0_OR_GREATER
-			new(bytes, true);
+		return new(bytes, bigEndian: true);
 #else
-			new(bytes.SwapByteOrder());
+		return new(bytes.SwapByteOrder());
 #endif
 	}
 }

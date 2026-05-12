@@ -113,10 +113,10 @@ public sealed class SequentialSqlGuidStructTests
 	void DefaultConstructorTimestampIsUtcAndCurrent()
 	{
 		// Arrange
-		var before = GuidV7.Timestamp;
+		var before = DateTime.UtcNow.TruncateToMs();
 		// Act
 		SequentialSqlGuid id = new();
-		var after = GuidV7.Timestamp;
+		var after = DateTime.UtcNow.TruncateToMs();
 		// Assert
 		id.Timestamp.Kind.ShouldBe(DateTimeKind.Utc);
 		id.Timestamp.ShouldBeGreaterThanOrEqualTo(before);
@@ -151,10 +151,10 @@ public sealed class SequentialSqlGuidStructTests
 	void V8CustomConstructorTimestampIsUtcAndCurrent()
 	{
 		// Arrange
-		var before = GuidV8Time.Timestamp;
+		var before = DateTime.UtcNow;
 		// Act
 		SequentialSqlGuid id = new(SequentialGuidType.Rfc9562V8Custom);
-		var after = GuidV8Time.Timestamp;
+		var after = DateTime.UtcNow;
 		// Assert
 		id.Timestamp.Kind.ShouldBe(DateTimeKind.Utc);
 		id.Timestamp.ShouldBeGreaterThanOrEqualTo(before);

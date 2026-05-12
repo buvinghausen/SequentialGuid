@@ -159,10 +159,10 @@ public sealed class GuidV7Tests
 	void TestCurrentTimestampIsEmbedded()
 	{
 		// Arrange
-		var before = GuidV7.Timestamp;
+		var before = DateTime.UtcNow.TruncateToMs();
 		// Act
 		var actual = GuidV7.NewGuid().ToDateTime().GetValueOrDefault();
-		var after = GuidV7.Timestamp;
+		var after = DateTime.UtcNow.TruncateToMs();
 
 		// Assert
 		actual.ShouldBeGreaterThanOrEqualTo(before);
@@ -233,7 +233,7 @@ public sealed class GuidV7Tests
 	{
 		// Arrange - use the current time so the counter path is exercised
 		// (RFC 9562 §6.2 Method 1: fixed bit-length dedicated counter spanning rand_a and rand_b)
-		var timestamp = GuidV7.Timestamp;
+		var timestamp = DateTime.UtcNow.TruncateToMs();
 		// Act - generate 100 UUIDs all sharing the same millisecond timestamp
 		Guid[] actual = [.. Enumerable.Range(0, 100).Select(_ => GuidV7.NewGuid(timestamp))];
 		// Assert - the counter in rand_a ensures they are already in creation order
@@ -246,7 +246,7 @@ public sealed class GuidV7Tests
 	{
 		// Arrange
 		// Guid V7 only keeps time to the millisecond so strip off additional precision
-		var expected = GuidV7.Timestamp;
+		var expected = DateTime.UtcNow.TruncateToMs();
 
 		// Act
 		var actual = GuidV7.NewGuid(expected).ToDateTime();
@@ -259,7 +259,7 @@ public sealed class GuidV7Tests
 	void TestSqlGuidToDateTime()
 	{
 		// Arrange
-		var expected = GuidV7.Timestamp;
+		var expected = DateTime.UtcNow.TruncateToMs();
 
 		// Act
 		var actual = GuidV7.NewSqlGuid(expected).ToDateTime();

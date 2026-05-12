@@ -16,12 +16,14 @@ internal static class GuidNameBased
 	internal static Guid Create(Guid namespaceId, byte[] name, HashAlgorithmName algorithmName, byte version)
 	{
 #if NETFRAMEWORK
-		// Legacy .NET Framework does not support incremental hash so do the full-blown hash
-		// and set the resulting value to digest to match so the downstream bit setting and return work
+		// Legacy .NET Framework — full-blown hash then read .Hash
 		using var hash = HashAlgorithm.Create(algorithmName.Name)!;
 		hash.TransformBlock(namespaceId.ToByteArray().SwapByteOrder(), 0, 16, null, 0);
 		hash.TransformFinalBlock(name, 0, name.Length);
 		var digest = hash.Hash;
+		digest.SetRfc9562Version(version);
+		digest.SetRfc9562Variant();
+		return new(digest.SwapByteOrder());
 #else
 		using var hash = IncrementalHash.CreateHash(algorithmName);
 		hash.AppendData(namespaceId
@@ -32,15 +34,20 @@ internal static class GuidNameBased
 #endif
 		);
 		hash.AppendData(name);
+#if NET6_0_OR_GREATER
+		// SHA-256 is the widest digest we use (32 bytes); SHA-1 fills the first 20.
+		Span<byte> digest = stackalloc byte[32];
+		hash.TryGetHashAndReset(digest, out _);
+		var head = digest[..16];
+		head.SetRfc9562Version(version);
+		head.SetRfc9562Variant();
+		return new(head, bigEndian: true);
+#else
 		var digest = hash.GetHashAndReset();
-#endif
 		digest.SetRfc9562Version(version);
 		digest.SetRfc9562Variant();
-		return
-#if NET6_0_OR_GREATER
-			new(digest.AsSpan(0, 16), true);
-#else
-			new(digest.SwapByteOrder());
+		return new(digest.SwapByteOrder());
+#endif
 #endif
 	}
 }

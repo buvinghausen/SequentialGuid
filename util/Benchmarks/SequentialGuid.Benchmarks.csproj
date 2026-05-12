@@ -4,6 +4,8 @@
 		<OutputType>Exe</OutputType>
 		<TargetFramework>net10.0</TargetFramework>
 		<IsPackable>false</IsPackable>
+		<!-- BenchmarkDotNet requires [Benchmark] methods to be instance methods. -->
+		<NoWarn>$(NoWarn);CA1822</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>

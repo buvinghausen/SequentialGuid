@@ -12,14 +12,8 @@
 		<Using Remove="System.Net.Http" />
 		<Using Remove="System.Threading" />
 		<Using Remove="System.Threading.Tasks" />
-	</ItemGroup>
-
-	<!-- Version 2.29 is the lowest level version that supports MongoDB 8.1 -->
-	<ItemGroup>
+		<!-- Version 2.29 is the lowest level version that supports MongoDB 8.1 -->
 		<PackageReference Include="MongoDB.Bson" Version="2.29.0" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<ProjectReference Include="..\SequentialGuid\SequentialGuid.csproj" />
 	</ItemGroup>
 

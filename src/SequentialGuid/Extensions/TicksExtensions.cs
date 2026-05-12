@@ -15,7 +15,7 @@ static class TicksExtensions
 
 		internal bool IsDateTime =>
 			value >= UnixEpochTicks &&
-			value <= DateTime.UtcNow.Ticks;
+			value <= DateTime.UtcNow.Ticks + TimeSpan.TicksPerSecond;
 
 		internal long Rfc9562V7Ticks =>
 			UnixEpochTicks + value * TimeSpan.TicksPerMillisecond;

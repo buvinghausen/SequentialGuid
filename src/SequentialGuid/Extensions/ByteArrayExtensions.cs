@@ -209,5 +209,17 @@ internal static class ByteArrayExtensions
 			dest[15] = b[3];
 		}
 	}
+
+	// Mutable Span helpers for the generation hot path
+	extension(Span<byte> b)
+	{
+		// Sets the RFC 9562 version nibble (bits 48-51) in bytes[6]
+		internal void SetRfc9562Version(byte version) =>
+			b[6] = (byte)((b[6] & 0x0F) | (version << 4));
+
+		// Sets the RFC 9562 variant bits (10xxxxxx) on bytes[8]
+		internal void SetRfc9562Variant() =>
+			b[8] = (byte)((b[8] & 0x3F) | 0x80);
+	}
 #endif
 }

@@ -37,14 +37,6 @@ public static class GuidV7
 	}
 
 	/// <summary>
-	/// Gets the current date and time in Coordinated Universal Time (UTC).
-	/// </summary>
-	/// <remarks>This property provides the current UTC date and time with millisecond precision. The value is based
-	/// on the system clock and may be affected by system time changes.</remarks>
-	public static DateTime Timestamp =>
-		DateTimeOffset.FromUnixTimeMilliseconds(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()).UtcDateTime;
-
-	/// <summary>
 	/// Creates a new UUID version 7 using the current UTC time, with byte ordering
 	/// suitable for storage in a SQL Server <c>uniqueidentifier</c> column.
 	/// </summary>
@@ -140,16 +132,13 @@ public static class GuidV7
 				"Unix millisecond timestamp must be non-negative and fit within 48 bits.");
 
 		// RFC 9562 §6.2 Method 1: claim a unique slot in the monotonic counter.
-		// Mirrors GuidV8Time.NewGuid: no timestamp-tracking state, no CAS loop.
-		var counter = Interlocked.Increment(ref s_counter) & 0x3FFFFFF; // 26-bit counter (12 rand_a + 14 rand_b)
+		var counter = Interlocked.Increment(ref s_counter) & 0x3FFFFFF;
 
-		// Build 16 bytes in network (big-endian) byte order per RFC 9562 Section 5.7
-		var bytes = new byte[16];
-
-		// Fill rand_b tail (octets 10-15) with random data; octets 8-9 hold the counter extension
 #if NET6_0_OR_GREATER
-		RandomNumberGenerator.Fill(bytes.AsSpan(10));
+		Span<byte> bytes = stackalloc byte[16];
+		RandomNumberGenerator.Fill(bytes[10..]);
 #else
+		var bytes = new byte[16];
 		using var rng = RandomNumberGenerator.Create();
 		rng.GetBytes(bytes, 10, 6);
 #endif
@@ -162,22 +151,20 @@ public static class GuidV7
 		bytes[5] = (byte)unixMilliseconds;
 
 		// rand_a: upper 12 bits of 26-bit counter (octets 6-7)
-		bytes[6] = (byte)(counter >> 22);          // counter bits 25-22 (lower nibble; version takes upper)
-		bytes[7] = (byte)((counter >> 14) & 0xFF); // counter bits 21-14
+		bytes[6] = (byte)(counter >> 22);
+		bytes[7] = (byte)((counter >> 14) & 0xFF);
 
-		// rand_b extension: lower 14 bits of counter (octets 8-9; variant takes upper 2 bits of octet 8)
-		bytes[8] = (byte)((counter >> 8) & 0x3F);  // counter bits 13-8
-		bytes[9] = (byte)(counter & 0xFF);          // counter bits 7-0
+		// rand_b extension: lower 14 bits of counter (octets 8-9)
+		bytes[8] = (byte)((counter >> 8) & 0x3F);
+		bytes[9] = (byte)(counter & 0xFF);
 
 		bytes.SetRfc9562Version(7);
 		bytes.SetRfc9562Variant();
 
-		// Swap from network byte order to .NET's mixed-endian Guid format
-		return
 #if NET6_0_OR_GREATER
-			new(bytes, true);
+		return new(bytes, bigEndian: true);
 #else
-			new(bytes.SwapByteOrder());
+		return new(bytes.SwapByteOrder());
 #endif
 	}
 }
