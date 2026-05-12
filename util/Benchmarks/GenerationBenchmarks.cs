@@ -7,29 +7,29 @@ namespace SequentialGuid.Benchmarks;
 /// Run with: dotnet run -c Release -- --filter *Generation*
 /// </summary>
 [MemoryDiagnoser]
-public sealed class GenerationBenchmarks
+public class GenerationBenchmarks
 {
 	[Benchmark(Baseline = true, Description = "Guid.NewGuid")]
-	public static Guid SystemGuidNewGuid() =>
+	public Guid SystemGuidNewGuid() =>
 		Guid.NewGuid();
 
 	[Benchmark(Description = "GuidV4.NewGuid")]
-	public static Guid GuidV4NewGuid() =>
+	public Guid GuidV4NewGuid() =>
 		GuidV4.NewGuid();
 
 	[Benchmark(Description = "GuidV7.NewGuid")]
-	public static Guid GuidV7NewGuid() =>
+	public Guid GuidV7NewGuid() =>
 		GuidV7.NewGuid();
 
 	[Benchmark(Description = "GuidV7.NewSqlGuid")]
-	public static Guid GuidV7NewSqlGuid() =>
+	public Guid GuidV7NewSqlGuid() =>
 		GuidV7.NewSqlGuid();
 
 	[Benchmark(Description = "GuidV8Time.NewGuid")]
-	public static Guid GuidV8TimeNewGuid() =>
+	public Guid GuidV8TimeNewGuid() =>
 		GuidV8Time.NewGuid();
 
 	[Benchmark(Description = "GuidV8Time.NewSqlGuid")]
-	public static Guid GuidV8TimeNewSqlGuid() =>
+	public Guid GuidV8TimeNewSqlGuid() =>
 		GuidV8Time.NewSqlGuid();
 }
