@@ -166,9 +166,11 @@ public static class GuidV8Time
 		// only use low order 22 bits
 		var increment = Interlocked.Increment(ref s_increment) & 0x003fffff;
 
-		// Build 16 bytes in network (big-endian) byte order per RFC 9562 Appendix B.1
+#if NET6_0_OR_GREATER
+		Span<byte> bytes = stackalloc byte[16];
+#else
 		var bytes = new byte[16];
-
+#endif
 		// custom_a: timestamp bits [59:12] → octets 0-5
 		bytes[0] = (byte)(timestamp >> 52);
 		bytes[1] = (byte)(timestamp >> 44);
@@ -194,12 +196,10 @@ public static class GuidV8Time
 		bytes.SetRfc9562Version(8);
 		bytes.SetRfc9562Variant();
 
-		// Swap from network byte order to .NET's mixed-endian Guid format
-		return
 #if NET6_0_OR_GREATER
-			new(bytes, true);
+		return new(bytes, bigEndian: true);
 #else
-			new(bytes.SwapByteOrder());
+		return new(bytes.SwapByteOrder());
 #endif
 	}
 }
