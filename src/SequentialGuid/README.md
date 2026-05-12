@@ -30,9 +30,10 @@ SequentialGuid is a zero-dependency .NET library that produces [RFC 9562](https:
 - **Monotonically increasing** — `GuidV7` and `GuidV8Time` both use a process-global `Interlocked.Increment` counter so IDs generated on the same timestamp are still strictly ordered, even under heavy concurrency
 - **Zero dependencies** — the core package references nothing outside the BCL
 - **Zero allocations on modern .NET** — `stackalloc`, `Span<T>`, and `[SkipLocalsInit]` eliminate heap allocations on the hot path (.NET 8+)
-- **Broad platform support** — targets **.NET 10 / 9 / 8**, **.NET Framework 4.6.2**, and **.NET Standard 2.0**, with explicit `browser` platform support for Blazor WebAssembly
+- **Broad platform support** — targets **.NET 10 / 9 / 8**, **.NET Framework 4.6.2**, and **.NET Standard 2.0**, with explicit `browser` platform support and Native AOT compatibility for Blazor WebAssembly
+- **Native AOT compatible** — declares `IsAotCompatible=true` and is verified end-to-end with a published AOT smoke test in CI
 - **Round-trip timestamp extraction** — call `.ToDateTime()` on any `Guid` (V7, V8, or legacy) to recover the embedded UTC timestamp — works on `SqlGuid` too
-- **SQL Server sort-order aware** — `NewSqlGuid()` and `.ToSqlGuid()` / `.FromSqlGuid()` handle the byte-order shuffle so your UUIDs sort chronologically in `uniqueidentifier` columns — the only uses of `System.Data.SqlTypes.SqlGuid` are in the obsolete legacy classes and test suite
+- **SQL Server sort-order aware** — `NewSqlGuid()` and `.ToSqlGuid()` / `.FromSqlGuid()` handle the byte-order shuffle so your UUIDs sort chronologically in `uniqueidentifier` columns — the only production use of `System.Data.SqlTypes.SqlGuid` is inside `SequentialSqlGuid.CompareTo`, where it implements SQL Server's documented sort order
 - **Built-in benchmarks** — a BenchmarkDotNet project is included so you can measure generation and conversion performance on your own hardware
 
 ### GuidV7 vs GuidV8Time — Which Should I Use?
