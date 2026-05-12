@@ -5,10 +5,6 @@
 		<Description>Entity Framework Core value generation support for SequentialGuid.</Description>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(TargetFramework)' == 'net8.0' or '$(TargetFramework)' == 'net9.0' or '$(TargetFramework)' == 'net10.0'">
-		<IsAotCompatible>true</IsAotCompatible>
-	</PropertyGroup>
-
 	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
 	</ItemGroup>

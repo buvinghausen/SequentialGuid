@@ -6,15 +6,8 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(TargetFramework)' == 'net8.0' or '$(TargetFramework)' == 'net9.0' or '$(TargetFramework)' == 'net10.0'">
-		<IsAotCompatible>true</IsAotCompatible>
-	</PropertyGroup>
-
 	<ItemGroup>
 		<SupportedPlatform Include="browser" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<Using Remove="System.Collections.Generic" />
 		<Using Remove="System.IO" />
 		<Using Remove="System.Net.Http" />
