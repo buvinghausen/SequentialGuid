@@ -29,7 +29,7 @@ SequentialGuid is a zero-dependency .NET library that produces [RFC 9562](https:
 - **RFC 9562 compliant** — correct version nibble and variant bits on every UUID, every time
 - **Monotonically increasing** — `GuidV7` and `GuidV8Time` both use a process-global `Interlocked.Increment` counter so IDs generated on the same timestamp are still strictly ordered, even under heavy concurrency
 - **Zero dependencies** — the core package references nothing outside the BCL
-- **Zero allocations on modern .NET** — `stackalloc`, `Span<T>`, and `[SkipLocalsInit]` eliminate heap allocations on **every** generation path on the package's modern TFMs (.NET 8+), including the deterministic v5/v8 name-based generators
+- **Zero allocations on modern .NET** — `stackalloc`, `Span<T>`, and `[SkipLocalsInit]` eliminate heap allocations on **every** generation path on the package's **.NET 10 / 9 / 8** targets, including the deterministic v5/v8 name-based generators
 - **Broad platform support** — targets **.NET 10 / 9 / 8**, **.NET Framework 4.6.2**, and **.NET Standard 2.0**, with explicit `browser` platform support and Native AOT compatibility for Blazor WebAssembly
 - **Native AOT compatible** — declares `IsAotCompatible=true` and is verified end-to-end with a published AOT smoke test in CI
 - **Round-trip timestamp extraction** — call `.ToDateTime()` on any `Guid` (V7, V8, or legacy) to recover the embedded UTC timestamp — works on `SqlGuid` too
