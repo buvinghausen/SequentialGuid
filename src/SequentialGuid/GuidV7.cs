@@ -89,7 +89,7 @@ public static class GuidV7
 	/// </summary>
 	/// <returns>A new time-ordered version 7 <see cref="Guid"/>.</returns>
 	public static Guid NewGuid() =>
-		NewGuid(DateTimeOffset.UtcNow);
+		NewGuid(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
 
 	/// <summary>
 	/// Creates a new UUID version 7 from a <see cref="DateTimeOffset"/> timestamp.
