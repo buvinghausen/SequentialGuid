@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using SequentialGuid.Extensions;
 
@@ -88,7 +89,7 @@ public static class GuidV7
 	/// </summary>
 	/// <returns>A new time-ordered version 7 <see cref="Guid"/>.</returns>
 	public static Guid NewGuid() =>
-		NewGuid(DateTimeOffset.UtcNow);
+		NewGuid(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
 
 	/// <summary>
 	/// Creates a new UUID version 7 from a <see cref="DateTimeOffset"/> timestamp.
@@ -125,6 +126,7 @@ public static class GuidV7
 	/// <exception cref="ArgumentOutOfRangeException">
 	/// Thrown when <paramref name="unixMilliseconds"/> is negative or exceeds the 48-bit maximum.
 	/// </exception>
+	[SkipLocalsInit]
 	public static Guid NewGuid(long unixMilliseconds)
 	{
 		if (unixMilliseconds is < 0 or > 0x0000_FFFF_FFFF_FFFF)

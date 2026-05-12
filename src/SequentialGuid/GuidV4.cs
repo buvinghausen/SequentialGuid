@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using SequentialGuid.Extensions;
 
@@ -18,6 +19,7 @@ public static class GuidV4
 	/// Creates a new UUID version 4 using a cryptographically strong random number generator.
 	/// </summary>
 	/// <returns>A new random version 4 <see cref="Guid"/>.</returns>
+	[SkipLocalsInit]
 	public static Guid NewGuid()
 	{
 		// Build 16 bytes in network (big-endian) byte order per RFC 9562 Section 5.4

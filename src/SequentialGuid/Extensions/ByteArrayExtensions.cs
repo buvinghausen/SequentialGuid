@@ -220,6 +220,17 @@ internal static class ByteArrayExtensions
 		// Sets the RFC 9562 variant bits (10xxxxxx) on bytes[8]
 		internal void SetRfc9562Variant() =>
 			b[8] = (byte)((b[8] & 0x3F) | 0x80);
+
+		// Swaps the first 16 bytes of `b` between .NET mixed-endian and RFC 9562 network (big-endian)
+		// byte order, in place. Reverses Data1 (4 bytes), Data2 (2 bytes), Data3 (2 bytes); Data4 unchanged.
+		// This mapping is self-inverse: applying it twice returns the original bytes.
+		internal void SwapGuidBytesInPlace()
+		{
+			(b[0], b[3]) = (b[3], b[0]);
+			(b[1], b[2]) = (b[2], b[1]);
+			(b[4], b[5]) = (b[5], b[4]);
+			(b[6], b[7]) = (b[7], b[6]);
+		}
 	}
 #endif
 }
