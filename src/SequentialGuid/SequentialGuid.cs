@@ -37,38 +37,11 @@ public readonly record struct SequentialGuid : ISequentialGuid<SequentialGuid>
 	/// <exception cref="ArgumentException">Thrown when <paramref name="value"/> is not a recognised sequential GUID.</exception>
 	public SequentialGuid(Guid value)
 	{
-#if NET6_0_OR_GREATER
-		Span<byte> bytes = stackalloc byte[16];
-		value.TryWriteBytes(bytes);
-#else
-		var bytes = value.ToByteArray();
-#endif
-		// First: if the bytes can convert to a valid timestamp.
-		// Guard against SQL-ordered V8 GUIDs whose counter byte (mapped to position [7])
-		// accidentally has high nibble 7 or 8, which makes IsRfc9562Version fire as a false
-		// positive. Disambiguate by requiring a valid timestamp when SQL detection also fires.
-		if ((bytes.IsRfc9562Version(7) || bytes.IsRfc9562Version(8) || bytes.IsLegacy()) &&
-			(bytes.ToTicks() is { IsDateTime: true } ||
-			 !bytes.IsSqlRfc9562Version(7) && !bytes.IsSqlRfc9562Version(8) && !bytes.IsSqlLegacy()))
-		{
-			Value = value;
-		}
-		else if (bytes.IsSqlRfc9562Version(7) || bytes.IsSqlRfc9562Version(8) || bytes.IsSqlLegacy())
-		{
-#if NET6_0_OR_GREATER
-			Span<byte> sqlBytes = stackalloc byte[16];
-			bytes.WriteFromSqlByteOrder(sqlBytes);
-			Value = new(sqlBytes);
-#else
-			Value = new(bytes.FromSqlByteOrder());
-#endif
-		}
-		else
-		{
+		if (!SequentialGuidByteOrder.TryDetect(value, out var wasSqlOrder))
 			throw new ArgumentException(
 				"Guid must be a version 7, version 8, or legacy sequential guid in standard or SQL Server byte order.",
 				nameof(value));
-		}
+		Value = wasSqlOrder ? value.FromSqlGuid() : value;
 		Timestamp = Value.ToDateTime().GetValueOrDefault();
 	}
 
