@@ -5,6 +5,10 @@
 		<Description>Implement MongoDB's IIdGenerator interface and add registration BsonSerializer helper method</Description>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net8.0' or '$(TargetFramework)' == 'net9.0' or '$(TargetFramework)' == 'net10.0'">
+		<IsAotCompatible>true</IsAotCompatible>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<Using Remove="System.Collections.Generic" />
 		<Using Remove="System.IO" />
