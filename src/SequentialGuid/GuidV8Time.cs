@@ -24,8 +24,8 @@ namespace SequentialGuid;
 /// </remarks>
 public static class GuidV8Time
 {
-	private static readonly byte[] MachinePid;
-	private static int s_increment;
+	static readonly byte[] MachinePid;
+	static int s_increment;
 
 	static GuidV8Time()
 	{

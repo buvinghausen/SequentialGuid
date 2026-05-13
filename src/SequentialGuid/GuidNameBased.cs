@@ -8,7 +8,7 @@ using SequentialGuid.Extensions;
 
 namespace SequentialGuid;
 
-internal static class GuidNameBased
+static class GuidNameBased
 {
 	internal static class Namespaces
 	{

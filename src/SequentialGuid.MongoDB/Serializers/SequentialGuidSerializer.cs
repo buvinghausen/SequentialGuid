@@ -6,7 +6,7 @@ namespace SequentialGuid.MongoDB.Serializers;
 abstract class SequentialGuidSerializerBase<T> : SerializerBase<T> where T : struct
 {
 	// ReSharper disable once StaticMemberInGenericType
-	private static readonly IBsonSerializer<Guid> Serializer = BsonSerializer.LookupSerializer<Guid>();
+	static readonly IBsonSerializer<Guid> Serializer = BsonSerializer.LookupSerializer<Guid>();
 
 	public override T Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args) =>
 		FromGuid(Serializer.Deserialize(context, new() { NominalType = typeof(Guid) }));

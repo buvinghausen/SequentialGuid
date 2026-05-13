@@ -43,21 +43,21 @@ Check("v8n deterministic",
 	v8n == GuidV8Name.Create(GuidV8Name.Namespaces.Url, "https://example.com"));
 
 // SequentialGuid struct
-var sg = new SgStruct();
+SgStruct sg = new();
 Check("SequentialGuid ctor", sg.Value != Guid.Empty);
 Check("SequentialGuid timestamp populated", sg.Timestamp > DateTime.MinValue);
 
-var sg2 = new SgStruct(v7);
+SgStruct sg2 = new(v7);
 Check("SequentialGuid wraps v7", sg2.Value == v7);
 
-var sg3 = new SgStruct(v7.ToString());
+SgStruct sg3 = new(v7.ToString());
 Check("SequentialGuid wraps string", sg3.Value == v7);
 
 // SequentialSqlGuid struct
-var ssg = new SsgStruct();
+SsgStruct ssg = new();
 Check("SequentialSqlGuid ctor", ssg.Value != Guid.Empty);
 
-var ssg2 = new SsgStruct(v7);
+SsgStruct ssg2 = new(v7);
 Check("SequentialSqlGuid wraps v7", ssg2.Value == v7.ToSqlGuid());
 
 // JSON converters — use a source-generated JsonSerializerContext so the round-trip is
@@ -98,4 +98,4 @@ void Check(string name, bool condition)
 }
 
 [JsonSerializable(typeof(SgStruct))]
-internal sealed partial class SmokeJsonContext : JsonSerializerContext;
+sealed partial class SmokeJsonContext : JsonSerializerContext;

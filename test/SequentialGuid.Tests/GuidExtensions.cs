@@ -2,7 +2,7 @@ using SequentialGuid.Extensions;
 
 namespace SequentialGuid.Tests;
 
-internal static class GuidExtensions
+static class GuidExtensions
 {
 	extension(Guid id)
 	{
