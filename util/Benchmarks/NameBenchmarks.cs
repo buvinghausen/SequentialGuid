@@ -16,7 +16,7 @@ public class NameBenchmarks
 		"https://a.much.longer.url.example.com/with/a/path?and=query&more=params")]
 	public string Name { get; set; } = null!;
 
-	private byte[] _nameBytes = null!;
+	byte[] _nameBytes = null!;
 
 	[GlobalSetup]
 	public void Setup() => _nameBytes = Encoding.UTF8.GetBytes(Name);

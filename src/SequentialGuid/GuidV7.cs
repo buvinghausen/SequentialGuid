@@ -24,7 +24,7 @@ public static class GuidV7
 	// Process-global monotonic counter for RFC 9562 §6.2 Method 1 — Fixed Bit-Length Dedicated
 	// Counter. Advanced via Interlocked.Increment; upper 12 bits written to rand_a, lower 14 bits
 	// to the first 14 bits of rand_b (after variant). Masked to 26 bits (0x3FFFFFF).
-	private static int s_counter;
+	static int s_counter;
 
 	static GuidV7()
 	{

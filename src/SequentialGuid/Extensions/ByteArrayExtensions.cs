@@ -1,6 +1,6 @@
 namespace SequentialGuid.Extensions;
 
-internal static class ByteArrayExtensions
+static class ByteArrayExtensions
 {
 	extension(byte[] b)
 	{
@@ -29,7 +29,7 @@ internal static class ByteArrayExtensions
 			((long)b[5] << 8) |
 			b[4];
 
-		private long Rfc9562V8Ticks =>
+		long Rfc9562V8Ticks =>
 			((long)b[3] << 52) +
 			((long)b[2] << 44) +
 			((long)b[1] << 36) +
@@ -39,7 +39,7 @@ internal static class ByteArrayExtensions
 			(((long)b[7] & 0x0F) << 8) +
 			b[6];
 
-		private long LegacyTicks =>
+		long LegacyTicks =>
 			((long)b[3] << 56) +
 			((long)b[2] << 48) +
 			((long)b[1] << 40) +
@@ -134,7 +134,7 @@ internal static class ByteArrayExtensions
 			((long)b[5] << 8) |
 			b[4];
 
-		private long Rfc9562V8Ticks =>
+		long Rfc9562V8Ticks =>
 			((long)b[3] << 52) +
 			((long)b[2] << 44) +
 			((long)b[1] << 36) +
@@ -144,7 +144,7 @@ internal static class ByteArrayExtensions
 			(((long)b[7] & 0x0F) << 8) +
 			b[6];
 
-		private long LegacyTicks =>
+		long LegacyTicks =>
 			((long)b[3] << 56) +
 			((long)b[2] << 48) +
 			((long)b[1] << 40) +

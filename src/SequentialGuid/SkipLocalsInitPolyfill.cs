@@ -9,5 +9,5 @@ namespace System.Runtime.CompilerServices;
 	AttributeTargets.Constructor | AttributeTargets.Method | AttributeTargets.Property |
 	AttributeTargets.Event | AttributeTargets.Interface,
 	Inherited = false)]
-internal sealed class SkipLocalsInitAttribute : Attribute;
+sealed class SkipLocalsInitAttribute : Attribute;
 #endif

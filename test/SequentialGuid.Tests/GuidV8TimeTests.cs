@@ -24,7 +24,7 @@ public sealed class GuidV8TimeTests
 	/// <summary>
 	///     Properly sequenced v8 SqlGuid array with UnixEpoch timestamp, version 8, and variant bits set
 	/// </summary>
-	private static IReadOnlyList<SequentialSqlGuid> SortedSqlGuidList { get; } =
+	static IReadOnlyList<SequentialSqlGuid> SortedSqlGuidList { get; } =
 	[
 		new("01000000-0000-0080-8000-89f7ff5f7b58"),
 		new("00010000-0000-0080-8000-89f7ff5f7b58"),

@@ -27,7 +27,7 @@ public sealed class GuidV7Tests
 	/// <summary>
 	///     Properly sequenced v7 SqlGuid array with UnixEpoch (0 ms) timestamp, version 7, and variant bits set
 	/// </summary>
-	private static IReadOnlyList<SequentialSqlGuid> SortedSqlGuidList { get; } =
+	static IReadOnlyList<SequentialSqlGuid> SortedSqlGuidList { get; } =
 	[
 		new("01000000-0000-0080-7000-000000000000"),
 		new("00010000-0000-0080-7000-000000000000"),

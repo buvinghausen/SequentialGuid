@@ -1,5 +1,4 @@
 using System.Runtime.CompilerServices;
-using SequentialGuid;
 using SequentialGuid.Extensions;
 
 #pragma warning disable IDE0130 // Namespace does not match folder structure
@@ -14,12 +13,12 @@ namespace System;
 [SkipLocalsInit]
 public static class GuidExtensions
 {
-	private static readonly Guid s_maxValue = new("ffffffff-ffff-ffff-ffff-ffffffffffff");
+	static readonly Guid SMaxValue = new("ffffffff-ffff-ffff-ffff-ffffffffffff");
 
 	extension(Guid id)
 	{
 		/// <summary>Gets the RFC 9562 §5.10 max UUID — all bits set to 1.</summary>
-		public static Guid MaxValue => s_maxValue;
+		public static Guid MaxValue => SMaxValue;
 
 		/// <summary>
 		/// Converts a <see cref="Guid"/> to a <see cref="DateTime"/> if the <see cref="Guid"/> contains a valid timestamp.

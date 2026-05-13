@@ -10,9 +10,9 @@ namespace SequentialGuid.Benchmarks;
 [MemoryDiagnoser]
 public class ConversionBenchmarks
 {
-	private Guid _guidV7;
-	private Guid _guidV8Time;
-	private Guid _sqlGuid;
+	Guid _guidV7;
+	Guid _guidV8Time;
+	Guid _sqlGuid;
 
 	[GlobalSetup]
 	public void Setup()

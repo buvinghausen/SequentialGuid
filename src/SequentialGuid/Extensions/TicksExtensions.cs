@@ -6,7 +6,7 @@ namespace SequentialGuid.Extensions;
 /// </summary>
 static class TicksExtensions
 {
-	private const long UnixEpochTicks = 621355968000000000L;
+	const long UnixEpochTicks = 621355968000000000L;
 
 	extension(long value)
 	{

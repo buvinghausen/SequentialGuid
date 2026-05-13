@@ -1,6 +1,6 @@
 namespace SequentialGuid.Extensions;
 
-internal static class SequentialGuidByteOrder
+static class SequentialGuidByteOrder
 {
 	/// <summary>
 	/// Detects whether <paramref name="value"/> is a recognised sequential GUID,
