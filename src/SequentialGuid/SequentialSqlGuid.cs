@@ -144,7 +144,7 @@ public readonly record struct SequentialSqlGuid : ISequentialGuid<SequentialSqlG
 #if NET6_0_OR_GREATER
 				, provider
 #endif
-			    , out var guid))
+				, out var guid))
 		{
 			try
 			{

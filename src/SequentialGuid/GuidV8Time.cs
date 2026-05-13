@@ -163,31 +163,32 @@ public static class GuidV8Time
 		var increment = Interlocked.Increment(ref s_increment) & 0x003fffff;
 
 #if NET6_0_OR_GREATER
-		Span<byte> bytes = stackalloc byte[16];
+		Span<byte>
 #else
-		var bytes = new byte[16];
+		byte[]
 #endif
-		// custom_a: timestamp bits [59:12] → octets 0-5
-		bytes[0] = (byte)(timestamp >> 52);
-		bytes[1] = (byte)(timestamp >> 44);
-		bytes[2] = (byte)(timestamp >> 36);
-		bytes[3] = (byte)(timestamp >> 28);
-		bytes[4] = (byte)(timestamp >> 20);
-		bytes[5] = (byte)(timestamp >> 12);
-
-		// custom_b: timestamp bits [11:0] → octets 6-7 (version takes upper nibble of octet 6)
-		bytes[6] = (byte)((timestamp >> 8) & 0x0F);
-		bytes[7] = (byte)timestamp;
-
-		// custom_c: increment[21:0] + MachinePid → octets 8-15 (variant takes upper 2 bits of octet 8)
-		bytes[8] = (byte)((increment >> 16) & 0x3F);
-		bytes[9] = (byte)(increment >> 8);
-		bytes[10] = (byte)increment;
-		bytes[11] = MachinePid[0];
-		bytes[12] = MachinePid[1];
-		bytes[13] = MachinePid[2];
-		bytes[14] = MachinePid[3];
-		bytes[15] = MachinePid[4];
+		bytes =
+		[
+			// custom_a: timestamp bits [59:12] → octets 0-5
+			(byte)(timestamp >> 52),
+			(byte)(timestamp >> 44),
+			(byte)(timestamp >> 36),
+			(byte)(timestamp >> 28),
+			(byte)(timestamp >> 20),
+			(byte)(timestamp >> 12),
+			// custom_b: timestamp bits [11:0] → octets 6-7 (version takes upper nibble of octet 6)
+			(byte)((timestamp >> 8) & 0x0F),
+			(byte)timestamp,
+			// custom_c: increment[21:0] + MachinePid → octets 8-15 (variant takes upper 2 bits of octet 8)
+			(byte)((increment >> 16) & 0x3F),
+			(byte)(increment >> 8),
+			(byte)increment,
+			MachinePid[0],
+			MachinePid[1],
+			MachinePid[2],
+			MachinePid[3],
+			MachinePid[4],
+		];
 
 		bytes.SetRfc9562Version(8);
 		bytes.SetRfc9562Variant();

@@ -35,15 +35,13 @@ public sealed class SequentialSqlGuidStructTests
 		// Use the RFC 9562 §A.4 v4 test vector — a fixed guid avoids the 1/256 flakiness
 		// where a random v4 guid's b[10] happens to equal 8, accidentally satisfying IsLegacy()
 		// after SQL byte conversion shifts the variant bits out of position.
-		Guid v4 = new ("919108f7-52d1-4320-9bac-f847db4148a8");
+		Guid v4 = new("919108f7-52d1-4320-9bac-f847db4148a8");
 		Should.Throw<ArgumentException>(() => new SequentialSqlGuid(v4));
 	}
 
 	[Fact]
-	void GuidConstructorThrowsForEmptyGuid()
-	{
+	void GuidConstructorThrowsForEmptyGuid() =>
 		Should.Throw<ArgumentException>(() => new SequentialSqlGuid(Guid.Empty));
-	}
 
 	[Fact]
 	void StringConstructorDelegatesToGuidConstructor()
@@ -57,19 +55,15 @@ public sealed class SequentialSqlGuidStructTests
 	}
 
 	[Fact]
-	void StringConstructorThrowsForInvalidFormat()
-	{
+	void StringConstructorThrowsForInvalidFormat() =>
 		Should.Throw<FormatException>(() => new SequentialSqlGuid("not-a-guid"));
-	}
 
+	// Use the RFC 9562 §A.4 v4 test vector — a fixed guid avoids the 1/256 flakiness
+	// where a random v4 guid's b[10] happens to equal 8, accidentally satisfying IsSqlLegacy()
+	// after SQL byte conversion shifts the variant bits out of position.
 	[Fact]
-	void StringConstructorThrowsForNonSequentialGuid()
-	{
-		// Use the RFC 9562 §A.4 v4 test vector — a fixed guid avoids the 1/256 flakiness
-		// where a random v4 guid's b[10] happens to equal 8, accidentally satisfying IsSqlLegacy()
-		// after SQL byte conversion shifts the variant bits out of position.
+	void StringConstructorThrowsForNonSequentialGuid() =>
 		Should.Throw<ArgumentException>(() => new SequentialSqlGuid("919108f7-52d1-4320-9bac-f847db4148a8"));
-	}
 
 	[Fact]
 	void RecordEqualityBasedOnValue()
@@ -221,16 +215,12 @@ public sealed class SequentialSqlGuidStructTests
 	}
 
 	[Fact]
-	void ParseStringThrowsFormatExceptionForInvalidInput()
-	{
+	void ParseStringThrowsFormatExceptionForInvalidInput() =>
 		Should.Throw<FormatException>(() => SequentialSqlGuid.Parse("not-a-guid", null));
-	}
 
 	[Fact]
-	void ParseStringThrowsArgumentExceptionForNonSequentialGuid()
-	{
+	void ParseStringThrowsArgumentExceptionForNonSequentialGuid() =>
 		Should.Throw<ArgumentException>(() => SequentialSqlGuid.Parse("919108f7-52d1-4320-9bac-f847db4148a8", null));
-	}
 
 	[Fact]
 	void TryParseStringReturnsTrueForValidSequentialSqlGuid()
@@ -245,16 +235,12 @@ public sealed class SequentialSqlGuidStructTests
 	}
 
 	[Fact]
-	void TryParseStringReturnsFalseForInvalidInput()
-	{
+	void TryParseStringReturnsFalseForInvalidInput() =>
 		SequentialSqlGuid.TryParse("not-a-guid", null, out _).ShouldBeFalse();
-	}
 
 	[Fact]
-	void TryParseStringReturnsFalseForNonSequentialGuid()
-	{
+	void TryParseStringReturnsFalseForNonSequentialGuid() =>
 		SequentialSqlGuid.TryParse("919108f7-52d1-4320-9bac-f847db4148a8", null, out _).ShouldBeFalse();
-	}
 
 	[Fact]
 	void TryParseStringReturnsFalseForNull()
@@ -275,16 +261,12 @@ public sealed class SequentialSqlGuidStructTests
 	}
 
 	[Fact]
-	void ParseSpanThrowsFormatExceptionForInvalidInput()
-	{
+	void ParseSpanThrowsFormatExceptionForInvalidInput() =>
 		Should.Throw<FormatException>(() => SequentialSqlGuid.Parse("not-a-guid".AsSpan(), null));
-	}
 
 	[Fact]
-	void ParseSpanThrowsArgumentExceptionForNonSequentialGuid()
-	{
+	void ParseSpanThrowsArgumentExceptionForNonSequentialGuid() =>
 		Should.Throw<ArgumentException>(() => SequentialSqlGuid.Parse("919108f7-52d1-4320-9bac-f847db4148a8".AsSpan(), null));
-	}
 
 	[Fact]
 	void TryParseSpanReturnsTrueForValidSequentialSqlGuid()
@@ -299,16 +281,12 @@ public sealed class SequentialSqlGuidStructTests
 	}
 
 	[Fact]
-	void TryParseSpanReturnsFalseForInvalidInput()
-	{
+	void TryParseSpanReturnsFalseForInvalidInput() =>
 		SequentialSqlGuid.TryParse("not-a-guid".AsSpan(), null, out _).ShouldBeFalse();
-	}
 
 	[Fact]
-	void TryParseSpanReturnsFalseForNonSequentialGuid()
-	{
+	void TryParseSpanReturnsFalseForNonSequentialGuid() =>
 		SequentialSqlGuid.TryParse("919108f7-52d1-4320-9bac-f847db4148a8".AsSpan(), null, out _).ShouldBeFalse();
-	}
 #endif
 
 #if NET6_0_OR_GREATER
@@ -382,15 +360,11 @@ public sealed class SequentialSqlGuidStructTests
 	}
 
 	[Fact]
-	void TryParseUtf8SpanReturnsFalseForInvalidInput()
-	{
+	void TryParseUtf8SpanReturnsFalseForInvalidInput() =>
 		SequentialSqlGuid.TryParse("not-a-guid"u8, null, out _).ShouldBeFalse();
-	}
 
 	[Fact]
-	void TryParseUtf8SpanReturnsFalseForNonSequentialGuid()
-	{
+	void TryParseUtf8SpanReturnsFalseForNonSequentialGuid() =>
 		SequentialSqlGuid.TryParse("919108f7-52d1-4320-9bac-f847db4148a8"u8, null, out _).ShouldBeFalse();
-	}
 #endif
 }

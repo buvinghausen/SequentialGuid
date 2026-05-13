@@ -21,7 +21,7 @@ abstract class SequentialGuidSerializerBase<T> : SerializerBase<T> where T : str
 
 sealed class SequentialGuidSerializer : SequentialGuidSerializerBase<SequentialGuid>
 {
-	private SequentialGuidSerializer() { }
+	SequentialGuidSerializer() { }
 
 	public static SequentialGuidSerializer Instance { get; } = new();
 
@@ -34,7 +34,7 @@ sealed class SequentialGuidSerializer : SequentialGuidSerializerBase<SequentialG
 
 sealed class SequentialSqlGuidSerializer : SequentialGuidSerializerBase<SequentialSqlGuid>
 {
-	private SequentialSqlGuidSerializer() { }
+	SequentialSqlGuidSerializer() { }
 
 	public static SequentialSqlGuidSerializer Instance { get; } = new();
 
