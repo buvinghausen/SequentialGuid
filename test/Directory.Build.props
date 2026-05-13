@@ -3,10 +3,11 @@
 	<Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" Condition="'' != $([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
 	<PropertyGroup>
-		<!-- .NET 8 & 9 end on November 10, 2026 -->
-		<TargetFrameworks>net10.0;net9.0;net8.0;net472</TargetFrameworks>
-		<OutputType>Exe</OutputType>
 		<IsPackable>false</IsPackable>
+		<NoWarn>$(NoWarn);IDE0051;CS1591</NoWarn>
+		<OutputType>Exe</OutputType>
+		<!-- .NET 8 & 9 end on November 10, 2026 -->
+		<TargetFrameworks>net11.0;net10.0;net9.0;net8.0;net472</TargetFrameworks>
 		<TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
 		<UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
 	</PropertyGroup>

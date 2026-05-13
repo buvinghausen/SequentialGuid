@@ -9,7 +9,7 @@ public enum SequentialGuidType
 	/// RFC 9562 Version 7 sequential GUID.
 	/// </summary>
 	Rfc9562V7 = 1,
-	
+
 	/// <summary>
 	/// RFC 9562 Version 8 custom sequential GUID.
 	/// </summary>

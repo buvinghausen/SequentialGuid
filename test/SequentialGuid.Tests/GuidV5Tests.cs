@@ -24,7 +24,7 @@ public sealed class GuidV5Tests
 		// Act
 		var id = GuidV5.Create(GuidV5.Namespaces.Dns, "test");
 		var bytes = id.ToByteArray();
-		
+
 #if NET9_0_OR_GREATER
 		id.Version.ShouldBe(5);
 #endif

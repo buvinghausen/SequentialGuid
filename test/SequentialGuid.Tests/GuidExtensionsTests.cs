@@ -3,16 +3,12 @@ namespace SequentialGuid.Tests;
 public sealed class GuidExtensionsTests
 {
 	[Fact]
-	void MaxValueIsAllBitsSet()
-	{
+	void MaxValueIsAllBitsSet() =>
 		Guid.MaxValue.ShouldBe(new("ffffffff-ffff-ffff-ffff-ffffffffffff"));
-	}
 
 	[Fact]
-	void MaxValueIsNotEmpty()
-	{
+	void MaxValueIsNotEmpty() =>
 		Guid.MaxValue.ShouldNotBe(Guid.Empty);
-	}
 
 	[Fact]
 	void TryToDateTimeReturnsTrueForSequentialGuid()
@@ -33,7 +29,7 @@ public sealed class GuidExtensionsTests
 		var v4 = new Guid("919108f7-52d1-4320-9bac-f847db4148a8");
 		var success = v4.TryToDateTime(out var timestamp);
 		success.ShouldBeFalse();
-		timestamp.ShouldBe(default(DateTime));
+		timestamp.ShouldBe(default);
 	}
 
 	[Fact]
@@ -41,7 +37,7 @@ public sealed class GuidExtensionsTests
 	{
 		var success = Guid.Empty.TryToDateTime(out var timestamp);
 		success.ShouldBeFalse();
-		timestamp.ShouldBe(default(DateTime));
+		timestamp.ShouldBe(default);
 	}
 
 	[Fact]
@@ -78,49 +74,35 @@ public sealed class GuidExtensionsTests
 		var v4 = new Guid("919108f7-52d1-4320-9bac-f847db4148a8");
 		var success = v4.TryToDateTimeOffset(out var dto);
 		success.ShouldBeFalse();
-		dto.ShouldBe(default(DateTimeOffset));
+		dto.ShouldBe(default);
 	}
 
 	[Fact]
-	void IsSequentialGuidTrueForV7()
-	{
+	void IsSequentialGuidTrueForV7() =>
 		GuidV7.NewGuid().IsSequentialGuid().ShouldBeTrue();
-	}
 
 	[Fact]
-	void IsSequentialGuidTrueForV8Time()
-	{
+	void IsSequentialGuidTrueForV8Time() =>
 		GuidV8Time.NewGuid().IsSequentialGuid().ShouldBeTrue();
-	}
 
 	[Fact]
-	void IsSequentialGuidTrueForLegacy()
-	{
+	void IsSequentialGuidTrueForLegacy() =>
 		new Guid("08de7bf5-381d-cc8b-f24c-56e3580439dd").IsSequentialGuid().ShouldBeTrue();
-	}
 
 	[Fact]
-	void IsSequentialGuidTrueForSqlOrderedV7()
-	{
+	void IsSequentialGuidTrueForSqlOrderedV7() =>
 		GuidV7.NewSqlGuid().IsSequentialGuid().ShouldBeTrue();
-	}
 
+	// RFC 9562 §A.4 v4 vector
 	[Fact]
-	void IsSequentialGuidFalseForRandomV4()
-	{
-		// RFC 9562 §A.4 v4 vector
+	void IsSequentialGuidFalseForRandomV4() =>
 		new Guid("919108f7-52d1-4320-9bac-f847db4148a8").IsSequentialGuid().ShouldBeFalse();
-	}
 
 	[Fact]
-	void IsSequentialGuidFalseForEmpty()
-	{
+	void IsSequentialGuidFalseForEmpty() =>
 		Guid.Empty.IsSequentialGuid().ShouldBeFalse();
-	}
 
 	[Fact]
-	void IsSequentialGuidFalseForMaxValue()
-	{
+	void IsSequentialGuidFalseForMaxValue() =>
 		Guid.MaxValue.IsSequentialGuid().ShouldBeFalse();
-	}
 }
