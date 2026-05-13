@@ -1,5 +1,4 @@
 using System.Security.Cryptography;
-using System.Text;
 
 namespace SequentialGuid;
 
@@ -42,7 +41,7 @@ public static class GuidV8Name
 	/// <param name="name">The name within the namespace.</param>
 	/// <returns>A deterministic version 8 <see cref="Guid"/> derived from the namespace and name.</returns>
 	public static Guid Create(Guid namespaceId, string name) =>
-		Create(namespaceId, Encoding.UTF8.GetBytes(name));
+		GuidNameBased.Create(namespaceId, name, HashAlgorithmName.SHA256, 8);
 
 	/// <summary>
 	/// Creates a deterministic UUID version 8 from a namespace <see cref="Guid"/> and raw name bytes.
@@ -52,4 +51,24 @@ public static class GuidV8Name
 	/// <returns>A deterministic version 8 <see cref="Guid"/> derived from the namespace and name.</returns>
 	public static Guid Create(Guid namespaceId, byte[] name) =>
 		GuidNameBased.Create(namespaceId, name, HashAlgorithmName.SHA256, 8);
+
+#if NET6_0_OR_GREATER
+	/// <summary>
+	/// Creates a deterministic UUID version 8 from a namespace <see cref="Guid"/> and a UTF-8 encoded name span.
+	/// </summary>
+	/// <param name="namespaceId">The namespace UUID.</param>
+	/// <param name="name">The name within the namespace.</param>
+	/// <returns>A deterministic version 8 <see cref="Guid"/> derived from the namespace and name.</returns>
+	public static Guid Create(Guid namespaceId, ReadOnlySpan<char> name) =>
+		GuidNameBased.Create(namespaceId, name, HashAlgorithmName.SHA256, 8);
+
+	/// <summary>
+	/// Creates a deterministic UUID version 8 from a namespace <see cref="Guid"/> and a raw name byte span.
+	/// </summary>
+	/// <param name="namespaceId">The namespace UUID.</param>
+	/// <param name="name">The raw name bytes within the namespace.</param>
+	/// <returns>A deterministic version 8 <see cref="Guid"/> derived from the namespace and name.</returns>
+	public static Guid Create(Guid namespaceId, ReadOnlySpan<byte> name) =>
+		GuidNameBased.Create(namespaceId, name, HashAlgorithmName.SHA256, 8);
+#endif
 }
