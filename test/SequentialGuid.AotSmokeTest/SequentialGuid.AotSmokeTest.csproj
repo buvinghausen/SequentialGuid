@@ -3,14 +3,13 @@
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
 		<TargetFrameworks></TargetFrameworks>
-		<TargetFramework>net10.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<PublishAot>true</PublishAot>
 		<!-- Enable trim/AOT analyzers at build time too, so IL2xxx/IL3xxx warnings surface in
 		     ordinary builds (and in CI publish on platforms that lack the native linker). -->
 		<IsAotCompatible>true</IsAotCompatible>
 		<InvariantGlobalization>true</InvariantGlobalization>
 		<IsPackable>false</IsPackable>
-		<RootNamespace>SequentialGuid.AotSmokeTest</RootNamespace>
 		<!-- The inherited test/Directory.Build.props imports xunit and Shouldly. This is a plain
 		     executable, not a test project, so opt out of the testing-platform integration and
 		     drop the inherited packages/usings. -->
@@ -24,9 +23,6 @@
 		<PackageReference Remove="xunit.v3.mtp-v2" />
 		<Using Remove="Shouldly" />
 		<Using Remove="Xunit" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<ProjectReference Include="..\..\src\SequentialGuid\SequentialGuid.csproj" />
 	</ItemGroup>
 

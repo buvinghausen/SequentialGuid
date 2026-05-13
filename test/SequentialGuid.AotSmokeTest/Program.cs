@@ -7,12 +7,7 @@ using SequentialGuid.Extensions;
 using SgStruct = SequentialGuid.SequentialGuid;
 using SsgStruct = SequentialGuid.SequentialSqlGuid;
 
-var failures = new List<string>();
-
-void Check(string name, bool condition)
-{
-	if (!condition) failures.Add(name);
-}
+IList<string> failures = [];
 
 // GuidV4
 var v4 = GuidV4.NewGuid();
@@ -68,7 +63,7 @@ Check("SequentialSqlGuid wraps v7", ssg2.Value == v7.ToSqlGuid());
 // JSON converters — use a source-generated JsonSerializerContext so the round-trip is
 // trimmer- and AOT-safe. AddSequentialGuidConverters() registers the SequentialGuid converters
 // on top of the generated context's options.
-var opts = new JsonSerializerOptions(SmokeJsonContext.Default.Options);
+JsonSerializerOptions opts = new(SmokeJsonContext.Default.Options);
 opts.AddSequentialGuidConverters();
 var typeInfo = (JsonTypeInfo<SgStruct>)opts.GetTypeInfo(typeof(SgStruct));
 var json = JsonSerializer.Serialize(sg, typeInfo);
@@ -96,6 +91,11 @@ if (failures.Count == 0)
 Console.WriteLine($"AOT smoke test: FAIL ({failures.Count} failures)");
 foreach (var f in failures) Console.WriteLine($"  - {f}");
 return 1;
+
+void Check(string name, bool condition)
+{
+	if (!condition) failures.Add(name);
+}
 
 [JsonSerializable(typeof(SgStruct))]
 internal sealed partial class SmokeJsonContext : JsonSerializerContext;
