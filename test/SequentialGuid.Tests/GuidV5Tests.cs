@@ -86,6 +86,25 @@ public sealed class GuidV5Tests
 		fromString.ShouldBe(fromBytes);
 	}
 
+#if NET6_0_OR_GREATER
+	[Theory]
+	[InlineData("short")]
+	// 80-char ASCII forces the pooled (>StackThreshold) path: 16 + 3*80 = 256, +1 = exceeds 256
+	[InlineData("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")]
+	// Multi-byte UTF-8 exercises the GetMaxByteCount sizing
+	[InlineData("café — RFC 9562 §A.4 — 日本語")]
+	void TestSpanOverloadsMatchStringOverload(string name)
+	{
+		// Act
+		var fromString = GuidV5.Create(GuidV5.Namespaces.Dns, name);
+		var fromCharSpan = GuidV5.Create(GuidV5.Namespaces.Dns, name.AsSpan());
+		var fromByteSpan = GuidV5.Create(GuidV5.Namespaces.Dns, (ReadOnlySpan<byte>)Encoding.UTF8.GetBytes(name));
+		// Assert
+		fromCharSpan.ShouldBe(fromString);
+		fromByteSpan.ShouldBe(fromString);
+	}
+#endif
+
 	[Fact]
 	void TestAllWellKnownNamespacesAreDistinct()
 	{
