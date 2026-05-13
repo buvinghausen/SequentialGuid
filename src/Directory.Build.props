@@ -7,6 +7,7 @@
 		<Authors>Brian Buvinghausen</Authors>
 		<Company>Buvinghausen Solutions</Company>
 		<Copyright>Copyright © 2026 Brian Buvinghausen</Copyright>
+		<IsAotCompatible Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))">true</IsAotCompatible>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageProjectUrl>https://github.com/buvinghausen/SequentialGuid/blob/master/README.md</PackageProjectUrl>
@@ -20,12 +21,7 @@
 		<PackageOutputPath>..\..\</PackageOutputPath>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(TargetFramework)' == 'net8.0' or '$(TargetFramework)' == 'net9.0' or '$(TargetFramework)' == 'net10.0'">
-		<IsAotCompatible>true</IsAotCompatible>
-	</PropertyGroup>
-
 	<ItemGroup>
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.*" PrivateAssets="All" />
 		<None Include="../../LICENSE.txt" Pack="true" PackagePath="$(PackageLicenseFile)" />
 		<None Include="README.md" Pack="true" PackagePath="$(PackageReadmeFile)" />
 		<InternalsVisibleTo Include="$(AssemblyName).Tests" />

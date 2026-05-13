@@ -21,6 +21,7 @@
   <Project Path="src/SequentialGuid.MongoDB/SequentialGuid.MongoDB.csproj" />
   <Project Path="src/SequentialGuid.NodaTime/SequentialGuid.NodaTime.csproj" />
   <Project Path="src/SequentialGuid/SequentialGuid.csproj" />
+  <Project Path="test/SequentialGuid.AotSmokeTest/SequentialGuid.AotSmokeTest.csproj" />
   <Project Path="test/SequentialGuid.EntityFrameworkCore.Tests/SequentialGuid.EntityFrameworkCore.Tests.csproj" />
   <Project Path="test/SequentialGuid.MongoDB.Tests/SequentialGuid.MongoDB.Tests.csproj" />
   <Project Path="test/SequentialGuid.NodaTime.Tests/SequentialGuid.NodaTime.Tests.csproj" />

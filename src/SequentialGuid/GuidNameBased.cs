@@ -33,12 +33,12 @@ internal static class GuidNameBased
 		digest.SetRfc9562Variant();
 		return new(digest.SwapByteOrder());
 #elif NET6_0_OR_GREATER
-		const int StackThreshold = 256;
+		const int stackThreshold = 256;
 		var totalLen = checked(16 + name.Length);
 
-		Span<byte> stackBuf = stackalloc byte[StackThreshold];
+		Span<byte> stackBuf = stackalloc byte[stackThreshold];
 		byte[]? rented = null;
-		var input = totalLen <= StackThreshold
+		var input = totalLen <= stackThreshold
 			? stackBuf[..totalLen]
 			: (rented = ArrayPool<byte>.Shared.Rent(totalLen)).AsSpan(0, totalLen);
 		try
