@@ -6,11 +6,11 @@
     <Authors>Brian Buvinghausen</Authors>
     <Company>Buvinghausen Solutions</Company>
     <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
-    <Copyright>Copyright © 2026 Brian Buvinghausen</Copyright>
+    <Copyright>Copyright © $([System.DateTime]::UtcNow.ToString("yyyy")) Brian Buvinghausen</Copyright>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
     <IsAotCompatible Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))">true</IsAotCompatible>
-    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageOutputPath>..\..\</PackageOutputPath>
     <PackageProjectUrl>https://github.com/buvinghausen/SequentialGuid/blob/master/README.md</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
