@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup Condition="'$(TargetFramework)' != 'net472'">
+    <PackageReference Include="NodaTime" Version="3.*" />
+    <ProjectReference Include="..\..\..\src\SequentialGuid.NodaTime\SequentialGuid.NodaTime.csproj" />
+  </ItemGroup>
+</Project>

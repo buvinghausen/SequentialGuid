@@ -8,7 +8,8 @@ sealed record TestEntity(int Id, SeqGuid SequentialGuid, SeqSqlGuid SequentialSq
 
 sealed class TestDbContext(DbContextOptions<TestDbContext> options) : DbContext(options)
 {
-	public DbSet<TestEntity> TestEntities => Set<TestEntity>();
+	public DbSet<TestEntity> TestEntities =>
+		Set<TestEntity>();
 
 	protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder) =>
 		configurationBuilder.AddSequentialGuidValueConverters();

@@ -15,22 +15,20 @@
   <Folder Name="/Solution Items/src/">
     <File Path="src/Directory.Build.props" />
   </Folder>
-  <Folder Name="/Solution Items/test/">
-    <File Path="test/Directory.Build.props" />
+  <Folder Name="/Solution Items/tests/">
+    <File Path="tests/unit/Directory.Build.props" />
   </Folder>
+  <Project Path="benches/Benchmarks/SequentialGuid.Benchmarks.csproj" />
   <Project Path="src/SequentialGuid.EntityFrameworkCore/SequentialGuid.EntityFrameworkCore.csproj" />
   <Project Path="src/SequentialGuid.MongoDB/SequentialGuid.MongoDB.csproj" />
   <Project Path="src/SequentialGuid.NodaTime/SequentialGuid.NodaTime.csproj" />
   <Project Path="src/SequentialGuid/SequentialGuid.csproj" />
-  <Project Path="test/SequentialGuid.AotSmokeTest/SequentialGuid.AotSmokeTest.csproj" />
-  <Project Path="test/SequentialGuid.EntityFrameworkCore.Tests/SequentialGuid.EntityFrameworkCore.Tests.csproj" />
-  <Project Path="test/SequentialGuid.MongoDB.Tests/SequentialGuid.MongoDB.Tests.csproj" />
-  <Project Path="test/SequentialGuid.NodaTime.Tests/SequentialGuid.NodaTime.Tests.csproj" />
-  <Project Path="test/SequentialGuid.Tests/SequentialGuid.Tests.csproj" />
-  <Project Path="util/Benchmarks/SequentialGuid.Benchmarks.csproj">
-    <Build Solution="Release|*" Project="false" />
-  </Project>
-  <Project Path="util/Generator/SequentialGuid.Generator.csproj">
+  <Project Path="tests/smoke/SequentialGuid.AotSmokeTest/SequentialGuid.AotSmokeTest.csproj" />
+  <Project Path="tests/unit/SequentialGuid.EntityFrameworkCore.Tests/SequentialGuid.EntityFrameworkCore.Tests.csproj" />
+  <Project Path="tests/unit/SequentialGuid.MongoDB.Tests/SequentialGuid.MongoDB.Tests.csproj" />
+  <Project Path="tests/unit/SequentialGuid.NodaTime.Tests/SequentialGuid.NodaTime.Tests.csproj" />
+  <Project Path="tests/unit/SequentialGuid.Tests/SequentialGuid.Tests.csproj" />
+  <Project Path="utils/Generator/SequentialGuid.Generator.csproj">
     <Build Solution="Release|*" Project="false" />
   </Project>
 </Solution>
