@@ -19,7 +19,8 @@ public class NameBenchmarks
 	byte[] _nameBytes = null!;
 
 	[GlobalSetup]
-	public void Setup() => _nameBytes = Encoding.UTF8.GetBytes(Name);
+	public void Setup() =>
+		_nameBytes = Encoding.UTF8.GetBytes(Name);
 
 	[Benchmark(Description = "GuidV5.Create(string)")]
 	public Guid GuidV5CreateString() =>

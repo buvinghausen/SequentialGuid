@@ -12,7 +12,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: | 
+        dotnet-version: |
           8.0.*
           9.0.*
           10.0.*
@@ -28,6 +28,6 @@ jobs:
       run: dotnet test --no-build /p:CollectCoverage=true /p:CoverletOutput='../../' /p:CoverletOutputFormat=opencover /p:Threshold=22 /p:SkipAutoProps=true /p:UseSourceLink=true
     - name: AOT smoke test
       run: |
-        dotnet publish test/SequentialGuid.AotSmokeTest -c Release -r win-x64 -o aot-out
+        dotnet publish tests/smoke/SequentialGuid.AotSmokeTest -c Release -r win-x64 -o aot-out
         .\aot-out\SequentialGuid.AotSmokeTest.exe
       shell: pwsh
