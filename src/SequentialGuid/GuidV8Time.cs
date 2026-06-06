@@ -24,21 +24,21 @@ namespace SequentialGuid;
 /// </remarks>
 public static class GuidV8Time
 {
-	static readonly byte[] MachinePid;
-	static int s_increment;
+	static readonly byte[] _machinePid;
+	static int _increment;
 
 	static GuidV8Time()
 	{
 #if NET6_0_OR_GREATER
 		// Use the RandomNumberGenerator static function where available
-		s_increment = RandomNumberGenerator
+		_increment = RandomNumberGenerator
 #else
 		// Fall back to the old Random create function
 		using var rng = RandomNumberGenerator.Create();
-		s_increment = rng
+		_increment = rng
 #endif
 			.GetInt32(500000);
-		MachinePid = new byte[5];
+		_machinePid = new byte[5];
 #if NET6_0_OR_GREATER
 		// For newer frameworks use the preferred static function
 		var hash = SHA256.HashData
@@ -49,7 +49,7 @@ public static class GuidV8Time
 #endif
 			(Encoding.UTF8.GetBytes(Environment.MachineName));
 		for (var i = 0; i < 3; i++)
-			MachinePid[i] = hash[i];
+			_machinePid[i] = hash[i];
 		try
 		{
 			var pid =
@@ -62,8 +62,8 @@ public static class GuidV8Time
 #endif
 				;
 			// use low order two bytes only
-			MachinePid[3] = (byte)(pid >> 8);
-			MachinePid[4] = (byte)pid;
+			_machinePid[3] = (byte)(pid >> 8);
+			_machinePid[4] = (byte)pid;
 		}
 		catch (SecurityException)
 		{
@@ -160,7 +160,7 @@ public static class GuidV8Time
 	internal static Guid NewGuid(long timestamp)
 	{
 		// only use low order 22 bits
-		var increment = Interlocked.Increment(ref s_increment) & 0x003fffff;
+		var increment = Interlocked.Increment(ref _increment) & 0x003fffff;
 
 #if NET6_0_OR_GREATER
 		Span<byte>
@@ -179,15 +179,15 @@ public static class GuidV8Time
 			// custom_b: timestamp bits [11:0] → octets 6-7 (version takes upper nibble of octet 6)
 			(byte)((timestamp >> 8) & 0x0F),
 			(byte)timestamp,
-			// custom_c: increment[21:0] + MachinePid → octets 8-15 (variant takes upper 2 bits of octet 8)
+			// custom_c: increment[21:0] + _machinePid → octets 8-15 (variant takes upper 2 bits of octet 8)
 			(byte)((increment >> 16) & 0x3F),
 			(byte)(increment >> 8),
 			(byte)increment,
-			MachinePid[0],
-			MachinePid[1],
-			MachinePid[2],
-			MachinePid[3],
-			MachinePid[4],
+			_machinePid[0],
+			_machinePid[1],
+			_machinePid[2],
+			_machinePid[3],
+			_machinePid[4],
 		];
 
 		bytes.SetRfc9562Version(8);

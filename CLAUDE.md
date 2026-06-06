@@ -66,7 +66,7 @@ sort rules.
 
 ### Monotonic Counter (`GuidV7` and `GuidV8Time`)
 
-- A process-global `static int s_counter` is advanced with `Interlocked.Increment`.
+- A process-global `static int _counter` is advanced with `Interlocked.Increment`.
 - Seeded at startup with a small random value from `RandomNumberGenerator` to leave headroom
   before wrap.
 - **No CAS loop, no timestamp tracking** — the counter is unconditional and race-free.

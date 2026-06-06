@@ -24,15 +24,15 @@ public static class GuidV7
 	// Process-global monotonic counter for RFC 9562 §6.2 Method 1 — Fixed Bit-Length Dedicated
 	// Counter. Advanced via Interlocked.Increment; upper 12 bits written to rand_a, lower 14 bits
 	// to the first 14 bits of rand_b (after variant). Masked to 26 bits (0x3FFFFFF).
-	static int s_counter;
+	static int _counter;
 
 	static GuidV7()
 	{
 #if NET6_0_OR_GREATER
-		s_counter = RandomNumberGenerator
+		_counter = RandomNumberGenerator
 #else
 		using var rng = RandomNumberGenerator.Create();
-		s_counter = rng
+		_counter = rng
 #endif
 			.GetInt32(0x200); // seed in [0, 512) to leave ample headroom before the 26-bit wrap
 	}
@@ -134,7 +134,7 @@ public static class GuidV7
 				"Unix millisecond timestamp must be non-negative and fit within 48 bits.");
 
 		// RFC 9562 §6.2 Method 1: claim a unique slot in the monotonic counter.
-		var counter = Interlocked.Increment(ref s_counter) & 0x3FFFFFF;
+		var counter = Interlocked.Increment(ref _counter) & 0x3FFFFFF;
 
 #if NET6_0_OR_GREATER
 		Span<byte> bytes = stackalloc byte[16];

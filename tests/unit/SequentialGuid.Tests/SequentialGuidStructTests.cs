@@ -8,9 +8,9 @@ namespace SequentialGuid.Tests;
 public sealed class SequentialGuidStructTests
 {
 	// Known guids for each supported category
-	static readonly Guid V7Guid = GuidV7.NewGuid();
-	static readonly Guid V8Guid = GuidV8Time.NewGuid();
-	static readonly Guid LegacyGuid = new("08de7bf5-381d-cc8b-f24c-56e3580439dd");
+	static readonly Guid _v7Guid = GuidV7.NewGuid();
+	static readonly Guid _v8Guid = GuidV8Time.NewGuid();
+	static readonly Guid _legacyGuid = new("08de7bf5-381d-cc8b-f24c-56e3580439dd");
 
 	[Fact]
 	void DefaultConstructorCreatesVersion7()
@@ -37,27 +37,27 @@ public sealed class SequentialGuidStructTests
 	void GuidConstructorAcceptsVersion7()
 	{
 		// Act
-		SequentialGuid id = new(V7Guid);
+		SequentialGuid id = new(_v7Guid);
 		// Assert
-		id.Value.ShouldBe(V7Guid);
+		id.Value.ShouldBe(_v7Guid);
 	}
 
 	[Fact]
 	void GuidConstructorAcceptsVersion8()
 	{
 		// Act
-		SequentialGuid id = new(V8Guid);
+		SequentialGuid id = new(_v8Guid);
 		// Assert
-		id.Value.ShouldBe(V8Guid);
+		id.Value.ShouldBe(_v8Guid);
 	}
 
 	[Fact]
 	void GuidConstructorAcceptsLegacy()
 	{
 		// Act
-		SequentialGuid id = new(LegacyGuid);
+		SequentialGuid id = new(_legacyGuid);
 		// Assert
-		id.Value.ShouldBe(LegacyGuid);
+		id.Value.ShouldBe(_legacyGuid);
 	}
 
 	[Fact]

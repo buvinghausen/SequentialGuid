@@ -89,12 +89,14 @@ if (failures.Count == 0)
 }
 
 Console.WriteLine($"AOT smoke test: FAIL ({failures.Count} failures)");
-foreach (var f in failures) Console.WriteLine($"  - {f}");
+foreach (var f in failures)
+	Console.WriteLine($"  - {f}");
 return 1;
 
 void Check(string name, bool condition)
 {
-	if (!condition) failures.Add(name);
+	if (!condition)
+		failures.Add(name);
 }
 
 [JsonSerializable(typeof(SgStruct))]

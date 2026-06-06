@@ -44,7 +44,8 @@ static class GuidNameBased
 		}
 		finally
 		{
-			if (rented is not null) ArrayPool<byte>.Shared.Return(rented);
+			if (rented is not null)
+				ArrayPool<byte>.Shared.Return(rented);
 		}
 	}
 
@@ -68,7 +69,8 @@ static class GuidNameBased
 		}
 		finally
 		{
-			if (rented is not null) ArrayPool<byte>.Shared.Return(rented);
+			if (rented is not null)
+				ArrayPool<byte>.Shared.Return(rented);
 		}
 	}
 

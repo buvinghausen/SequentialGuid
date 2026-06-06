@@ -173,8 +173,8 @@ public sealed class GuidV7Tests
 	void TestSequentialTimestampsProduceOrderedGuids()
 	{
 		// Arrange - generate UUIDs with strictly increasing 1 ms timestamps
-		const long baseMs = 1_000_000L;
-		var guids = Enumerable.Range(0, 10).Select(i => GuidV7.NewGuid(baseMs + i)).ToArray();
+		const long BaseMs = 1_000_000L;
+		var guids = Enumerable.Range(0, 10).Select(i => GuidV7.NewGuid(BaseMs + i)).ToArray();
 		// Act
 		Guid[] sorted = [.. guids.OrderBy(x => x)];
 		// Assert - different timestamp ms values always sort in creation order
@@ -197,13 +197,13 @@ public sealed class GuidV7Tests
 	void TestMaxValidTimestampSucceeds()
 	{
 		// Arrange / Act
-		const long maxMs = 0x0000_FFFF_FFFF_FFFF;
-		var guid = GuidV7.NewGuid(maxMs);
+		const long MaxMs = 0x0000_FFFF_FFFF_FFFF;
+		var guid = GuidV7.NewGuid(MaxMs);
 		var bytes = guid.ToByteArray();
 		// Assert
 		bytes.IsRfc9562Version(7).ShouldBeTrue();
 		bytes.VariantIsRfc9562().ShouldBeTrue();
-		guid.ToUnixMs().ShouldBe(maxMs);
+		guid.ToUnixMs().ShouldBe(MaxMs);
 	}
 
 	[Fact]

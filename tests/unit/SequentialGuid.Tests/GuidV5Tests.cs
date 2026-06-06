@@ -78,10 +78,10 @@ public sealed class GuidV5Tests
 	void TestByteArrayOverloadMatchesStringOverload()
 	{
 		// Arrange
-		const string name = "test-name";
+		const string Name = "test-name";
 		// Act
-		var fromString = GuidV5.Create(GuidV5.Namespaces.Url, name);
-		var fromBytes = GuidV5.Create(GuidV5.Namespaces.Url, Encoding.UTF8.GetBytes(name));
+		var fromString = GuidV5.Create(GuidV5.Namespaces.Url, Name);
+		var fromBytes = GuidV5.Create(GuidV5.Namespaces.Url, Encoding.UTF8.GetBytes(Name));
 		// Assert
 		fromString.ShouldBe(fromBytes);
 	}

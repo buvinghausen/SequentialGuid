@@ -143,8 +143,8 @@ public sealed class GuidV8TimeTests
 	void TestSequentialTimestampsProduceOrderedGuids()
 	{
 		// Arrange - generate UUIDs with strictly increasing tick timestamps
-		const long baseTicks = 639084490271870091L;
-		var guids = Enumerable.Range(0, 10).Select(i => GuidV8Time.NewGuid(baseTicks + i)).ToArray();
+		const long BaseTicks = 639084490271870091L;
+		var guids = Enumerable.Range(0, 10).Select(i => GuidV8Time.NewGuid(BaseTicks + i)).ToArray();
 		// Act
 		Guid[] sorted = [.. guids.OrderBy(x => x)];
 		// Assert - different timestamp tick values always sort in creation order
