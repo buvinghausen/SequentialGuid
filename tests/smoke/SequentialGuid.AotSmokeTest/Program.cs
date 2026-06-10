@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using SequentialGuid;
 using SequentialGuid.Extensions;
+using NodaTime;
 // Disambiguate the SequentialGuid type from the SequentialGuid namespace.
 using SgStruct = SequentialGuid.SequentialGuid;
 using SsgStruct = SequentialGuid.SequentialSqlGuid;
@@ -81,6 +82,33 @@ Check("v4 ToDateTimeOffset null", v4.ToDateTimeOffset() is null);
 
 Check("v7 IsSequentialGuid true", v7.IsSequentialGuid());
 Check("v4 IsSequentialGuid false", !v4.IsSequentialGuid());
+
+// v6.2 bulk generation
+var bulk = GuidV7.NewGuids(8);
+Check("v7 bulk count", bulk.Length == 8);
+Check("v7 bulk sorted", bulk.SequenceEqual(bulk.OrderBy(g => g)));
+Check("v7 bulk all valid", bulk.All(g => g.IsSequentialGuid()));
+
+var bulkSql = GuidV7.NewSqlGuids(8);
+Check("v7 bulk sql all valid", bulkSql.All(g => g.IsSequentialGuid()));
+
+var bulkV8 = GuidV8Time.NewGuids(8);
+Check("v8 bulk count", bulkV8.Length == 8);
+Check("v8 bulk sorted", bulkV8.SequenceEqual(bulkV8.OrderBy(g => g)));
+
+Span<Guid> fillSpan = stackalloc Guid[4];
+GuidV7.Fill(fillSpan);
+Check("v7 Fill span non-default", fillSpan[3] != Guid.Empty);
+
+// v6.2 TimeProvider overloads
+Check("v7 TimeProvider non-default", GuidV7.NewGuid(TimeProvider.System) != Guid.Empty);
+Check("v8 TimeProvider non-default", GuidV8Time.NewGuid(TimeProvider.System) != Guid.Empty);
+
+// NodaTime companion
+var instant = SystemClock.Instance.GetCurrentInstant();
+var v7FromInstant = GuidV7.NewGuid(instant);
+Check("v7 from Instant non-default", v7FromInstant != Guid.Empty);
+Check("v7 ToInstant roundtrip", v7FromInstant.ToInstant() is not null);
 
 if (failures.Count == 0)
 {

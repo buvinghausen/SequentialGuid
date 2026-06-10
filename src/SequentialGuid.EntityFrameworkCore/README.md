@@ -84,6 +84,24 @@ builder.Services.AddControllers()
     .AddJsonOptions(o => o.JsonSerializerOptions.AddSequentialGuidConverters());
 ```
 
+## Value generation
+
+`UseSequentialGuidValueGeneration()` registers a model-finalizing convention that assigns RFC 9562 v7 sequential value generators to every `Guid`, `SequentialGuid`, and `SequentialSqlGuid` primary-key property. Keys are generated client-side on `Add` — no database round-trip, retry-safe.
+
+```csharp
+protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+{
+    configurationBuilder.AddSequentialGuidValueConverters();
+    configurationBuilder.UseSequentialGuidValueGeneration();           // v7 keys on Add
+    // configurationBuilder.UseSequentialGuidValueGeneration(sqlServerByteOrder: true);
+}
+```
+
+- Plain `Guid` keys get standard byte order; pass `sqlServerByteOrder: true` to switch to SQL Server `uniqueidentifier`-friendly order.
+- `SequentialGuid` / `SequentialSqlGuid` keys carry byte order in the type and ignore the flag.
+- Explicit `HasValueGenerator<T>()` always wins — the convention never overwrites it.
+- The four generators (`SequentialGuidValueGenerator`, `SequentialSqlGuidValueGenerator`, `SequentialGuidStructValueGenerator`, `SequentialSqlGuidStructValueGenerator`) are public for explicit per-property wiring.
+
 ## Further Reading
 
 See the [main SequentialGuid README](https://github.com/buvinghausen/SequentialGuid/blob/master/README.md) for full documentation on UUID generation, timestamp extraction, and SQL Server byte-order handling.

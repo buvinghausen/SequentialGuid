@@ -30,4 +30,8 @@ jobs:
       run: |
         dotnet publish tests/smoke/SequentialGuid.AotSmokeTest -c Release -r win-x64 -o aot-out
         .\aot-out\SequentialGuid.AotSmokeTest.exe
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        dotnet publish tests/smoke/SequentialGuid.EntityFrameworkCore.AotSmokeTest -c Release -r win-x64 -o aot-ef-out
+        .\aot-ef-out\SequentialGuid.EntityFrameworkCore.AotSmokeTest.exe
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       shell: pwsh

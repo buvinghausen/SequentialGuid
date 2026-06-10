@@ -103,6 +103,16 @@ await orders.InsertOneAsync(new Order { Description = "Widget" });
 - **`MongoSequentialGuidGenerator`** implements `IIdGenerator` and calls `GuidV8Time.NewGuid()` to generate each ID. It considers any `Guid` value that is not `Guid.Empty` as non-empty.
 - **`SequentialGuidSerializer<T>`** delegates to the default `Guid` BSON serializer for the wire format, then wraps/unwraps the struct type on read/write. This means documents stored with raw `Guid` IDs remain compatible.
 
+## Choosing the GUID version
+
+`MongoSequentialGuidGenerator.Instance` emits RFC 9562 **v8 time-based** GUIDs — the historical default, preserving full 100 ns tick precision in the document id. To emit **v7** ids instead:
+
+```csharp
+new MongoSequentialGuidGenerator(SequentialGuidType.Rfc9562V7).RegisterMongoIdGenerator();
+```
+
+The default stays v8 so existing applications keep their id semantics across upgrades.
+
 ## Further Reading
 
 See the [main SequentialGuid README](https://github.com/buvinghausen/SequentialGuid/blob/master/README.md) for full documentation on UUID generation, timestamp extraction, and SQL Server byte-order handling.

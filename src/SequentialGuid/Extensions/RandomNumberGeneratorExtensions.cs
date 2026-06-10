@@ -10,10 +10,23 @@ static class RandomNumberGeneratorExtensions
 	{
 		internal int GetInt32(int toExclusive)
 		{
-			// where max is exclusive
+			// Unbiased mask-and-reject sampling: mask to the smallest power-of-two
+			// range covering toExclusive, retry on overshoot. Expected iterations < 2.
+			var mask = toExclusive - 1;
+			mask |= mask >> 1;
+			mask |= mask >> 2;
+			mask |= mask >> 4;
+			mask |= mask >> 8;
+			mask |= mask >> 16;
+
 			var bytes = new byte[sizeof(int)]; // 4 bytes
-			generator.GetNonZeroBytes(bytes);
-			return (BitConverter.ToInt32(bytes, 0) % toExclusive + toExclusive) % toExclusive;
+			int result;
+			do
+			{
+				generator.GetBytes(bytes);
+				result = BitConverter.ToInt32(bytes, 0) & mask;
+			} while (result >= toExclusive);
+			return result;
 		}
 	}
 }

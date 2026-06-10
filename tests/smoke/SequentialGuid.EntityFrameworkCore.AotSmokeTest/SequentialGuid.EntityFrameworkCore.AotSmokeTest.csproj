@@ -12,8 +12,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\..\src\SequentialGuid\SequentialGuid.csproj" />
-		<ProjectReference Include="..\..\..\src\SequentialGuid.NodaTime\SequentialGuid.NodaTime.csproj" />
+		<ProjectReference Include="..\..\..\src\SequentialGuid.EntityFrameworkCore\SequentialGuid.EntityFrameworkCore.csproj" />
 	</ItemGroup>
 
 </Project>

@@ -82,4 +82,33 @@ public sealed class SequentialGuidMongoTests
 		reader.ReadEndDocument();
 		return result;
 	}
+
+	[Fact]
+	void DefaultGeneratorEmitsV8()
+	{
+		// Back-compat pin: Instance must keep emitting v8 time-based GUIDs.
+		var id = (Guid)MongoSequentialGuidGenerator.Instance.GenerateId(null!, null!);
+		// Mixed-endian ToByteArray(): RFC version nibble is the high nibble of byte[7]
+		(id.ToByteArray()[7] >> 4).ShouldBe(8);
+	}
+
+	[Fact]
+	void V7ConstructedGeneratorEmitsV7()
+	{
+		MongoSequentialGuidGenerator generator = new(SequentialGuidType.Rfc9562V7);
+		var id = (Guid)generator.GenerateId(null!, null!);
+		(id.ToByteArray()[7] >> 4).ShouldBe(7);
+	}
+
+	[Fact]
+	void V8ConstructedGeneratorEmitsV8()
+	{
+		MongoSequentialGuidGenerator generator = new(SequentialGuidType.Rfc9562V8Custom);
+		var id = (Guid)generator.GenerateId(null!, null!);
+		(id.ToByteArray()[7] >> 4).ShouldBe(8);
+	}
+
+	[Fact]
+	void UndefinedTypeThrows() =>
+		Should.Throw<ArgumentOutOfRangeException>(() => new MongoSequentialGuidGenerator((SequentialGuidType)99));
 }
