@@ -199,4 +199,321 @@ public static class GuidV8Time
 		return new(bytes.SwapByteOrder());
 #endif
 	}
+
+#if NET6_0_OR_GREATER
+	/// <summary>
+	/// Fills <paramref name="destination"/> with new UUID version 8 values sharing a single
+	/// current-UTC-time capture, ordered by a contiguous block of monotonic counter slots.
+	/// </summary>
+	/// <param name="destination">The span to fill. Must not exceed 4,194,304 (2^22) elements.</param>
+	/// <exception cref="ArgumentOutOfRangeException">
+	/// Thrown when <paramref name="destination"/> exceeds the 22-bit counter space.
+	/// </exception>
+	public static void Fill(Span<Guid> destination) =>
+		FillCore(destination, DateTime.UtcNow.Ticks);
+
+	/// <summary>
+	/// Fills <paramref name="destination"/> with new UUID version 8 values that all embed
+	/// <paramref name="timestamp"/>, ordered by a contiguous block of monotonic counter slots.
+	/// </summary>
+	/// <param name="destination">The span to fill. Must not exceed 4,194,304 (2^22) elements.</param>
+	/// <param name="timestamp">
+	/// The timestamp to embed in every UUID. Must have <see cref="DateTimeKind.Utc"/> or
+	/// <see cref="DateTimeKind.Local"/> kind, with a value between January 1st, 1970 UTC and now.
+	/// </param>
+	/// <exception cref="ArgumentException">
+	/// Thrown when <paramref name="timestamp"/> has <see cref="DateTimeKind.Unspecified"/> kind,
+	/// or when its value is outside the valid range.
+	/// </exception>
+	/// <exception cref="ArgumentOutOfRangeException">
+	/// Thrown when <paramref name="destination"/> exceeds the 22-bit counter space.
+	/// </exception>
+	public static void Fill(Span<Guid> destination, DateTime timestamp) =>
+		FillCore(destination, ToValidatedTicks(timestamp));
+
+	/// <summary>
+	/// Fills <paramref name="destination"/> with new UUID version 8 values in SQL Server byte
+	/// order, sharing a single current-UTC-time capture.
+	/// </summary>
+	/// <param name="destination">The span to fill. Must not exceed 4,194,304 (2^22) elements.</param>
+	/// <exception cref="ArgumentOutOfRangeException">
+	/// Thrown when <paramref name="destination"/> exceeds the 22-bit counter space.
+	/// </exception>
+	public static void FillSql(Span<Guid> destination) =>
+		FillSqlCore(destination, DateTime.UtcNow.Ticks);
+
+	/// <summary>
+	/// Fills <paramref name="destination"/> with new UUID version 8 values in SQL Server byte
+	/// order that all embed <paramref name="timestamp"/>.
+	/// </summary>
+	/// <param name="destination">The span to fill. Must not exceed 4,194,304 (2^22) elements.</param>
+	/// <param name="timestamp">
+	/// The timestamp to embed in every UUID. Must have <see cref="DateTimeKind.Utc"/> or
+	/// <see cref="DateTimeKind.Local"/> kind, with a value between January 1st, 1970 UTC and now.
+	/// </param>
+	/// <exception cref="ArgumentException">
+	/// Thrown when <paramref name="timestamp"/> has <see cref="DateTimeKind.Unspecified"/> kind,
+	/// or when its value is outside the valid range.
+	/// </exception>
+	/// <exception cref="ArgumentOutOfRangeException">
+	/// Thrown when <paramref name="destination"/> exceeds the 22-bit counter space.
+	/// </exception>
+	public static void FillSql(Span<Guid> destination, DateTime timestamp) =>
+		FillSqlCore(destination, ToValidatedTicks(timestamp));
+
+	/// <summary>
+	/// Creates an array of new UUID version 8 values sharing a single current-UTC-time capture.
+	/// </summary>
+	/// <param name="count">The number of UUIDs to create. Must be between 0 and 4,194,304 (2^22).</param>
+	/// <returns>An array of <paramref name="count"/> time-ordered version 8 <see cref="Guid"/> values.</returns>
+	/// <exception cref="ArgumentOutOfRangeException">
+	/// Thrown when <paramref name="count"/> is negative or exceeds the 22-bit counter space.
+	/// </exception>
+	public static Guid[] NewGuids(int count)
+	{
+		ValidateCount(count);
+		if (count == 0)
+			return [];
+		var result = new Guid[count];
+		FillCore(result, DateTime.UtcNow.Ticks);
+		return result;
+	}
+
+	/// <summary>
+	/// Creates an array of new UUID version 8 values that all embed <paramref name="timestamp"/>.
+	/// </summary>
+	/// <param name="count">The number of UUIDs to create. Must be between 0 and 4,194,304 (2^22).</param>
+	/// <param name="timestamp">
+	/// The timestamp to embed in every UUID. Must have <see cref="DateTimeKind.Utc"/> or
+	/// <see cref="DateTimeKind.Local"/> kind, with a value between January 1st, 1970 UTC and now.
+	/// </param>
+	/// <returns>An array of <paramref name="count"/> time-ordered version 8 <see cref="Guid"/> values.</returns>
+	/// <exception cref="ArgumentException">
+	/// Thrown when <paramref name="timestamp"/> has <see cref="DateTimeKind.Unspecified"/> kind,
+	/// or when its value is outside the valid range.
+	/// </exception>
+	/// <exception cref="ArgumentOutOfRangeException">
+	/// Thrown when <paramref name="count"/> is negative or exceeds the 22-bit counter space.
+	/// </exception>
+	public static Guid[] NewGuids(int count, DateTime timestamp)
+	{
+		ValidateCount(count);
+		if (count == 0)
+			return [];
+		var result = new Guid[count];
+		Fill(result, timestamp);
+		return result;
+	}
+
+	/// <summary>
+	/// Creates an array of new UUID version 8 values in SQL Server byte order, sharing a
+	/// single current-UTC-time capture.
+	/// </summary>
+	/// <param name="count">The number of UUIDs to create. Must be between 0 and 4,194,304 (2^22).</param>
+	/// <returns>An array of <paramref name="count"/> version 8 <see cref="Guid"/> values in SQL Server sort order.</returns>
+	/// <exception cref="ArgumentOutOfRangeException">
+	/// Thrown when <paramref name="count"/> is negative or exceeds the 22-bit counter space.
+	/// </exception>
+	public static Guid[] NewSqlGuids(int count)
+	{
+		var result = NewGuids(count);
+		for (var i = 0; i < result.Length; i++)
+			result[i] = result[i].ToSqlGuid();
+		return result;
+	}
+
+	/// <summary>
+	/// Creates an array of new UUID version 8 values in SQL Server byte order that all embed
+	/// <paramref name="timestamp"/>.
+	/// </summary>
+	/// <param name="count">The number of UUIDs to create. Must be between 0 and 4,194,304 (2^22).</param>
+	/// <param name="timestamp">
+	/// The timestamp to embed in every UUID. Must have <see cref="DateTimeKind.Utc"/> or
+	/// <see cref="DateTimeKind.Local"/> kind, with a value between January 1st, 1970 UTC and now.
+	/// </param>
+	/// <returns>An array of <paramref name="count"/> version 8 <see cref="Guid"/> values in SQL Server sort order.</returns>
+	/// <exception cref="ArgumentException">
+	/// Thrown when <paramref name="timestamp"/> has <see cref="DateTimeKind.Unspecified"/> kind,
+	/// or when its value is outside the valid range.
+	/// </exception>
+	/// <exception cref="ArgumentOutOfRangeException">
+	/// Thrown when <paramref name="count"/> is negative or exceeds the 22-bit counter space.
+	/// </exception>
+	public static Guid[] NewSqlGuids(int count, DateTime timestamp)
+	{
+		var result = NewGuids(count, timestamp);
+		for (var i = 0; i < result.Length; i++)
+			result[i] = result[i].ToSqlGuid();
+		return result;
+	}
+
+	// Converts a DateTime to validated UTC ticks, mirroring the single-call NewGuid(DateTime) rules.
+	static long ToValidatedTicks(DateTime timestamp)
+	{
+		var ticks = timestamp.Kind switch
+		{
+			DateTimeKind.Utc => timestamp.Ticks, // use ticks as is
+			DateTimeKind.Local => timestamp.ToUniversalTime().Ticks, // convert to UTC
+			_ => throw new ArgumentException("DateTimeKind.Unspecified not supported", nameof(timestamp))
+		};
+		return !ticks.IsDateTime
+			? throw new ArgumentException("Timestamp must be between January 1st, 1970 UTC and now",
+				nameof(timestamp))
+			: ticks;
+	}
+
+	static void ValidateCount(int count)
+	{
+		if (count is < 0 or > 0x40_0000)
+			throw new ArgumentOutOfRangeException(nameof(count),
+				"Count must be between 0 and the 22-bit counter space (4,194,304).");
+	}
+
+	static void FillSqlCore(Span<Guid> destination, long timestamp)
+	{
+		FillCore(destination, timestamp);
+		for (var i = 0; i < destination.Length; i++)
+			destination[i] = destination[i].ToSqlGuid();
+	}
+
+	[SkipLocalsInit]
+	static void FillCore(Span<Guid> destination, long timestamp)
+	{
+		if (destination.Length > 0x40_0000)
+			throw new ArgumentOutOfRangeException(nameof(destination),
+				"Batch size must not exceed the 22-bit counter space (4,194,304).");
+		if (destination.IsEmpty)
+			return;
+
+		var count = destination.Length;
+		// RFC 9562 §6.2 Method 1: reserve a contiguous block of counter slots so the
+		// whole batch is ordered and concurrent callers can never collide. The +1 mirrors
+		// Interlocked.Increment semantics on the single-call path, which consumes the
+		// post-increment value — the block is (old, old + count], never reusing old.
+		var start = Interlocked.Add(ref _increment, count) - count + 1;
+
+		Span<byte> bytes = stackalloc byte[16];
+		// custom_a: timestamp bits [59:12] → octets 0-5; custom_b: bits [11:0] → octets 6-7.
+		// Identical for every item — written once, as is the machine/pid fingerprint.
+		bytes[0] = (byte)(timestamp >> 52);
+		bytes[1] = (byte)(timestamp >> 44);
+		bytes[2] = (byte)(timestamp >> 36);
+		bytes[3] = (byte)(timestamp >> 28);
+		bytes[4] = (byte)(timestamp >> 20);
+		bytes[5] = (byte)(timestamp >> 12);
+		bytes[6] = (byte)((timestamp >> 8) & 0x0F);
+		bytes[7] = (byte)timestamp;
+		bytes[11] = _machinePid[0];
+		bytes[12] = _machinePid[1];
+		bytes[13] = _machinePid[2];
+		bytes[14] = _machinePid[3];
+		bytes[15] = _machinePid[4];
+		bytes.SetRfc9562Version(8); // octet 6 is per-batch; version set once
+
+		for (var i = 0; i < count; i++)
+		{
+			// start may be negative when _increment wraps near Int32.MaxValue; the mask
+			// discards bits 22-31, which is correct regardless of sign.
+			var increment = (start + i) & 0x003fffff;
+
+			// custom_c: increment[21:0] → octets 8-10 (variant takes upper 2 bits of octet 8)
+			bytes[8] = (byte)((increment >> 16) & 0x3F);
+			bytes[9] = (byte)(increment >> 8);
+			bytes[10] = (byte)increment;
+			bytes.SetRfc9562Variant(); // octet 8 is rewritten per item
+
+			destination[i] = new(bytes, bigEndian: true);
+		}
+	}
+
+#if NET8_0_OR_GREATER
+	/// <summary>
+	/// Creates a new UUID version 8 using the current time of the supplied <see cref="TimeProvider"/>.
+	/// </summary>
+	/// <param name="provider">The clock supplying the timestamp.</param>
+	/// <returns>A new time-ordered version 8 <see cref="Guid"/>.</returns>
+	/// <exception cref="ArgumentNullException">Thrown when <paramref name="provider"/> is <see langword="null"/>.</exception>
+	public static Guid NewGuid(TimeProvider provider)
+	{
+		ArgumentNullException.ThrowIfNull(provider);
+		return NewGuid(provider.GetUtcNow().UtcDateTime);
+	}
+
+	/// <summary>
+	/// Creates a new UUID version 8 using the current time of the supplied <see cref="TimeProvider"/>,
+	/// with byte ordering suitable for storage in a SQL Server <c>uniqueidentifier</c> column.
+	/// </summary>
+	/// <param name="provider">The clock supplying the timestamp.</param>
+	/// <returns>A new time-ordered version 8 <see cref="Guid"/> with bytes in SQL Server sort order.</returns>
+	/// <exception cref="ArgumentNullException">Thrown when <paramref name="provider"/> is <see langword="null"/>.</exception>
+	public static Guid NewSqlGuid(TimeProvider provider) =>
+		NewGuid(provider).ToSqlGuid();
+
+	/// <summary>
+	/// Fills <paramref name="destination"/> with new UUID version 8 values using a single
+	/// timestamp capture from the supplied <see cref="TimeProvider"/>.
+	/// </summary>
+	/// <param name="destination">The span to fill. Must not exceed 4,194,304 (2^22) elements.</param>
+	/// <param name="provider">The clock supplying the shared timestamp.</param>
+	/// <exception cref="ArgumentNullException">Thrown when <paramref name="provider"/> is <see langword="null"/>.</exception>
+	/// <exception cref="ArgumentOutOfRangeException">
+	/// Thrown when <paramref name="destination"/> exceeds the 22-bit counter space.
+	/// </exception>
+	public static void Fill(Span<Guid> destination, TimeProvider provider)
+	{
+		ArgumentNullException.ThrowIfNull(provider);
+		Fill(destination, provider.GetUtcNow().UtcDateTime);
+	}
+
+	/// <summary>
+	/// Fills <paramref name="destination"/> with new UUID version 8 values in SQL Server byte
+	/// order using a single timestamp capture from the supplied <see cref="TimeProvider"/>.
+	/// </summary>
+	/// <param name="destination">The span to fill. Must not exceed 4,194,304 (2^22) elements.</param>
+	/// <param name="provider">The clock supplying the shared timestamp.</param>
+	/// <exception cref="ArgumentNullException">Thrown when <paramref name="provider"/> is <see langword="null"/>.</exception>
+	/// <exception cref="ArgumentOutOfRangeException">
+	/// Thrown when <paramref name="destination"/> exceeds the 22-bit counter space.
+	/// </exception>
+	public static void FillSql(Span<Guid> destination, TimeProvider provider)
+	{
+		ArgumentNullException.ThrowIfNull(provider);
+		FillSql(destination, provider.GetUtcNow().UtcDateTime);
+	}
+
+	/// <summary>
+	/// Creates an array of new UUID version 8 values using a single timestamp capture from the
+	/// supplied <see cref="TimeProvider"/>.
+	/// </summary>
+	/// <param name="count">The number of UUIDs to create. Must be between 0 and 4,194,304 (2^22).</param>
+	/// <param name="provider">The clock supplying the shared timestamp.</param>
+	/// <returns>An array of <paramref name="count"/> time-ordered version 8 <see cref="Guid"/> values.</returns>
+	/// <exception cref="ArgumentNullException">Thrown when <paramref name="provider"/> is <see langword="null"/>.</exception>
+	/// <exception cref="ArgumentOutOfRangeException">
+	/// Thrown when <paramref name="count"/> is negative or exceeds the 22-bit counter space.
+	/// </exception>
+	public static Guid[] NewGuids(int count, TimeProvider provider)
+	{
+		ArgumentNullException.ThrowIfNull(provider);
+		return NewGuids(count, provider.GetUtcNow().UtcDateTime);
+	}
+
+	/// <summary>
+	/// Creates an array of new UUID version 8 values in SQL Server byte order using a single
+	/// timestamp capture from the supplied <see cref="TimeProvider"/>.
+	/// </summary>
+	/// <param name="count">The number of UUIDs to create. Must be between 0 and 4,194,304 (2^22).</param>
+	/// <param name="provider">The clock supplying the shared timestamp.</param>
+	/// <returns>An array of <paramref name="count"/> version 8 <see cref="Guid"/> values in SQL Server sort order.</returns>
+	/// <exception cref="ArgumentNullException">Thrown when <paramref name="provider"/> is <see langword="null"/>.</exception>
+	/// <exception cref="ArgumentOutOfRangeException">
+	/// Thrown when <paramref name="count"/> is negative or exceeds the 22-bit counter space.
+	/// </exception>
+	public static Guid[] NewSqlGuids(int count, TimeProvider provider)
+	{
+		ArgumentNullException.ThrowIfNull(provider);
+		return NewSqlGuids(count, provider.GetUtcNow().UtcDateTime);
+	}
+#endif
+#endif
 }

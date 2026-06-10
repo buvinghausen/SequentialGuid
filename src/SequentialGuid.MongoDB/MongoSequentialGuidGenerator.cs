@@ -8,8 +8,29 @@ namespace SequentialGuid.MongoDB;
 /// </summary>
 public sealed class MongoSequentialGuidGenerator : IIdGenerator
 {
+	readonly SequentialGuidType _type;
+
 	/// <summary>
-	/// Gets the singleton instance of the generator.
+	/// Initializes a generator emitting <see cref="SequentialGuidType.Rfc9562V8Custom"/> GUIDs —
+	/// the historical default, preserving 100 ns tick precision.
+	/// </summary>
+	public MongoSequentialGuidGenerator() : this(SequentialGuidType.Rfc9562V8Custom) { }
+
+	/// <summary>
+	/// Initializes a generator emitting the specified sequential GUID type.
+	/// </summary>
+	/// <param name="type">The algorithm to use when generating document ids.</param>
+	/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="type"/> is not a recognised <see cref="SequentialGuidType"/> value.</exception>
+	public MongoSequentialGuidGenerator(SequentialGuidType type) =>
+		_type = type switch
+		{
+			SequentialGuidType.Rfc9562V7 or SequentialGuidType.Rfc9562V8Custom => type,
+			_ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+		};
+
+	/// <summary>
+	/// Gets the singleton instance of the generator, emitting
+	/// <see cref="SequentialGuidType.Rfc9562V8Custom"/> GUIDs.
 	/// </summary>
 	public static MongoSequentialGuidGenerator Instance { get; } = new();
 
@@ -20,7 +41,7 @@ public sealed class MongoSequentialGuidGenerator : IIdGenerator
 	/// <param name="document">The document being assigned an id.</param>
 	/// <returns>A new sequential <see cref="Guid"/>.</returns>
 	public object GenerateId(object container, object document) =>
-		GuidV8Time.NewGuid();
+		_type == SequentialGuidType.Rfc9562V7 ? GuidV7.NewGuid() : GuidV8Time.NewGuid();
 
 	/// <summary>
 	/// Determines whether the specified id is considered empty.

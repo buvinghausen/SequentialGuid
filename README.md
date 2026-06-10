@@ -55,12 +55,14 @@ The zero-dependency core package. Provides UUID generation, timestamp extraction
 
 ### [SequentialGuid.EntityFrameworkCore](src/SequentialGuid.EntityFrameworkCore/README.md) — EF Core Integration
 
-Value converters and JSON serialization support for the `SequentialGuid` and `SequentialSqlGuid` struct types.
+Value converters, value generation, and JSON serialization support for the `SequentialGuid` and `SequentialSqlGuid` struct types — plus a one-line convention that generates RFC 9562 v7 keys for every `Guid` primary key on Add.
 
 ```csharp
 protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
 {
     configurationBuilder.AddSequentialGuidValueConverters();
+    configurationBuilder.UseSequentialGuidValueGeneration();           // v7 keys on Add
+    // configurationBuilder.UseSequentialGuidValueGeneration(sqlServerByteOrder: true);
 }
 ```
 
@@ -97,6 +99,9 @@ Instant? created = id.ToInstant();
 
 - **RFC 9562 compliant** — correct version nibble and variant bits on every UUID
 - **Monotonically increasing** — process-global `Interlocked.Increment` counter ensures strict ordering under concurrency
+- **Bulk generation** — `GuidV7.Fill(Span<Guid>)` / `NewGuids(count)` amortize timestamp capture, counter reservation, and RNG across the batch (.NET 8+)
+- **EF Core value generation** — one-line convention assigns RFC 9562 v7 generators to every Guid primary key
+- **Testable clocks** — `TimeProvider` overloads on every generation path (.NET 8+)
 - **Zero dependencies** — the core package references nothing outside the BCL
 - **Zero allocations on modern .NET** — `stackalloc`, `Span<T>`, and `[SkipLocalsInit]` on .NET 8+
 - **Broad platform support** — .NET 10 / 9 / 8, .NET Framework 4.6.2, and .NET Standard 2.0 (including Blazor WebAssembly)
@@ -104,6 +109,29 @@ Instant? created = id.ToInstant();
 - **SQL Server sort-order aware** — `NewSqlGuid()`, `.ToSqlGuid()`, `.FromSqlGuid()` handle byte-order conversion
 - **Strongly-typed struct wrappers** — `SequentialGuid` and `SequentialSqlGuid` validate at construction and implement `IComparable`, `IFormattable`, `ISpanParsable<T>`, and more
 - **Built-in benchmarks** — BenchmarkDotNet project included for measuring performance on your hardware
+
+## Why not `Guid.CreateVersion7`?
+
+.NET 9 added [`Guid.CreateVersion7`](https://learn.microsoft.com/en-us/dotnet/api/system.guid.createversion7) — so why this library?
+
+1. **No monotonic counter.** BCL v7 GUIDs generated within the same millisecond sort randomly relative to each other (RFC 9562 §6.2 Method 1 is not implemented). Under insert load that is exactly the index-fragmentation problem v7 adoption is meant to solve. SequentialGuid's process-global counter guarantees strict creation order, even across threads.
+2. **No SQL Server byte-order story.** A BCL v7 GUID stored in a `uniqueidentifier` clustered index still fragments — SQL Server sorts GUIDs by its own byte order. `NewSqlGuid()`, `.ToSqlGuid()`, and `.FromSqlGuid()` handle that here.
+3. **No bulk generation.** `GuidV7.Fill(Span<Guid>)` reserves one counter block and makes one RNG call for the whole batch — an order of magnitude faster than calling `Guid.CreateVersion7` in a loop.
+4. **No round-trip tooling.** No timestamp extraction, no sequential-GUID detection, no strongly-typed wrappers.
+5. **Reach.** `Guid.CreateVersion7` is .NET 9+; this library covers .NET Framework 4.6.2 and .NET Standard 2.0.
+
+The trade-off is honest: the monotonic counter and RFC-compliant layout cost a few nanoseconds per single call versus the BCL. Where throughput matters, the bulk API more than repays it.
+
+Measured with BenchmarkDotNet on Intel Core Ultra 9 185H 2.30GHz, .NET 10.0.9 — regenerate with `dotnet run -c Release --project benches/Benchmarks -- --filter *BclComparison*`:
+
+| Method                           | Mean         | Error        | StdDev       | Ratio    | RatioSD | Allocated | Alloc Ratio |
+|--------------------------------- |-------------:|-------------:|-------------:|---------:|--------:|----------:|------------:|
+| Guid.NewGuid                     |     44.46 ns |     0.812 ns |     0.634 ns |     1.00 |    0.02 |         - |          NA |
+| Guid.CreateVersion7              |     65.09 ns |     1.025 ns |     1.437 ns |     1.46 |    0.04 |         - |          NA |
+| GuidV7.NewGuid                   |     82.59 ns |     1.501 ns |     2.055 ns |     1.86 |    0.05 |         - |          NA |
+| 'Guid.CreateVersion7 ×1000 loop' | 67,284.17 ns | 1,299.937 ns | 1,152.361 ns | 1,513.81 |   32.54 |         - |          NA |
+| 'GuidV7.NewGuid ×1000 loop'      | 88,345.82 ns | 1,731.024 ns | 2,892.152 ns | 1,987.67 |   69.76 |         - |          NA |
+| 'GuidV7.Fill ×1000 bulk'         |  6,210.75 ns |    56.053 ns |    49.690 ns |   139.73 |    2.20 |         - |          NA |
 
 ## Contributing
 
