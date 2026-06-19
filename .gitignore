@@ -162,7 +162,8 @@ coverage.*.xml
 *.*nupkg
 
 # Local agent + benchmark artifacts
-.claude/
+.claude/*
+!.claude/settings.json
 BenchmarkDotNet.Artifacts/
 aot-out/
 bench-*.txt
