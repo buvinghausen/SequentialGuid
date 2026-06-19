@@ -16,36 +16,79 @@ and supports client-side ID generation without a server round-trip.
 | `SequentialGuid.MongoDB` | MongoDB BSON serializers |
 | `SequentialGuid.NodaTime` | NodaTime `Instant`/`ZonedDateTime` overloads |
 
+## Development Workflow — Use Superpowers
+
+This repo has the `superpowers` plugin enabled (`.claude/settings.json`). It's not decorative —
+use the skill tree for real work here, and it maps directly onto the spec-first, plan-second,
+code-last workflow:
+
+| Phase | Skill |
+|---|---|
+| Design/spec iteration | `brainstorming` |
+| Plan once the spec settles | `writing-plans` |
+| Implementation | `executing-plans` (pairs with `test-driven-development`) |
+| Bug fixes (spec-first exception) | `systematic-debugging` |
+| Before calling anything done | `verification-before-completion` |
+| Opening/handling a PR | `requesting-code-review` / `receiving-code-review` |
+| Wrapping up a branch | `finishing-a-development-branch` |
+
+If a skill applies to what you're doing, invoke it — don't just read the table and proceed
+manually. The transition points (spec → plan, plan → code) are still explicit human decisions,
+per the global CLAUDE.md; the skills are how each phase gets executed, not a way around the
+hand-off.
+
 ## Repository Structure
 
     SequentialGuid/
     ├── src/
-    │   ├── SequentialGuid/                     # Core library
-    │   │   ├── GuidV4.cs                       # Cryptographically random UUID (v4)
-    │   │   ├── GuidV5.cs                       # Deterministic UUID using SHA-1 (v5)
-    │   │   ├── GuidV7.cs                       # Time-ordered UUID, 48-bit Unix ms + 26-bit counter (v7)
-    │   │   ├── GuidV8Name.cs                   # Deterministic UUID using SHA-256 (v8)
-    │   │   ├── GuidV8Time.cs                   # Time-ordered UUID, 60-bit .NET Ticks (v8)
-    │   │   ├── SequentialGuid.cs               # Strongly-typed struct wrapper (ISequentialGuid<T>)
-    │   │   ├── SequentialSqlGuid.cs            # SQL Server byte-order struct wrapper
+    │   ├── SequentialGuid/                                # Core library
+    │   │   ├── GuidV4.cs                                  # Cryptographically random UUID (v4)
+    │   │   ├── GuidV5.cs                                  # Deterministic UUID using SHA-1 (v5)
+    │   │   ├── GuidV7.cs                                  # Time-ordered UUID, 48-bit Unix ms + 26-bit counter (v7)
+    │   │   ├── GuidV8Name.cs                              # Deterministic UUID using SHA-256 (v8)
+    │   │   ├── GuidV8Time.cs                              # Time-ordered UUID, 60-bit .NET Ticks (v8)
+    │   │   ├── SequentialGuid.cs                          # Strongly-typed struct wrapper (ISequentialGuid<T>)
+    │   │   ├── SequentialSqlGuid.cs                       # SQL Server byte-order struct wrapper
     │   │   └── Extensions/
-    │   │       ├── ByteArrayExtensions.cs      # Internal: byte order swaps, RFC bit helpers
-    │   │       └── GuidExtensions.cs           # Public: ToDateTime(), ToSqlGuid(), etc.
+    │   │       ├── ByteArrayExtensions.cs                 # Internal: byte order swaps, RFC bit helpers
+    │   │       └── GuidExtensions.cs                      # Public: ToDateTime(), ToSqlGuid(), etc.
     │   ├── SequentialGuid.EntityFrameworkCore/
     │   ├── SequentialGuid.MongoDB/
     │   └── SequentialGuid.NodaTime/
-    ├── test/
-    │   └── SequentialGuid.Tests/               # xUnit test project
-    └── util/
-        └── Benchmarks/                         # BenchmarkDotNet benchmarks
+    ├── tests/
+    │   ├── unit/
+    │   │   ├── SequentialGuid.Tests/                      # xUnit test project (core library)
+    │   │   ├── SequentialGuid.EntityFrameworkCore.Tests/
+    │   │   ├── SequentialGuid.MongoDB.Tests/
+    │   │   └── SequentialGuid.NodaTime.Tests/
+    │   └── smoke/
+    │       ├── SequentialGuid.AotSmokeTest/                # PublishAot smoke test (core + NodaTime)
+    │       └── SequentialGuid.EntityFrameworkCore.AotSmokeTest/
+    ├── utils/
+    │   └── Generator/                                     # Emits RFC test-vector [InlineData] lines for GuidV7/GuidV8Time
+    ├── benches/
+    │   └── Benchmarks/                                    # BenchmarkDotNet benchmarks
+    └── test.sh                                            # Linux/WSL2 test runner — see Testing below
 
 ## Target Frameworks
 
-All projects multi-target:
+`global.json` pins the repo to the **.NET 11 preview SDK** (`allowPrerelease: true`,
+`rollForward: latestFeature`) — this is a standing pin for this repo, not a temporary
+side-channel install.
 
-- `.NET 10`, `.NET 9`, `.NET 8` (modern .NET)
-- `.NET Framework 4.7.2`, `.NET Framework 4.6.2`
-- `.NET Standard 2.0`
+Most projects multi-target:
+
+- `net11.0`, `net10.0`, `net9.0`, `net8.0` (modern .NET)
+- A legacy framework leg — **not the same TFM in `src/` and `tests/`:**
+  - `src/`: `net462`
+  - `tests/unit/`: `net472`
+- `netstandard2.0` (`src/` only)
+
+**Exception:** `SequentialGuid.EntityFrameworkCore` (and its test project) targets only
+`net10.0;net9.0;net8.0` — no `net11.0`, no legacy framework leg, no `netstandard2.0`. This is
+deliberate (EF Core doesn't support .NET Framework and net11 EF Core support wasn't out yet when
+last checked), not an oversight — don't "fix" it to match the other packages without checking
+upstream EF Core support first.
 
 Use `#if NET6_0_OR_GREATER` (or the appropriate TFM guard) to separate modern and legacy code
 paths. Always provide both paths — do **not** drop legacy support.
@@ -102,13 +145,26 @@ traditional static extension methods. Follow this pattern when adding internal b
 
 ## Testing
 
-Framework: **xUnit**
+Framework: **xUnit v3** on Microsoft.Testing.Platform (MTP) — see `global.json`'s `test.runner`.
 
-Run all tests:
+**On Windows:** bare `dotnet test` works fine and runs the full matrix, including the net472 legs.
 
-    dotnet test
+**On Linux/WSL2:** bare `dotnet test` (and even `dotnet test -f net472`) fails immediately with
+`Unhandled exception: ... Ensure you have a runnable project type ... A runnable project should
+target a runnable TFM` the instant it hits a net472 leg — MTP's orchestrator enumerates every TFM
+across every project up front, and net472 isn't launchable through the `dotnet` muxer on Linux.
+Use the repo's `test.sh` instead:
 
-Test file naming convention: `{ClassName}Tests.cs` in `test/SequentialGuid.Tests/`.
+    ./test.sh
+
+It runs the modern TFMs one at a time via `dotnet test -f <tfm>` (net11.0/net10.0/net9.0/net8.0,
+skipping projects that don't target a given one), then builds each net472 test project and runs
+the resulting `.exe` directly under **Mono** (`sudo dnf install -y mono-complete` or equivalent —
+see `TOOLCHAIN.md` in the `buvinghausen` repo). Verified against the real MTP test host, not a
+build-only stand-in. `set -euo pipefail` — any failure stops the script with a non-zero exit.
+
+Test file naming convention: `{ClassName}Tests.cs` in `tests/unit/SequentialGuid.Tests/` (and the
+equivalent `tests/unit/SequentialGuid.<Package>.Tests/` for the other packages).
 
 ### Test Conventions
 
@@ -122,9 +178,9 @@ Test file naming convention: `{ClassName}Tests.cs` in `test/SequentialGuid.Tests
 
 ## Benchmarks
 
-Framework: **BenchmarkDotNet** (in `util/Benchmarks/`)
+Framework: **BenchmarkDotNet** (in `benches/Benchmarks/`)
 
-    dotnet run -c Release --project util/Benchmarks -- --filter *<Pattern>*
+    dotnet run -c Release --project benches/Benchmarks -- --filter *<Pattern>*
 
 Use `[MemoryDiagnoser]` on all benchmark classes.
 
