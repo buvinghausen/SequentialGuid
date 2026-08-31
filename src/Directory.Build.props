@@ -17,7 +17,7 @@
     <PackageTags>UUID;GUID;RFC9562;UUIDv4;UUIDv5;UUIDv7;UUIDv8;Sequential GUID;Sequential UUID;COMB GUID;Time-Ordered UUID;Primary Key;Database Key;Clustered Index;Idempotency;Timestamp;Monotonic;Deterministic UUID;Name-Based UUID;SQL Server;uniqueidentifier;MongoDB;MongoDB ObjectId</PackageTags>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <TargetFrameworks>net11.0;net10.0;net9.0;net8.0;net462;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net11.0;net10.0;net462;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
