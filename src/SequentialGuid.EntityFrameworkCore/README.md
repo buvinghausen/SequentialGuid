@@ -16,8 +16,6 @@ dotnet add package SequentialGuid.EntityFrameworkCore
 | Target | EF Core Version |
 |---|---|
 | .NET 10 | 10.0.0 |
-| .NET 9 | 9.0.0 |
-| .NET 8 | 8.0.10+ |
 
 ## Setup
 

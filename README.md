@@ -99,12 +99,12 @@ Instant? created = id.ToInstant();
 
 - **RFC 9562 compliant** — correct version nibble and variant bits on every UUID
 - **Monotonically increasing** — process-global `Interlocked.Increment` counter ensures strict ordering under concurrency
-- **Bulk generation** — `GuidV7.Fill(Span<Guid>)` / `NewGuids(count)` amortize timestamp capture, counter reservation, and RNG across the batch (.NET 8+)
+- **Bulk generation** — `GuidV7.Fill(Span<Guid>)` / `NewGuids(count)` amortize timestamp capture, counter reservation, and RNG across the batch (.NET 10+)
 - **EF Core value generation** — one-line convention assigns RFC 9562 v7 generators to every Guid primary key
-- **Testable clocks** — `TimeProvider` overloads on every generation path (.NET 8+)
+- **Testable clocks** — `TimeProvider` overloads on every generation path (.NET 10+)
 - **Zero dependencies** — the core package references nothing outside the BCL
-- **Zero allocations on modern .NET** — `stackalloc`, `Span<T>`, and `[SkipLocalsInit]` on .NET 8+
-- **Broad platform support** — .NET 10 / 9 / 8, .NET Framework 4.6.2, and .NET Standard 2.0 (including Blazor WebAssembly)
+- **Zero allocations on modern .NET** — `stackalloc`, `Span<T>`, and `[SkipLocalsInit]` on .NET 10+
+- **Broad platform support** — .NET 11 / 10, .NET Framework 4.6.2, and .NET Standard 2.0 (including Blazor WebAssembly)
 - **Round-trip timestamp extraction** — `.ToDateTime()` on any `Guid` (V7, V8, or legacy)
 - **SQL Server sort-order aware** — `NewSqlGuid()`, `.ToSqlGuid()`, `.FromSqlGuid()` handle byte-order conversion
 - **Strongly-typed struct wrappers** — `SequentialGuid` and `SequentialSqlGuid` validate at construction and implement `IComparable`, `IFormattable`, `ISpanParsable<T>`, and more

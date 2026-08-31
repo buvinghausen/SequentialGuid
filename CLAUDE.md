@@ -78,17 +78,21 @@ side-channel install.
 
 Most projects multi-target:
 
-- `net11.0`, `net10.0`, `net9.0`, `net8.0` (modern .NET)
+- `net11.0`, `net10.0` (modern .NET — 8 and 9 dropped, both EOL November 10, 2026)
 - A legacy framework leg — **not the same TFM in `src/` and `tests/`:**
   - `src/`: `net462`
   - `tests/unit/`: `net472`
 - `netstandard2.0` (`src/` only)
 
 **Exception:** `SequentialGuid.EntityFrameworkCore` (and its test project) targets only
-`net10.0;net9.0;net8.0` — no `net11.0`, no legacy framework leg, no `netstandard2.0`. This is
-deliberate (EF Core doesn't support .NET Framework and net11 EF Core support wasn't out yet when
-last checked), not an oversight — don't "fix" it to match the other packages without checking
-upstream EF Core support first.
+`net10.0` — no legacy framework leg, no `netstandard2.0`. This is deliberate (EF Core doesn't
+support .NET Framework), not an oversight. A `net11.0` leg is planned once EF Core 11 ships
+stable — as of this writing only `11.0.0-preview.*` is on nuget.org.
+
+Note both EF Core projects use `<TargetFrameworks>` (plural) even with a single value. The
+singular `<TargetFramework>` does **not** override the plural property inherited from
+`Directory.Build.props`, so using it silently drags these projects onto the `net462` /
+`netstandard2.0` / `net472` legs and fails restore with `NU1202`.
 
 Use `#if NET6_0_OR_GREATER` (or the appropriate TFM guard) to separate modern and legacy code
 paths. Always provide both paths — do **not** drop legacy support.
@@ -157,7 +161,7 @@ Use the repo's `test.sh` instead:
 
     ./test.sh
 
-It runs the modern TFMs one at a time via `dotnet test -f <tfm>` (net11.0/net10.0/net9.0/net8.0,
+It runs the modern TFMs one at a time via `dotnet test -f <tfm>` (net11.0/net10.0,
 skipping projects that don't target a given one), then builds each net472 test project and runs
 the resulting `.exe` directly under **Mono** (`sudo dnf install -y mono-complete` or equivalent —
 see `TOOLCHAIN.md` in the `buvinghausen` repo). Verified against the real MTP test host, not a

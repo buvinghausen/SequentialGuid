@@ -1,6 +1,5 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Text.Json.Serialization.Metadata;
 using SequentialGuid;
 using SequentialGuid.Extensions;
 using NodaTime;
@@ -66,7 +65,7 @@ Check("SequentialSqlGuid wraps v7", ssg2.Value == v7.ToSqlGuid());
 // on top of the generated context's options.
 JsonSerializerOptions opts = new(SmokeJsonContext.Default.Options);
 opts.AddSequentialGuidConverters();
-var typeInfo = (JsonTypeInfo<SgStruct>)opts.GetTypeInfo(typeof(SgStruct));
+var typeInfo = opts.GetTypeInfo<SgStruct>();
 var json = JsonSerializer.Serialize(sg, typeInfo);
 var roundTripped = JsonSerializer.Deserialize(json, typeInfo);
 Check("JSON roundtrip preserves Value", roundTripped.Value == sg.Value);
