@@ -1,35 +1,35 @@
 <Solution>
-  <Folder Name="/Solution Items/">
-    <File Path=".editorconfig" />
-    <File Path=".gitattributes" />
-    <File Path=".gitignore" />
-    <File Path=".github/workflows/ci.yml" />
-    <File Path="CLAUDE.md" />
-    <File Path="CODE_OF_CONDUCT.md" />
-    <File Path="Directory.Build.props" />
-    <File Path="global.json" />
-    <File Path="LICENSE.txt" />
-    <File Path="README.md" />
-    <File Path=".github/workflows/release.yml" />
-  </Folder>
-  <Folder Name="/Solution Items/src/">
-    <File Path="src/Directory.Build.props" />
-  </Folder>
-  <Folder Name="/Solution Items/tests/">
-    <File Path="tests/unit/Directory.Build.props" />
-  </Folder>
-  <Project Path="benches/Benchmarks/SequentialGuid.Benchmarks.csproj" />
-  <Project Path="src/SequentialGuid.EntityFrameworkCore/SequentialGuid.EntityFrameworkCore.csproj" />
-  <Project Path="src/SequentialGuid.MongoDB/SequentialGuid.MongoDB.csproj" />
-  <Project Path="src/SequentialGuid.NodaTime/SequentialGuid.NodaTime.csproj" />
-  <Project Path="src/SequentialGuid/SequentialGuid.csproj" />
-  <Project Path="tests/smoke/SequentialGuid.AotSmokeTest/SequentialGuid.AotSmokeTest.csproj" />
-  <Project Path="tests/smoke/SequentialGuid.EntityFrameworkCore.AotSmokeTest/SequentialGuid.EntityFrameworkCore.AotSmokeTest.csproj" />
-  <Project Path="tests/unit/SequentialGuid.EntityFrameworkCore.Tests/SequentialGuid.EntityFrameworkCore.Tests.csproj" />
-  <Project Path="tests/unit/SequentialGuid.MongoDB.Tests/SequentialGuid.MongoDB.Tests.csproj" />
-  <Project Path="tests/unit/SequentialGuid.NodaTime.Tests/SequentialGuid.NodaTime.Tests.csproj" />
-  <Project Path="tests/unit/SequentialGuid.Tests/SequentialGuid.Tests.csproj" />
-  <Project Path="utils/Generator/SequentialGuid.Generator.csproj">
-    <Build Solution="Release|*" Project="false" />
-  </Project>
+	<Folder Name="/Solution Items/">
+		<File Path=".editorconfig" />
+		<File Path=".gitattributes" />
+		<File Path=".gitignore" />
+		<File Path=".github/workflows/ci.yml" />
+		<File Path="CLAUDE.md" />
+		<File Path="CODE_OF_CONDUCT.md" />
+		<File Path="Directory.Build.props" />
+		<File Path="global.json" />
+		<File Path="LICENSE.txt" />
+		<File Path="README.md" />
+		<File Path=".github/workflows/release.yml" />
+	</Folder>
+	<Folder Name="/Solution Items/src/">
+		<File Path="src/Directory.Build.props" />
+	</Folder>
+	<Folder Name="/Solution Items/tests/">
+		<File Path="tests/unit/Directory.Build.props" />
+	</Folder>
+	<Project Path="benches/Benchmarks/SequentialGuid.Benchmarks.csproj" />
+	<Project Path="src/SequentialGuid.EntityFrameworkCore/SequentialGuid.EntityFrameworkCore.csproj" />
+	<Project Path="src/SequentialGuid.MongoDB/SequentialGuid.MongoDB.csproj" />
+	<Project Path="src/SequentialGuid.NodaTime/SequentialGuid.NodaTime.csproj" />
+	<Project Path="src/SequentialGuid/SequentialGuid.csproj" />
+	<Project Path="tests/smoke/SequentialGuid.AotSmokeTest/SequentialGuid.AotSmokeTest.csproj" />
+	<Project Path="tests/smoke/SequentialGuid.EntityFrameworkCore.AotSmokeTest/SequentialGuid.EntityFrameworkCore.AotSmokeTest.csproj" />
+	<Project Path="tests/unit/SequentialGuid.EntityFrameworkCore.Tests/SequentialGuid.EntityFrameworkCore.Tests.csproj" />
+	<Project Path="tests/unit/SequentialGuid.MongoDB.Tests/SequentialGuid.MongoDB.Tests.csproj" />
+	<Project Path="tests/unit/SequentialGuid.NodaTime.Tests/SequentialGuid.NodaTime.Tests.csproj" />
+	<Project Path="tests/unit/SequentialGuid.Tests/SequentialGuid.Tests.csproj" />
+	<Project Path="utils/Generator/SequentialGuid.Generator.csproj">
+		<Build Solution="Release|*" Project="false" />
+	</Project>
 </Solution>

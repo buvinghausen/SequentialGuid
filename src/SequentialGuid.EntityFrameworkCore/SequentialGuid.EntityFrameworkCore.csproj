@@ -1,12 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFrameworks>net10.0</TargetFrameworks>
-    <Title>SequentialGuid.EntityFrameworkCore</Title>
-    <Description>Entity Framework Core value generation support for SequentialGuid.</Description>
-  </PropertyGroup>
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFrameworks>net10.0</TargetFrameworks>
+		<Title>SequentialGuid.EntityFrameworkCore</Title>
+		<Description>Entity Framework Core value generation support for SequentialGuid.</Description>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
-    <ProjectReference Include="..\SequentialGuid\SequentialGuid.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
+		<ProjectReference Include="..\SequentialGuid\SequentialGuid.csproj" />
+	</ItemGroup>
 </Project>

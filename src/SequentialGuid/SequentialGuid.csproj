@@ -8,6 +8,9 @@
 
 	<ItemGroup>
 		<SupportedPlatform Include="browser" />
+		<SupportedPlatform Include="Android" />
+		<SupportedPlatform Include="iOS" />
+		<SupportedPlatform Include="MacCatalyst" />
 		<Using Remove="System.Collections.Generic" />
 		<Using Remove="System.IO" />
 		<Using Remove="System.Net.Http" />
