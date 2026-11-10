@@ -72,9 +72,8 @@ hand-off.
 
 ## Target Frameworks
 
-`global.json` pins the repo to the **.NET 11 preview SDK** (`allowPrerelease: true`,
-`rollForward: latestFeature`) — this is a standing pin for this repo, not a temporary
-side-channel install.
+`global.json` pins the repo to the **.NET 11 RTM SDK** (`11.0.100`, `rollForward: latestFeature`,
+`allowPrerelease: false`).
 
 Most projects multi-target:
 
@@ -85,11 +84,11 @@ Most projects multi-target:
 - `netstandard2.0` (`src/` only)
 
 **Exception:** `SequentialGuid.EntityFrameworkCore` (and its test project) targets only
-`net10.0` — no legacy framework leg, no `netstandard2.0`. This is deliberate (EF Core doesn't
-support .NET Framework), not an oversight. A `net11.0` leg is planned once EF Core 11 ships
-stable — as of this writing only `11.0.0-preview.*` is on nuget.org.
+`net11.0;net10.0` — no legacy framework leg, no `netstandard2.0`. This is deliberate (EF Core
+doesn't support .NET Framework), not an oversight. Each leg references its matching EF Core major
+(11.x on `net11.0`, 10.x on `net10.0`) via `Condition`ed `PackageReference`s.
 
-Note both EF Core projects use `<TargetFrameworks>` (plural) even with a single value. The
+Note both EF Core projects must set `<TargetFrameworks>` (plural). The
 singular `<TargetFramework>` does **not** override the plural property inherited from
 `Directory.Build.props`, so using it silently drags these projects onto the `net462` /
 `netstandard2.0` / `net472` legs and fails restore with `NU1202`.
@@ -166,6 +165,13 @@ skipping projects that don't target a given one), then builds each net472 test p
 the resulting `.exe` directly under **Mono** (`sudo dnf install -y mono-complete` or equivalent —
 see `TOOLCHAIN.md` in the `buvinghausen` repo). Verified against the real MTP test host, not a
 build-only stand-in. `set -euo pipefail` — any failure stops the script with a non-zero exit.
+
+**Coverage:** every test project references `Microsoft.Testing.Extensions.CodeCoverage` (via
+`tests/unit/Directory.Build.props`). CI runs `dotnet test --coverage --coverage-output-format
+cobertura`, merges the per-host files with ReportGenerator, posts a sticky PR comment, and fails
+below `MINIMUM_BRANCH_COVERAGE` in `.github/workflows/ci.yml`. To check locally:
+
+    dotnet test -f net11.0 --coverage --coverage-output-format cobertura   # → TestResults/*.cobertura.xml
 
 Test file naming convention: `{ClassName}Tests.cs` in `tests/unit/SequentialGuid.Tests/` (and the
 equivalent `tests/unit/SequentialGuid.<Package>.Tests/` for the other packages).
