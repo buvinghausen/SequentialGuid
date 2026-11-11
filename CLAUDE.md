@@ -187,6 +187,15 @@ equivalent `tests/unit/SequentialGuid.<Package>.Tests/` for the other packages).
 - No test should depend on wall-clock time unless testing the no-arg `NewGuid()` overload;
   prefer the `long unixMilliseconds` overload for deterministic tests.
 
+## Changelog
+
+`CHANGELOG.md` follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Every user-visible change goes
+under `## [Unreleased]` in the same PR, grouped as Added / Changed / Deprecated / Removed / Fixed / Security. Leave
+out internal-only changes (CI, tests, repo layout) unless they affect what ships. At release time, rename
+`[Unreleased]` to the version and date, add a fresh empty `[Unreleased]`, and update the compare links at the
+bottom. The release tag sets the package version (`release.yml` passes `/p:Version=<tag>`), so nothing in code needs
+bumping.
+
 ## Benchmarks
 
 Framework: **BenchmarkDotNet** (in `benches/Benchmarks/`)

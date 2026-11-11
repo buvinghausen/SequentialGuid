@@ -137,6 +137,10 @@ Measured with BenchmarkDotNet on Intel Core Ultra 9 185H 2.30GHz, .NET 10.0.9 â€
 
 Pull requests and issues are welcome. The repository uses GitHub Actions for CI â€” all PRs must pass the build and test suite before merging.
 
+## Changelog
+
+See [CHANGELOG.md](https://github.com/buvinghausen/SequentialGuid/blob/master/CHANGELOG.md) for release history and upgrade notes.
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE.txt).
