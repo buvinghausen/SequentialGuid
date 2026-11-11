@@ -104,7 +104,7 @@ Instant? created = id.ToInstant();
 - **Testable clocks** — `TimeProvider` overloads on every generation path (.NET 10+)
 - **Zero dependencies** — the core package references nothing outside the BCL
 - **Zero allocations on modern .NET** — `stackalloc`, `Span<T>`, and `[SkipLocalsInit]` on .NET 10+
-- **Broad platform support** — .NET 11 / 10, .NET Framework 4.6.2, and .NET Standard 2.0 (including Blazor WebAssembly)
+- **Broad platform support** — .NET 11 / 10, .NET Framework 4.7.2+, and .NET Standard 2.0 (including Blazor WebAssembly)
 - **Round-trip timestamp extraction** — `.ToDateTime()` on any `Guid` (V7, V8, or legacy)
 - **SQL Server sort-order aware** — `NewSqlGuid()`, `.ToSqlGuid()`, `.FromSqlGuid()` handle byte-order conversion
 - **Strongly-typed struct wrappers** — `SequentialGuid` and `SequentialSqlGuid` validate at construction and implement `IComparable`, `IFormattable`, `ISpanParsable<T>`, and more
@@ -118,7 +118,7 @@ Instant? created = id.ToInstant();
 2. **No SQL Server byte-order story.** A BCL v7 GUID stored in a `uniqueidentifier` clustered index still fragments — SQL Server sorts GUIDs by its own byte order. `NewSqlGuid()`, `.ToSqlGuid()`, and `.FromSqlGuid()` handle that here.
 3. **No bulk generation.** `GuidV7.Fill(Span<Guid>)` reserves one counter block and makes one RNG call for the whole batch — an order of magnitude faster than calling `Guid.CreateVersion7` in a loop.
 4. **No round-trip tooling.** No timestamp extraction, no sequential-GUID detection, no strongly-typed wrappers.
-5. **Reach.** `Guid.CreateVersion7` is .NET 9+; this library covers .NET Framework 4.6.2 and .NET Standard 2.0.
+5. **Reach.** `Guid.CreateVersion7` is .NET 9+; this library covers .NET Framework 4.7.2+ and .NET Standard 2.0.
 
 The trade-off is honest: the monotonic counter and RFC-compliant layout cost a few nanoseconds per single call versus the BCL. Where throughput matters, the bulk API more than repays it.
 

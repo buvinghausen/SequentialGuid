@@ -78,10 +78,11 @@ hand-off.
 Most projects multi-target:
 
 - `net11.0`, `net10.0` (modern .NET — 8 and 9 dropped, both EOL November 10, 2026)
-- A legacy framework leg — **not the same TFM in `src/` and `tests/`:**
-  - `src/`: `net462`
-  - `tests/unit/`: `net472`
-- `netstandard2.0` (`src/` only)
+- `netstandard2.0` (`src/` only) — the single legacy build; it also serves .NET Framework
+  4.7.2+ consumers. `net462` was dropped ahead of its January 2027 end of support, and there is
+  no `NETFRAMEWORK`-specific code in `src/` any more.
+- `net472` (`tests/unit/` only) — this is the **only** test leg that exercises the shipped
+  `netstandard2.0` build (modern legs resolve the `net10.0`/`net11.0` assets). Don't drop it.
 
 **Exception:** `SequentialGuid.EntityFrameworkCore` (and its test project) targets only
 `net11.0;net10.0` — no legacy framework leg, no `netstandard2.0`. This is deliberate (EF Core
@@ -90,7 +91,7 @@ doesn't support .NET Framework), not an oversight. Each leg references its match
 
 Note both EF Core projects must set `<TargetFrameworks>` (plural). The
 singular `<TargetFramework>` does **not** override the plural property inherited from
-`Directory.Build.props`, so using it silently drags these projects onto the `net462` /
+`Directory.Build.props`, so using it silently drags these projects onto the
 `netstandard2.0` / `net472` legs and fails restore with `NU1202`.
 
 Use `#if NET6_0_OR_GREATER` (or the appropriate TFM guard) to separate modern and legacy code
