@@ -4,7 +4,7 @@
 
 **Goal:** Close the last allocation gap in `GuidNameBased.Create` (the path behind `GuidV5.Create` and `GuidV8Name.Create`), apply free perf wins missed in v6.0, and add four small ergonomic extension members. SemVer minor release v6.1.0, single PR against `master`.
 
-**Architecture:** All work on a single feature branch `v6.1/perf-and-ergonomics`. Eleven implementation tasks then one final PR. No breaking changes — everything is additive or internal. Spec lives at `docs/superpowers/specs/2026-05-12-sequentialguid-v6.1-design.md`.
+**Architecture:** All work on a single feature branch `v6.1/perf-and-ergonomics`. Eleven implementation tasks then one final PR. No breaking changes - everything is additive or internal. Spec lives at `docs/superpowers/specs/2026-05-12-sequentialguid-v6.1-design.md`.
 
 **Tech Stack:** .NET 10 / 9 / 8 + .NET Framework 4.6.2 + .NET Standard 2.0 (core); xUnit v3 + Shouldly (tests); BenchmarkDotNet (benchmarks); GitHub Actions on windows-latest (CI).
 
@@ -22,11 +22,11 @@ git checkout -b v6.1/perf-and-ergonomics master
 
 Expected: `Switched to a new branch 'v6.1/perf-and-ergonomics'`.
 
-No commit yet — this is just the branch setup.
+No commit yet - this is just the branch setup.
 
 ---
 
-## Section 1 — Deterministic generator zero-allocation
+## Section 1 - Deterministic generator zero-allocation
 
 ### Task 1: Add `SwapGuidBytesInPlace` Span helper
 
@@ -70,7 +70,7 @@ Expected: BUILD SUCCEEDED on all 5 TFMs (net10.0, net9.0, net8.0, net462, netsta
 dotnet test
 ```
 
-Expected: all green (no behavior change yet — this helper isn't called from anywhere yet).
+Expected: all green (no behavior change yet - this helper isn't called from anywhere yet).
 
 - [ ] **Step 5: Commit**
 
@@ -81,7 +81,7 @@ git commit -m "perf: add SwapGuidBytesInPlace Span helper for GuidNameBased rewr
 
 ---
 
-### Task 2: Rewrite `GuidNameBased.Create` — zero-alloc + flat `#if` nest
+### Task 2: Rewrite `GuidNameBased.Create` - zero-alloc + flat `#if` nest
 
 **Files:**
 - Modify: `C:\code\Buvinghausen\SequentialGuid\src\SequentialGuid\GuidNameBased.cs`
@@ -90,7 +90,7 @@ git commit -m "perf: add SwapGuidBytesInPlace Span helper for GuidNameBased rewr
 
 Net effect: `GuidV5.Create(byte[])` and `GuidV8Name.Create(byte[])` drop from ~176 B/call to 0 B/call on .NET 6+.
 
-- [ ] **Step 1: Open `src/SequentialGuid/GuidNameBased.cs`** — note the current state for comparison
+- [ ] **Step 1: Open `src/SequentialGuid/GuidNameBased.cs`** - note the current state for comparison
 
 The current file (after v6.0) has nested `#if` for NETFRAMEWORK / NETSTANDARD / NET6_0_OR_GREATER. Total method is ~38 lines.
 
@@ -104,7 +104,7 @@ using System.Security.Cryptography;
 using SequentialGuid.Extensions;
 ```
 
-(If `System.Buffers` is already covered by an implicit using or `using static` directive elsewhere — verify by attempting the build in Step 5; if so, no edit needed. `ArrayPool<T>` lives in `System.Buffers`.)
+(If `System.Buffers` is already covered by an implicit using or `using static` directive elsewhere - verify by attempting the build in Step 5; if so, no edit needed. `ArrayPool<T>` lives in `System.Buffers`.)
 
 - [ ] **Step 3: Replace the entire `Create` method body**
 
@@ -114,7 +114,7 @@ Replace lines 16-52 (the entire `internal static Guid Create(...)` body, keeping
 	internal static Guid Create(Guid namespaceId, byte[] name, HashAlgorithmName algorithmName, byte version)
 	{
 #if NETFRAMEWORK
-		// Legacy .NET Framework — full-blown hash then read .Hash
+		// Legacy .NET Framework - full-blown hash then read .Hash
 		using var hash = HashAlgorithm.Create(algorithmName.Name)!;
 		hash.TransformBlock(namespaceId.ToByteArray().SwapByteOrder(), 0, 16, null, 0);
 		hash.TransformFinalBlock(name, 0, name.Length);
@@ -159,7 +159,7 @@ Replace lines 16-52 (the entire `internal static Guid Create(...)` body, keeping
 			if (rented is not null) ArrayPool<byte>.Shared.Return(rented);
 		}
 #else
-		// netstandard2.0 — TryGetHashAndReset(Span<byte>, out int) is .NET 5+ / netstandard 2.1+
+		// netstandard2.0 - TryGetHashAndReset(Span<byte>, out int) is .NET 5+ / netstandard 2.1+
 		using var hash = IncrementalHash.CreateHash(algorithmName);
 		hash.AppendData(namespaceId.ToByteArray().SwapByteOrder());
 		hash.AppendData(name);
@@ -188,9 +188,9 @@ dotnet build src/SequentialGuid/SequentialGuid.csproj
 
 Expected: BUILD SUCCEEDED on all 5 TFMs, 0 warnings.
 
-If you get a build error about `ArrayPool` not being found, the `using System.Buffers;` directive is required — add it (Step 2). Verify by re-running this step.
+If you get a build error about `ArrayPool` not being found, the `using System.Buffers;` directive is required - add it (Step 2). Verify by re-running this step.
 
-- [ ] **Step 6: Run the V5 and V8Name test suites — critical RFC test vectors must still match**
+- [ ] **Step 6: Run the V5 and V8Name test suites - critical RFC test vectors must still match**
 
 ```powershell
 dotnet test test/SequentialGuid.Tests -- --filter-method "*GuidV5*"
@@ -222,7 +222,7 @@ unchanged. Result: GuidV5/GuidV8Name no longer allocate on .NET 6+."
 
 ---
 
-## Section 2 — Free perf wins
+## Section 2 - Free perf wins
 
 ### Task 3: Apply `[SkipLocalsInit]` to generator hot paths
 
@@ -232,7 +232,7 @@ unchanged. Result: GuidV5/GuidV8Name no longer allocate on .NET 6+."
 - Modify: `C:\code\Buvinghausen\SequentialGuid\src\SequentialGuid\GuidV8Time.cs`
 - Modify: `C:\code\Buvinghausen\SequentialGuid\src\SequentialGuid\GuidNameBased.cs`
 
-**Context:** Each generator method's stackalloc'd buffer is fully written before use — every byte index is explicitly assigned or filled by `RandomNumberGenerator.Fill` / `SHA*.HashData`. The JIT's automatic zero-init is redundant work. `[SkipLocalsInit]` is already on the struct wrappers (class-level); extending to generator methods is consistent.
+**Context:** Each generator method's stackalloc'd buffer is fully written before use - every byte index is explicitly assigned or filled by `RandomNumberGenerator.Fill` / `SHA*.HashData`. The JIT's automatic zero-init is redundant work. `[SkipLocalsInit]` is already on the struct wrappers (class-level); extending to generator methods is consistent.
 
 The polyfill shim at `src/SequentialGuid/SkipLocalsInitPolyfill.cs` already declares `AttributeTargets.Method` so the attribute applies to methods on all TFMs including netstandard2.0 and net462.
 
@@ -296,7 +296,7 @@ dotnet build src/SequentialGuid/SequentialGuid.csproj
 
 Expected: BUILD SUCCEEDED on all 5 TFMs, 0 warnings.
 
-- [ ] **Step 7: Run the full test suite (sanity check — no behavior change expected)**
+- [ ] **Step 7: Run the full test suite (sanity check - no behavior change expected)**
 
 ```powershell
 dotnet test
@@ -313,12 +313,12 @@ git commit -m "perf: apply [SkipLocalsInit] to generator hot paths"
 
 ---
 
-### Task 4: `GuidV7.NewGuid()` no-arg cleanup — eliminate one struct copy
+### Task 4: `GuidV7.NewGuid()` no-arg cleanup - eliminate one struct copy
 
 **Files:**
 - Modify: `C:\code\Buvinghausen\SequentialGuid\src\SequentialGuid\GuidV7.cs`
 
-**Context:** The no-arg `GuidV7.NewGuid()` currently calls `NewGuid(DateTimeOffset.UtcNow)`, which immediately calls `NewGuid(timestamp.ToUnixTimeMilliseconds())`. The intermediate `DateTimeOffset` parameter pass is unnecessary — extract the ms value inline.
+**Context:** The no-arg `GuidV7.NewGuid()` currently calls `NewGuid(DateTimeOffset.UtcNow)`, which immediately calls `NewGuid(timestamp.ToUnixTimeMilliseconds())`. The intermediate `DateTimeOffset` parameter pass is unnecessary - extract the ms value inline.
 
 - [ ] **Step 1: Open `src/SequentialGuid/GuidV7.cs` and locate the no-arg `NewGuid()`**
 
@@ -336,7 +336,7 @@ Around line 90:
 		NewGuid(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
 ```
 
-Keep the XML doc above unchanged. The `NewGuid(DateTimeOffset)` overload itself stays — only the no-arg call site changes.
+Keep the XML doc above unchanged. The `NewGuid(DateTimeOffset)` overload itself stays - only the no-arg call site changes.
 
 - [ ] **Step 3: Build**
 
@@ -363,7 +363,7 @@ git commit -m "perf: GuidV7.NewGuid() inlines unix-ms extraction, saves one stru
 
 ---
 
-## Section 3 — Ergonomic features (TDD)
+## Section 3 - Ergonomic features (TDD)
 
 ### Task 5: Add `Guid.MaxValue` static extension property (TDD)
 
@@ -396,7 +396,7 @@ public sealed class GuidExtensionsTests
 }
 ```
 
-- [ ] **Step 2: Run the new tests — expect compile failure**
+- [ ] **Step 2: Run the new tests - expect compile failure**
 
 ```powershell
 dotnet test test/SequentialGuid.Tests -- --filter-method "*GuidExtensionsTests*"
@@ -406,7 +406,7 @@ Expected: build error `CS0117: 'Guid' does not contain a definition for 'MaxValu
 
 - [ ] **Step 3: Open `src/SequentialGuid/Extensions/GuidExtensions.cs` and add the static extension block**
 
-The current file has `extension(Guid id)` for instance members. Add a new `extension(Guid)` block (no parameter name — that's the static-extension syntax) and a private static-readonly cache field.
+The current file has `extension(Guid id)` for instance members. Add a new `extension(Guid)` block (no parameter name - that's the static-extension syntax) and a private static-readonly cache field.
 
 Insert after the `[SkipLocalsInit]` line and before the existing `extension(Guid id)` block:
 
@@ -418,7 +418,7 @@ public static class GuidExtensions
 
 	extension(Guid)
 	{
-		/// <summary>Gets the RFC 9562 §5.10 max UUID — all bits set to 1.</summary>
+		/// <summary>Gets the RFC 9562 §5.10 max UUID - all bits set to 1.</summary>
 		public static Guid MaxValue => s_maxValue;
 	}
 
@@ -437,7 +437,7 @@ dotnet build src/SequentialGuid/SequentialGuid.csproj
 
 Expected: BUILD SUCCEEDED on all 5 TFMs, 0 warnings.
 
-- [ ] **Step 5: Run the tests — expect both pass**
+- [ ] **Step 5: Run the tests - expect both pass**
 
 ```powershell
 dotnet test test/SequentialGuid.Tests -- --filter-method "*GuidExtensionsTests*"
@@ -485,7 +485,7 @@ Open the file. Inside the existing `public sealed class GuidExtensionsTests` blo
 	[Fact]
 	void TryToDateTimeReturnsFalseForRandomV4()
 	{
-		// RFC 9562 §A.4 v4 vector — known not a sequential guid
+		// RFC 9562 §A.4 v4 vector - known not a sequential guid
 		var v4 = new Guid("919108f7-52d1-4320-9bac-f847db4148a8");
 		var success = v4.TryToDateTime(out var timestamp);
 		success.ShouldBeFalse();
@@ -503,7 +503,7 @@ Open the file. Inside the existing `public sealed class GuidExtensionsTests` blo
 
 (The `GuidV7` static class is in the `SequentialGuid` namespace; if the test file lacks a `using SequentialGuid;` directive, add it at the top.)
 
-- [ ] **Step 2: Run the new tests — expect compile failure**
+- [ ] **Step 2: Run the new tests - expect compile failure**
 
 ```powershell
 dotnet test test/SequentialGuid.Tests -- --filter-method "*TryToDateTime*"
@@ -607,7 +607,7 @@ Append inside the test class:
 	}
 ```
 
-- [ ] **Step 2: Run the new tests — expect compile failure**
+- [ ] **Step 2: Run the new tests - expect compile failure**
 
 ```powershell
 dotnet test test/SequentialGuid.Tests -- --filter-method "*ToDateTimeOffset*"
@@ -671,7 +671,7 @@ git commit -m "feat: add Guid.ToDateTimeOffset + TryToDateTimeOffset extensions"
 - Modify: `C:\code\Buvinghausen\SequentialGuid\test\SequentialGuid.Tests\GuidExtensionsTests.cs`
 - Modify: `C:\code\Buvinghausen\SequentialGuid\src\SequentialGuid\Extensions\GuidExtensions.cs`
 
-**Context:** Currently `SequentialGuidByteOrder.TryDetect` is internal — consumers can only check if a `Guid` is recognised by try/catching the struct constructor. Add a public `IsSequentialGuid()` extension that delegates to the existing internal helper. Discards the SQL-byte-order flag (consumers who need that detail can convert through the struct types).
+**Context:** Currently `SequentialGuidByteOrder.TryDetect` is internal - consumers can only check if a `Guid` is recognised by try/catching the struct constructor. Add a public `IsSequentialGuid()` extension that delegates to the existing internal helper. Discards the SQL-byte-order flag (consumers who need that detail can convert through the struct types).
 
 - [ ] **Step 1: Append failing tests to `GuidExtensionsTests.cs`**
 
@@ -722,7 +722,7 @@ Append inside the test class. Use a known-legacy guid string from `SequentialGui
 	}
 ```
 
-- [ ] **Step 2: Run the new tests — expect compile failure**
+- [ ] **Step 2: Run the new tests - expect compile failure**
 
 ```powershell
 dotnet test test/SequentialGuid.Tests -- --filter-method "*IsSequentialGuid*"
@@ -740,7 +740,7 @@ Inside the existing `extension(Guid id)` block, after the `TryToDateTimeOffset` 
 			SequentialGuidByteOrder.TryDetect(id, out _);
 ```
 
-The `SequentialGuidByteOrder` type lives in the `SequentialGuid.Extensions` namespace. The current `GuidExtensions.cs` file declares `namespace System;` (with an `IDE0130` suppression pragma) and already has `using SequentialGuid;` plus `using SequentialGuid.Extensions;` at the top — so the `SequentialGuidByteOrder.TryDetect` call resolves correctly with no additional imports needed.
+The `SequentialGuidByteOrder` type lives in the `SequentialGuid.Extensions` namespace. The current `GuidExtensions.cs` file declares `namespace System;` (with an `IDE0130` suppression pragma) and already has `using SequentialGuid;` plus `using SequentialGuid.Extensions;` at the top - so the `SequentialGuidByteOrder.TryDetect` call resolves correctly with no additional imports needed.
 
 - [ ] **Step 4: Build**
 
@@ -775,7 +775,7 @@ git commit -m "feat: add public Guid.IsSequentialGuid predicate"
 
 ---
 
-## Section 4 — Testing & verification
+## Section 4 - Testing & verification
 
 ### Task 9: Extend AOT smoke test to cover new public surface
 
@@ -790,7 +790,7 @@ Find the existing block of `Check(...)` calls. The new checks need to land in th
 
 - [ ] **Step 2: Add the new check lines**
 
-Add these `Check(...)` calls in the AOT smoke test, immediately before the final tally block. Place them next to the existing JSON-roundtrip check or at the end of the existing checks — anywhere before `if (failures.Count == 0)`:
+Add these `Check(...)` calls in the AOT smoke test, immediately before the final tally block. Place them next to the existing JSON-roundtrip check or at the end of the existing checks - anywhere before `if (failures.Count == 0)`:
 
 ```csharp
 // v6.1 ergonomic extensions
@@ -816,7 +816,7 @@ dotnet run --project test/SequentialGuid.AotSmokeTest
 
 Expected: `AOT smoke test: PASS` and exit code 0.
 
-If a check fails, the implementation in Tasks 5-8 has a bug — go fix it there, not here.
+If a check fails, the implementation in Tasks 5-8 has a bug - go fix it there, not here.
 
 - [ ] **Step 4: (Optional, machine-dependent) Run AOT publish locally**
 
@@ -829,7 +829,7 @@ dotnet publish test/SequentialGuid.AotSmokeTest -c Release -r win-x64 -o aot-out
 
 Expected: AOT publish produces zero `IL2xxx`/`IL3xxx` warnings; binary outputs `AOT smoke test: PASS`; exit code 0.
 
-If the publish fails locally because the C++ linker is missing (`Platform linker not found`), that's expected — CI will run this step on `windows-latest` which ships the toolchain. Move to Step 5.
+If the publish fails locally because the C++ linker is missing (`Platform linker not found`), that's expected - CI will run this step on `windows-latest` which ships the toolchain. Move to Step 5.
 
 - [ ] **Step 5: Commit**
 
@@ -843,7 +843,7 @@ git commit -m "test: extend AOT smoke test to cover v6.1 ergonomic extensions"
 ### Task 10: Verify zero-allocation benchmarks for name-based generators
 
 **Files:**
-- (no code changes — verification only)
+- (no code changes - verification only)
 
 **Context:** Run `NameBenchmarks` and confirm the `Allocated` column drops to 0 B for `GuidV5.Create(byte[])` and `GuidV8Name.Create(byte[])` at both input sizes.
 
@@ -858,10 +858,10 @@ Wait for BenchmarkDotNet to complete (typically 1-2 minutes).
 Expected: a results table with `Method`, `Mean`, `Allocated` columns. For:
 - `GuidV5.Create(byte[])` at both name lengths → `Allocated` column shows `-` or `0 B`
 - `GuidV8Name.Create(byte[])` at both name lengths → `Allocated` column shows `-` or `0 B`
-- `GuidV5.Create(string)` at both name lengths → still allocates (UTF-8 buffer is caller-controlled — that's expected)
+- `GuidV5.Create(string)` at both name lengths → still allocates (UTF-8 buffer is caller-controlled - that's expected)
 - `GuidV8Name.Create(string)` at both name lengths → still allocates (same reason)
 
-If the `(byte[])` rows still show non-zero allocation, Task 2's rewrite has a bug — investigate which path is taking heap (the unconditional `stackalloc byte[256]` should cover the test inputs; if it doesn't, verify the test inputs' lengths are <= 256).
+If the `(byte[])` rows still show non-zero allocation, Task 2's rewrite has a bug - investigate which path is taking heap (the unconditional `stackalloc byte[256]` should cover the test inputs; if it doesn't, verify the test inputs' lengths are <= 256).
 
 - [ ] **Step 2: Save the benchmark output for the PR description**
 
@@ -869,7 +869,7 @@ If the `(byte[])` rows still show non-zero allocation, Task 2's rewrite has a bu
 dotnet run -c Release --project util/Benchmarks -- --filter *Name* 2>&1 | Out-File -Encoding utf8 -FilePath bench-name-v6.1.txt
 ```
 
-The file goes in the working directory root. **Do NOT commit it** — `bench-*.txt` is in `.gitignore`.
+The file goes in the working directory root. **Do NOT commit it** - `bench-*.txt` is in `.gitignore`.
 
 - [ ] **Step 3: Also re-run generation benchmarks to confirm no regression**
 
@@ -885,7 +885,7 @@ This task is verification only.
 
 ---
 
-## Section 5 — Documentation
+## Section 5 - Documentation
 
 ### Task 11: README updates
 
@@ -896,14 +896,14 @@ This task is verification only.
 
 - [ ] **Step 1: Open `src/SequentialGuid/README.md` and find the existing "Zero allocations" Highlights bullet**
 
-The current bullet says something like "**Zero allocations on modern .NET** — `stackalloc`, `Span<T>`, and `[SkipLocalsInit]` eliminate heap allocations on the hot path (.NET 8+)". Locate the exact wording in the Highlights section.
+The current bullet says something like "**Zero allocations on modern .NET** - `stackalloc`, `Span<T>`, and `[SkipLocalsInit]` eliminate heap allocations on the hot path (.NET 8+)". Locate the exact wording in the Highlights section.
 
 - [ ] **Step 2: Update the bullet to claim coverage on every generation path**
 
 Change the wording to:
 
 ```markdown
-- **Zero allocations on modern .NET** — `stackalloc`, `Span<T>`, and `[SkipLocalsInit]` eliminate heap allocations on **every** generation path (.NET 6+), including the deterministic v5/v8 name-based generators
+- **Zero allocations on modern .NET** - `stackalloc`, `Span<T>`, and `[SkipLocalsInit]` eliminate heap allocations on **every** generation path (.NET 6+), including the deterministic v5/v8 name-based generators
 ```
 
 (Adjust to fit the existing surrounding bullet style; keep the bold pattern consistent.)
@@ -916,19 +916,19 @@ Find the existing "Extract the timestamp from any time-based UUID" section (arou
 ### Helpers for common timestamp & predicate scenarios
 
 ```csharp
-// Try-pattern variant — useful when you want to branch without nullable handling
+// Try-pattern variant - useful when you want to branch without nullable handling
 if (id.TryToDateTime(out var created))
 {
     Console.WriteLine($"Created at {created:O}");
 }
 
-// DateTimeOffset variant — explicit UTC offset
+// DateTimeOffset variant - explicit UTC offset
 DateTimeOffset? created = id.ToDateTimeOffset();
 
-// Predicate — "is this a recognised sequential GUID at all?"
+// Predicate - "is this a recognised sequential GUID at all?"
 bool isOurs = someGuid.IsSequentialGuid();
 
-// RFC 9562 §5.10 max UUID constant — useful for range-scan upper bounds
+// RFC 9562 §5.10 max UUID constant - useful for range-scan upper bounds
 Guid upper = Guid.MaxValue;
 ```
 ```
@@ -947,17 +947,17 @@ Expected: PACK SUCCEEDED.
 
 ```bash
 git add src/SequentialGuid/README.md
-git commit -m "docs: README — zero-alloc claim covers every generator + show v6.1 helpers"
+git commit -m "docs: README - zero-alloc claim covers every generator + show v6.1 helpers"
 ```
 
 ---
 
-## Section 6 — Release
+## Section 6 - Release
 
 ### Task 12: Push branch and open PR
 
 **Files:**
-- (no code changes — branch push + PR open only)
+- (no code changes - branch push + PR open only)
 
 - [ ] **Step 1: Run the full test suite one more time as a final sanity check**
 
@@ -987,17 +987,17 @@ gh pr create --base master --title "v6.1: zero-alloc deterministic generators + 
 SemVer minor release. No breaking changes.
 
 - **Perf:** `GuidV5.Create(byte[])` and `GuidV8Name.Create(byte[])` drop from ~176 B/call to 0 B/call on .NET 6+. Rewrites `GuidNameBased.Create` to use one-shot `SHA1.HashData` / `SHA256.HashData` with a stackalloc/`ArrayPool` concat buffer.
-- **Perf:** `[SkipLocalsInit]` applied to `GuidV4`, `GuidV7`, `GuidV8Time`, `GuidNameBased` generators — skips redundant JIT zero-init of stackalloc buffers.
+- **Perf:** `[SkipLocalsInit]` applied to `GuidV4`, `GuidV7`, `GuidV8Time`, `GuidNameBased` generators - skips redundant JIT zero-init of stackalloc buffers.
 - **Perf:** `GuidV7.NewGuid()` no-arg inlines unix-ms extraction (saves one struct copy).
 - **Feature:** `Guid.MaxValue` static extension property (RFC 9562 §5.10).
-- **Feature:** `Guid.TryToDateTime(out DateTime)` — BCL-style Try-pattern.
+- **Feature:** `Guid.TryToDateTime(out DateTime)` - BCL-style Try-pattern.
 - **Feature:** `Guid.ToDateTimeOffset()` + `Guid.TryToDateTimeOffset(out DateTimeOffset)`.
 - **Feature:** Public `Guid.IsSequentialGuid()` predicate.
 
 ## Test plan
 
 - [x] \`dotnet build\` clean on all 5 TFMs (0 warnings under TreatWarningsAsErrors=true)
-- [x] \`dotnet test\` — all tests pass (count grows by ~16 from new \`GuidExtensionsTests\`)
+- [x] \`dotnet test\` - all tests pass (count grows by ~16 from new \`GuidExtensionsTests\`)
 - [x] \`NameBenchmarks\` shows \`Allocated: 0 B\` for both \`(byte[])\` overloads
 - [x] AOT smoke test (JIT mode locally; AOT publish in CI) exercises new APIs
 
@@ -1009,13 +1009,13 @@ EOF
 )"
 ```
 
-If `gh` CLI is NOT available, the `git push` output already contains a URL like `https://github.com/buvinghausen/SequentialGuid/pull/new/v6.1/perf-and-ergonomics` — open that in a browser and paste the title and body from above.
+If `gh` CLI is NOT available, the `git push` output already contains a URL like `https://github.com/buvinghausen/SequentialGuid/pull/new/v6.1/perf-and-ergonomics` - open that in a browser and paste the title and body from above.
 
-- [ ] **Step 4: (No commit) — PR is now open. Wait for CI green + manual review before merging.**
+- [ ] **Step 4: (No commit) - PR is now open. Wait for CI green + manual review before merging.**
 
 ---
 
 ## Open questions
 
-None — scope is locked by the spec at
+None - scope is locked by the spec at
 `docs/superpowers/specs/2026-05-12-sequentialguid-v6.1-design.md`.

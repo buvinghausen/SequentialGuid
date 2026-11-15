@@ -63,7 +63,7 @@ public sealed class SequentialGuidStructTests
 	[Fact]
 	void GuidConstructorThrowsForRandomGuid()
 	{
-		// Use the RFC 9562 §A.4 v4 test vector — a fixed guid avoids the 1/256 flakiness
+		// Use the RFC 9562 §A.4 v4 test vector - a fixed guid avoids the 1/256 flakiness
 		// where a random v4 guid's b[10] happens to equal 8, accidentally satisfying IsSqlLegacy()
 		// after SQL byte conversion shifts the variant bits out of position.
 		var v4 = new Guid("919108f7-52d1-4320-9bac-f847db4148a8");
@@ -96,7 +96,7 @@ public sealed class SequentialGuidStructTests
 	[Fact]
 	void StringConstructorThrowsForNonSequentialGuid()
 	{
-		// Use the RFC 9562 §A.4 v4 test vector — a fixed guid avoids the 1/256 flakiness
+		// Use the RFC 9562 §A.4 v4 test vector - a fixed guid avoids the 1/256 flakiness
 		// where a random v4 guid's b[10] happens to equal 8, accidentally satisfying IsSqlLegacy()
 		// after SQL byte conversion shifts the variant bits out of position.
 		Should.Throw<ArgumentException>(() => new SequentialGuid("919108f7-52d1-4320-9bac-f847db4148a8"));
@@ -207,7 +207,7 @@ public sealed class SequentialGuidStructTests
 	[Fact]
 	void LessThanOperator()
 	{
-		// Arrange — timestamps 1 s apart guarantee ordering
+		// Arrange - timestamps 1 s apart guarantee ordering
 		var earlier = new SequentialGuid(GuidV7.NewGuid(1000L));
 		var later = new SequentialGuid(GuidV7.NewGuid(2000L));
 		// Assert

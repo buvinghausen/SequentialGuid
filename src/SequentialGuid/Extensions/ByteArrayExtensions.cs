@@ -58,7 +58,7 @@ static class ByteArrayExtensions
 					7 => b.Rfc9562V7UnixMs().Rfc9562V7Ticks,
 					_ => null
 				};
-			// Variant is not RFC 9562 — only legacy is possible
+			// Variant is not RFC 9562 - only legacy is possible
 			return b[3] == 8 && (!b.SqlVariantIsRfc9562() || b[8] >> 4 is not 7 and not 8)
 				? b.LegacyTicks
 				: null;
@@ -163,7 +163,7 @@ static class ByteArrayExtensions
 					7 => b.Rfc9562V7UnixMs().Rfc9562V7Ticks,
 					_ => null
 				};
-			// Variant is not RFC 9562 — only legacy is possible
+			// Variant is not RFC 9562 - only legacy is possible
 			return b[3] == 8 && (!b.SqlVariantIsRfc9562() || b[8] >> 4 is not 7 and not 8)
 				? b.LegacyTicks
 				: null;

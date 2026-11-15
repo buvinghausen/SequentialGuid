@@ -8,9 +8,9 @@
 
 **Tech Stack:** .NET multi-target (net11.0/net10.0/net9.0/net8.0/net462/netstandard2.0 core; net10/9/8 EF), xUnit v3 + Shouldly on Microsoft.Testing.Platform, BenchmarkDotNet, EF Core 8/9/10, MongoDB driver.
 
-**Spec:** `docs/superpowers/specs/2026-06-09-sequentialguid-v6.2-design.md` (approved). Branch `v6.2/generation-ergonomics` already exists with the spec committed — all work happens on it.
+**Spec:** `docs/superpowers/specs/2026-06-09-sequentialguid-v6.2-design.md` (approved). Branch `v6.2/generation-ergonomics` already exists with the spec committed - all work happens on it.
 
-**Workflow constraint — NO GIT COMMITS:** The maintainer reviews and commits everything himself via GitHub Desktop. Do **not** run `git commit`, `git add`, or `git push` at any point. Each task ends at a checkpoint with changes left in the working tree; the suggested commit message is provided for the maintainer's use only.
+**Workflow constraint - NO GIT COMMITS:** The maintainer reviews and commits everything himself via GitHub Desktop. Do **not** run `git commit`, `git add`, or `git push` at any point. Each task ends at a checkpoint with changes left in the working tree; the suggested commit message is provided for the maintainer's use only.
 
 **Conventions that gate every task (build fails otherwise):**
 - Tabs for indentation. `TreatWarningsAsErrors` is on; **XML doc comments are required on every public member** (CS1591).
@@ -202,7 +202,7 @@ Note: the oversized-`destination` guard on `Fill` itself is exercised through `N
 - [ ] **Step 2: Run tests to verify they fail**
 
 Run: `dotnet test tests/unit/SequentialGuid.Tests --framework net10.0`
-Expected: compile errors — `GuidV7.Fill`, `FillSql`, `NewGuids`, `NewSqlGuids` do not exist.
+Expected: compile errors - `GuidV7.Fill`, `FillSql`, `NewGuids`, `NewSqlGuids` do not exist.
 
 - [ ] **Step 3: Implement bulk generation in GuidV7**
 
@@ -278,7 +278,7 @@ using System.Buffers;
 
 			Span<byte> bytes = stackalloc byte[16];
 			// unix_ts_ms: 48-bit big-endian millisecond timestamp (octets 0-5),
-			// identical for every item — written once.
+			// identical for every item - written once.
 			bytes[0] = (byte)(unixMilliseconds >> 40);
 			bytes[1] = (byte)(unixMilliseconds >> 32);
 			bytes[2] = (byte)(unixMilliseconds >> 24);
@@ -426,7 +426,7 @@ Expected: PASS (all `GuidV7BulkTests` plus the existing suite).
 Run: `dotnet build src/SequentialGuid/SequentialGuid.csproj`
 Expected: 0 warnings, 0 errors on every TFM including net462/netstandard2.0 (which must not see the new members).
 
-- [ ] **Step 6: Checkpoint — no commit**
+- [ ] **Step 6: Checkpoint - no commit**
 
 Leave the changes in the working tree (maintainer commits via GitHub Desktop). Suggested message: `feat: add GuidV7 bulk generation (Fill/FillSql/NewGuids/NewSqlGuids)`
 
@@ -590,7 +590,7 @@ public sealed class GuidV8TimeBulkTests
 - [ ] **Step 2: Run tests to verify they fail**
 
 Run: `dotnet test tests/unit/SequentialGuid.Tests --framework net10.0`
-Expected: compile errors — `GuidV8Time.Fill`, `FillSql`, `NewGuids`, `NewSqlGuids` do not exist.
+Expected: compile errors - `GuidV8Time.Fill`, `FillSql`, `NewGuids`, `NewSqlGuids` do not exist.
 
 - [ ] **Step 3: Implement bulk generation in GuidV8Time**
 
@@ -789,7 +789,7 @@ Add the following block immediately before the closing brace of the `GuidV8Time`
 
 		Span<byte> bytes = stackalloc byte[16];
 		// custom_a: timestamp bits [59:12] → octets 0-5; custom_b: bits [11:0] → octets 6-7.
-		// Identical for every item — written once, as is the machine/pid fingerprint.
+		// Identical for every item - written once, as is the machine/pid fingerprint.
 		bytes[0] = (byte)(timestamp >> 52);
 		bytes[1] = (byte)(timestamp >> 44);
 		bytes[2] = (byte)(timestamp >> 36);
@@ -831,7 +831,7 @@ Expected: PASS.
 Run: `dotnet build src/SequentialGuid/SequentialGuid.csproj`
 Expected: 0 warnings, 0 errors.
 
-- [ ] **Step 6: Checkpoint — no commit**
+- [ ] **Step 6: Checkpoint - no commit**
 
 Leave the changes in the working tree (maintainer commits via GitHub Desktop). Suggested message: `feat: add GuidV8Time bulk generation (Fill/FillSql/NewGuids/NewSqlGuids)`
 
@@ -981,7 +981,7 @@ public sealed class TimeProviderTests
 - [ ] **Step 2: Run tests to verify they fail**
 
 Run: `dotnet test tests/unit/SequentialGuid.Tests --framework net10.0`
-Expected: compile errors — no `TimeProvider` overloads exist.
+Expected: compile errors - no `TimeProvider` overloads exist.
 
 - [ ] **Step 3: Implement the GuidV7 overloads**
 
@@ -1185,7 +1185,7 @@ Expected: PASS.
 Run: `dotnet build src/SequentialGuid/SequentialGuid.csproj`
 Expected: 0 warnings, 0 errors (net462/netstandard2.0 must not see `TimeProvider`).
 
-- [ ] **Step 7: Checkpoint — no commit**
+- [ ] **Step 7: Checkpoint - no commit**
 
 Leave the changes in the working tree (maintainer commits via GitHub Desktop). Suggested message: `feat: add TimeProvider overloads to GuidV7 and GuidV8Time`
 
@@ -1263,7 +1263,7 @@ public sealed class ValueGeneratorTests
 - [ ] **Step 2: Run tests to verify they fail**
 
 Run: `dotnet test tests/unit/SequentialGuid.EntityFrameworkCore.Tests --framework net10.0`
-Expected: compile errors — generator types do not exist.
+Expected: compile errors - generator types do not exist.
 
 - [ ] **Step 3: Implement the four generators**
 
@@ -1280,7 +1280,7 @@ namespace SequentialGuid.EntityFrameworkCore;
 /// </summary>
 public sealed class SequentialGuidValueGenerator : ValueGenerator<Guid>
 {
-	/// <summary>Always <see langword="false"/> — generated keys are real, client-generated values.</summary>
+	/// <summary>Always <see langword="false"/> - generated keys are real, client-generated values.</summary>
 	public override bool GeneratesTemporaryValues => false;
 
 	/// <summary>Creates a new time-ordered version 7 <see cref="Guid"/>.</summary>
@@ -1305,7 +1305,7 @@ namespace SequentialGuid.EntityFrameworkCore;
 /// </summary>
 public sealed class SequentialSqlGuidValueGenerator : ValueGenerator<Guid>
 {
-	/// <summary>Always <see langword="false"/> — generated keys are real, client-generated values.</summary>
+	/// <summary>Always <see langword="false"/> - generated keys are real, client-generated values.</summary>
 	public override bool GeneratesTemporaryValues => false;
 
 	/// <summary>Creates a new time-ordered version 7 <see cref="Guid"/> in SQL Server sort order.</summary>
@@ -1330,7 +1330,7 @@ namespace SequentialGuid.EntityFrameworkCore;
 /// </summary>
 public sealed class SequentialGuidStructValueGenerator : ValueGenerator<SeqGuid>
 {
-	/// <summary>Always <see langword="false"/> — generated keys are real, client-generated values.</summary>
+	/// <summary>Always <see langword="false"/> - generated keys are real, client-generated values.</summary>
 	public override bool GeneratesTemporaryValues => false;
 
 	/// <summary>Creates a new <see cref="SeqGuid"/> wrapping a time-ordered version 7 GUID.</summary>
@@ -1356,7 +1356,7 @@ namespace SequentialGuid.EntityFrameworkCore;
 /// </summary>
 public sealed class SequentialSqlGuidStructValueGenerator : ValueGenerator<SeqSqlGuid>
 {
-	/// <summary>Always <see langword="false"/> — generated keys are real, client-generated values.</summary>
+	/// <summary>Always <see langword="false"/> - generated keys are real, client-generated values.</summary>
 	public override bool GeneratesTemporaryValues => false;
 
 	/// <summary>Creates a new <see cref="SeqSqlGuid"/> wrapping a SQL-ordered version 7 GUID.</summary>
@@ -1372,7 +1372,7 @@ public sealed class SequentialSqlGuidStructValueGenerator : ValueGenerator<SeqSq
 Run: `dotnet test tests/unit/SequentialGuid.EntityFrameworkCore.Tests --framework net10.0`
 Expected: PASS.
 
-- [ ] **Step 5: Checkpoint — no commit**
+- [ ] **Step 5: Checkpoint - no commit**
 
 Leave the changes in the working tree (maintainer commits via GitHub Desktop). Suggested message: `feat: add RFC 9562 v7 EF Core value generators`
 
@@ -1556,7 +1556,7 @@ public sealed class ValueGenerationConventionTests
 - [ ] **Step 2: Run tests to verify they fail**
 
 Run: `dotnet test tests/unit/SequentialGuid.EntityFrameworkCore.Tests --framework net10.0`
-Expected: compile error — `UseSequentialGuidValueGeneration` does not exist.
+Expected: compile error - `UseSequentialGuidValueGeneration` does not exist.
 
 - [ ] **Step 3: Implement the convention**
 
@@ -1645,14 +1645,14 @@ In `src/SequentialGuid.EntityFrameworkCore/ModelConfigurationBuilderExtensions.c
 Run: `dotnet test tests/unit/SequentialGuid.EntityFrameworkCore.Tests --framework net10.0`
 Expected: PASS.
 
-Note: if `IConventionPropertyBuilder.HasValueGenerator`'s delegate signature differs on the net8.0 build (EF Core 8.0.10), the build for that TFM will say so — verify with `dotnet build src/SequentialGuid.EntityFrameworkCore/SequentialGuid.EntityFrameworkCore.csproj` (all three TFMs must compile; `Func<IProperty, ITypeBase, ValueGenerator>` is the EF 8+ signature).
+Note: if `IConventionPropertyBuilder.HasValueGenerator`'s delegate signature differs on the net8.0 build (EF Core 8.0.10), the build for that TFM will say so - verify with `dotnet build src/SequentialGuid.EntityFrameworkCore/SequentialGuid.EntityFrameworkCore.csproj` (all three TFMs must compile; `Func<IProperty, ITypeBase, ValueGenerator>` is the EF 8+ signature).
 
 - [ ] **Step 6: Build and test all EF TFMs**
 
 Run: `dotnet test tests/unit/SequentialGuid.EntityFrameworkCore.Tests`
-Expected: PASS on net8.0, net9.0, and net10.0 test targets (the test project's net11.0/net472 targets do not reference the EF package — if the test project multi-targets beyond the package's TFMs, the project file already handles it; otherwise expect PASS on the three EF TFMs).
+Expected: PASS on net8.0, net9.0, and net10.0 test targets (the test project's net11.0/net472 targets do not reference the EF package - if the test project multi-targets beyond the package's TFMs, the project file already handles it; otherwise expect PASS on the three EF TFMs).
 
-- [ ] **Step 7: Checkpoint — no commit**
+- [ ] **Step 7: Checkpoint - no commit**
 
 Leave the changes in the working tree (maintainer commits via GitHub Desktop). Suggested message: `feat: add UseSequentialGuidValueGeneration model-finalizing convention`
 
@@ -1662,13 +1662,13 @@ Leave the changes in the working tree (maintainer commits via GitHub Desktop). S
 
 **Files:**
 - Modify: `src/SequentialGuid.MongoDB/MongoSequentialGuidGenerator.cs`
-- Test: `tests/unit/SequentialGuid.MongoDB.Tests/SequentialGuidMongoTests.cs` (modify — append tests)
+- Test: `tests/unit/SequentialGuid.MongoDB.Tests/SequentialGuidMongoTests.cs` (modify - append tests)
 
-**Spec note:** the spec mentions an optional `SequentialGuidType` parameter on `RegisterMongoIdGenerator()`. That extension is instance-based — the generator instance already carries its type, so a second type parameter would contradict it. Implement the constructor only; v7 registration reads `new MongoSequentialGuidGenerator(SequentialGuidType.Rfc9562V7).RegisterMongoIdGenerator()`. Flag this simplification in the PR description.
+**Spec note:** the spec mentions an optional `SequentialGuidType` parameter on `RegisterMongoIdGenerator()`. That extension is instance-based - the generator instance already carries its type, so a second type parameter would contradict it. Implement the constructor only; v7 registration reads `new MongoSequentialGuidGenerator(SequentialGuidType.Rfc9562V7).RegisterMongoIdGenerator()`. Flag this simplification in the PR description.
 
 - [ ] **Step 1: Write the failing tests**
 
-Append to `tests/unit/SequentialGuid.MongoDB.Tests/SequentialGuidMongoTests.cs` (inside the existing test class — open the file first and match its namespace/class):
+Append to `tests/unit/SequentialGuid.MongoDB.Tests/SequentialGuidMongoTests.cs` (inside the existing test class - open the file first and match its namespace/class):
 
 ```csharp
 	[Fact]
@@ -1704,7 +1704,7 @@ Append to `tests/unit/SequentialGuid.MongoDB.Tests/SequentialGuidMongoTests.cs` 
 - [ ] **Step 2: Run tests to verify they fail**
 
 Run: `dotnet test tests/unit/SequentialGuid.MongoDB.Tests --framework net10.0`
-Expected: compile error — no constructor takes `SequentialGuidType`.
+Expected: compile error - no constructor takes `SequentialGuidType`.
 
 - [ ] **Step 3: Implement the configurable type**
 
@@ -1724,7 +1724,7 @@ public sealed class MongoSequentialGuidGenerator : IIdGenerator
 	readonly SequentialGuidType _type;
 
 	/// <summary>
-	/// Initializes a generator emitting <see cref="SequentialGuidType.Rfc9562V8Custom"/> GUIDs —
+	/// Initializes a generator emitting <see cref="SequentialGuidType.Rfc9562V8Custom"/> GUIDs -
 	/// the historical default, preserving 100 ns tick precision.
 	/// </summary>
 	public MongoSequentialGuidGenerator() : this(SequentialGuidType.Rfc9562V8Custom) { }
@@ -1774,7 +1774,7 @@ public sealed class MongoSequentialGuidGenerator : IIdGenerator
 Run: `dotnet test tests/unit/SequentialGuid.MongoDB.Tests --framework net10.0`
 Expected: PASS.
 
-- [ ] **Step 5: Checkpoint — no commit**
+- [ ] **Step 5: Checkpoint - no commit**
 
 Leave the changes in the working tree (maintainer commits via GitHub Desktop). Suggested message: `feat: make MongoSequentialGuidGenerator type configurable (v8 default preserved)`
 
@@ -1786,7 +1786,7 @@ Leave the changes in the working tree (maintainer commits via GitHub Desktop). S
 - Modify: `src/SequentialGuid/Extensions/RandomNumberGeneratorExtensions.cs`
 - Test: `tests/unit/SequentialGuid.Tests/RandomNumberGeneratorExtensionsTests.cs` (create)
 
-- [ ] **Step 1: Write the test (legacy TFM only — `InternalsVisibleTo` covers SequentialGuid.Tests)**
+- [ ] **Step 1: Write the test (legacy TFM only - `InternalsVisibleTo` covers SequentialGuid.Tests)**
 
 Create `tests/unit/SequentialGuid.Tests/RandomNumberGeneratorExtensionsTests.cs`:
 
@@ -1836,7 +1836,7 @@ public sealed class RandomNumberGeneratorExtensionsTests
 - [ ] **Step 2: Run the test on the legacy target to capture current behavior**
 
 Run: `dotnet test tests/unit/SequentialGuid.Tests --framework net472`
-Expected: `GetInt32CanProduceZero` FAILS against the current implementation when `toExclusive` is small (`GetNonZeroBytes` never produces zero bytes, so `GetInt32(2)` can yield 0 only via the modulo fold — verify the failure; if it happens to pass due to the fold, the range/bias fix below is still correct and the test documents the contract).
+Expected: `GetInt32CanProduceZero` FAILS against the current implementation when `toExclusive` is small (`GetNonZeroBytes` never produces zero bytes, so `GetInt32(2)` can yield 0 only via the modulo fold - verify the failure; if it happens to pass due to the fold, the range/bias fix below is still correct and the test documents the contract).
 
 - [ ] **Step 3: Implement the unbiased version**
 
@@ -1883,7 +1883,7 @@ static class RandomNumberGeneratorExtensions
 Run: `dotnet test tests/unit/SequentialGuid.Tests --framework net472`
 Expected: PASS (all three new tests plus the existing net472 suite).
 
-- [ ] **Step 5: Checkpoint — no commit**
+- [ ] **Step 5: Checkpoint - no commit**
 
 Leave the changes in the working tree (maintainer commits via GitHub Desktop). Suggested message: `fix: remove sampling bias from legacy GetInt32 counter seeding`
 
@@ -1894,7 +1894,7 @@ Leave the changes in the working tree (maintainer commits via GitHub Desktop). S
 **Files:**
 - Create: `benches/Benchmarks/BclComparisonBenchmarks.cs`
 
-No TDD cycle — benchmarks are measurement code, validated by running them.
+No TDD cycle - benchmarks are measurement code, validated by running them.
 
 - [ ] **Step 1: Create the benchmark class**
 
@@ -1955,15 +1955,15 @@ public class BclComparisonBenchmarks
 - [ ] **Step 2: Run the benchmarks and save the output**
 
 Run: `dotnet run -c Release --project benches/Benchmarks -- --filter *BclComparison*`
-Expected: completes with a results table; `GuidV7.Fill ×1000 bulk` should beat both loops, and all GuidV7 rows should show `Allocated: 0 B` (or `-`) except the loop/bulk rows' shared pre-allocated buffer. **Save the results table — Task 11 pastes it into the README.**
+Expected: completes with a results table; `GuidV7.Fill ×1000 bulk` should beat both loops, and all GuidV7 rows should show `Allocated: 0 B` (or `-`) except the loop/bulk rows' shared pre-allocated buffer. **Save the results table - Task 11 pastes it into the README.**
 
-- [ ] **Step 3: Checkpoint — no commit**
+- [ ] **Step 3: Checkpoint - no commit**
 
 Leave the changes in the working tree (maintainer commits via GitHub Desktop). Suggested message: `feat: add BCL CreateVersion7 comparison benchmarks`
 
 ---
 
-### Task 9: AOT smoke test — core additions + NodaTime
+### Task 9: AOT smoke test - core additions + NodaTime
 
 **Files:**
 - Modify: `tests/smoke/SequentialGuid.AotSmokeTest/SequentialGuid.AotSmokeTest.csproj`
@@ -2020,19 +2020,19 @@ Note: `ToInstant` is an extension on `Guid` in the `NodaTime` namespace; the exp
 Run: `dotnet publish tests/smoke/SequentialGuid.AotSmokeTest -c Release -r win-x64 -o aot-out; .\aot-out\SequentialGuid.AotSmokeTest.exe`
 Expected: build with 0 trim/AOT warnings, output `AOT smoke test: PASS`, exit code 0.
 
-- [ ] **Step 4: Checkpoint — no commit**
+- [ ] **Step 4: Checkpoint - no commit**
 
 Leave the changes in the working tree (maintainer commits via GitHub Desktop). Suggested message: `test: extend AOT smoke test to bulk, TimeProvider, and NodaTime surface`
 
 ---
 
-### Task 10: AOT smoke test — EF Core project + CI wiring
+### Task 10: AOT smoke test - EF Core project + CI wiring
 
 **Files:**
 - Create: `tests/smoke/SequentialGuid.EntityFrameworkCore.AotSmokeTest/SequentialGuid.EntityFrameworkCore.AotSmokeTest.csproj`
 - Create: `tests/smoke/SequentialGuid.EntityFrameworkCore.AotSmokeTest/Program.cs`
 - Modify: `.github/workflows/ci.yml`
-- Modify: `SequentialGuid.slnx` (add the new project — match how the existing smoke project is listed)
+- Modify: `SequentialGuid.slnx` (add the new project - match how the existing smoke project is listed)
 
 **Spec note:** the value converters are `internal`; the smoke test exercises the four **public** value generators (the new surface). The converters are covered by the build-time trim/AOT analyzers already on via `IsAotCompatible`.
 
@@ -2074,7 +2074,7 @@ using SsgStruct = SequentialGuid.SequentialSqlGuid;
 IList<string> failures = [];
 
 // The four public value generators are the new v6.2 surface; exercising them under ILC
-// verifies our code paths trim cleanly. No DbContext — EF Core's full NativeAOT story is
+// verifies our code paths trim cleanly. No DbContext - EF Core's full NativeAOT story is
 // experimental and out of scope.
 SequentialGuidValueGenerator guidGen = new();
 var v7 = guidGen.Next(null!);
@@ -2116,7 +2116,7 @@ void Check(string name, bool condition)
 
 Open `SequentialGuid.slnx`, find the entry for `tests/smoke/SequentialGuid.AotSmokeTest`, and add a sibling entry for `tests/smoke/SequentialGuid.EntityFrameworkCore.AotSmokeTest/SequentialGuid.EntityFrameworkCore.AotSmokeTest.csproj` in the same folder node, matching the existing XML shape exactly.
 
-- [ ] **Step 4: Publish and run — contingency gate**
+- [ ] **Step 4: Publish and run - contingency gate**
 
 Run: `dotnet publish tests/smoke/SequentialGuid.EntityFrameworkCore.AotSmokeTest -c Release -r win-x64 -o aot-ef-out; .\aot-ef-out\SequentialGuid.EntityFrameworkCore.AotSmokeTest.exe`
 Expected: publish with 0 IL2xxx/IL3xxx warnings, output `EF Core AOT smoke test: PASS`, exit code 0.
@@ -2139,7 +2139,7 @@ In `.github/workflows/ci.yml`, replace the `AOT smoke test` step with:
       shell: pwsh
 ```
 
-- [ ] **Step 6: Checkpoint — no commit**
+- [ ] **Step 6: Checkpoint - no commit**
 
 Leave the changes in the working tree (maintainer commits via GitHub Desktop). Suggested message: `test: add EF Core AOT smoke test and wire into CI`
 
@@ -2152,43 +2152,43 @@ Leave the changes in the working tree (maintainer commits via GitHub Desktop). S
 - Modify: `src/SequentialGuid.EntityFrameworkCore/README.md`
 - Modify: `src/SequentialGuid.MongoDB/README.md`
 
-- [ ] **Step 1: Root README — Key Features bullets**
+- [ ] **Step 1: Root README - Key Features bullets**
 
 In `README.md`, in the `## Key Features` list, add after the "**Monotonically increasing**" bullet:
 
 ```markdown
-- **Bulk generation** — `GuidV7.Fill(Span<Guid>)` / `NewGuids(count)` amortize timestamp capture, counter reservation, and RNG across the batch (.NET 6+)
-- **EF Core value generation** — one-line convention assigns RFC 9562 v7 generators to every Guid primary key
-- **Testable clocks** — `TimeProvider` overloads on every generation path (.NET 8+)
+- **Bulk generation** - `GuidV7.Fill(Span<Guid>)` / `NewGuids(count)` amortize timestamp capture, counter reservation, and RNG across the batch (.NET 6+)
+- **EF Core value generation** - one-line convention assigns RFC 9562 v7 generators to every Guid primary key
+- **Testable clocks** - `TimeProvider` overloads on every generation path (.NET 8+)
 ```
 
-- [ ] **Step 2: Root README — "Why not Guid.CreateVersion7?" section**
+- [ ] **Step 2: Root README - "Why not Guid.CreateVersion7?" section**
 
 In `README.md`, insert before `## Contributing`:
 
 ```markdown
 ## Why not `Guid.CreateVersion7`?
 
-.NET 9 added [`Guid.CreateVersion7`](https://learn.microsoft.com/en-us/dotnet/api/system.guid.createversion7) — so why this library?
+.NET 9 added [`Guid.CreateVersion7`](https://learn.microsoft.com/en-us/dotnet/api/system.guid.createversion7) - so why this library?
 
 1. **No monotonic counter.** BCL v7 GUIDs generated within the same millisecond sort randomly relative to each other (RFC 9562 §6.2 Method 1 is not implemented). Under insert load that is exactly the index-fragmentation problem v7 adoption is meant to solve. SequentialGuid's process-global counter guarantees strict creation order, even across threads.
-2. **No SQL Server byte-order story.** A BCL v7 GUID stored in a `uniqueidentifier` clustered index still fragments — SQL Server sorts GUIDs by its own byte order. `NewSqlGuid()`, `.ToSqlGuid()`, and `.FromSqlGuid()` handle that here.
+2. **No SQL Server byte-order story.** A BCL v7 GUID stored in a `uniqueidentifier` clustered index still fragments - SQL Server sorts GUIDs by its own byte order. `NewSqlGuid()`, `.ToSqlGuid()`, and `.FromSqlGuid()` handle that here.
 3. **No round-trip tooling.** No timestamp extraction, no sequential-GUID detection, no strongly-typed wrappers.
 4. **Reach.** `Guid.CreateVersion7` is .NET 9+; this library covers .NET Framework 4.6.2 and .NET Standard 2.0.
 
-Benchmarks (.NET 10, Release — run `dotnet run -c Release --project benches/Benchmarks -- --filter *BclComparison*` on your own hardware):
+Benchmarks (.NET 10, Release - run `dotnet run -c Release --project benches/Benchmarks -- --filter *BclComparison*` on your own hardware):
 
 <!-- Paste the BclComparisonBenchmarks results table from the Task 8 run here. -->
 ```
 
 Then **replace the HTML comment with the actual results table saved in Task 8** (the committed README must contain real numbers, with the machine's CPU line from the BenchmarkDotNet header noted above the table).
 
-- [ ] **Step 3: Root README — EF package blurb**
+- [ ] **Step 3: Root README - EF package blurb**
 
 In the `### [SequentialGuid.EntityFrameworkCore]` section, replace the sentence "Value converters and JSON serialization support for the `SequentialGuid` and `SequentialSqlGuid` struct types." with:
 
 ```markdown
-Value converters, value generation, and JSON serialization support for the `SequentialGuid` and `SequentialSqlGuid` struct types — plus a one-line convention that generates RFC 9562 v7 keys for every `Guid` primary key on Add.
+Value converters, value generation, and JSON serialization support for the `SequentialGuid` and `SequentialSqlGuid` struct types - plus a one-line convention that generates RFC 9562 v7 keys for every `Guid` primary key on Add.
 ```
 
 and replace the code sample in that section with:
@@ -2202,7 +2202,7 @@ protected override void ConfigureConventions(ModelConfigurationBuilder configura
 }
 ```
 
-(Root README code samples use spaces — match the file's existing samples.)
+(Root README code samples use spaces - match the file's existing samples.)
 
 - [ ] **Step 4: EF package README**
 
@@ -2213,7 +2213,7 @@ Open `src/SequentialGuid.EntityFrameworkCore/README.md` and add a `## Value gene
 
 `UseSequentialGuidValueGeneration()` registers a model-finalizing convention that assigns
 RFC 9562 v7 sequential value generators to every `Guid`, `SequentialGuid`, and
-`SequentialSqlGuid` primary-key property. Keys are generated client-side on `Add` —
+`SequentialSqlGuid` primary-key property. Keys are generated client-side on `Add` -
 no database round-trip, retry-safe.
 
 ```csharp
@@ -2228,7 +2228,7 @@ protected override void ConfigureConventions(ModelConfigurationBuilder configura
   `uniqueidentifier` clustered-index-friendly SQL Server byte order.
 - `SequentialGuid` / `SequentialSqlGuid` keys carry their byte order in the type and
   ignore the flag.
-- Explicit `HasValueGenerator<T>()` configuration always wins — the convention never
+- Explicit `HasValueGenerator<T>()` configuration always wins - the convention never
   overwrites it.
 - The four generators (`SequentialGuidValueGenerator`, `SequentialSqlGuidValueGenerator`,
   `SequentialGuidStructValueGenerator`, `SequentialSqlGuidStructValueGenerator`) are
@@ -2244,7 +2244,7 @@ Open `src/SequentialGuid.MongoDB/README.md` and add after the existing registrat
 ```markdown
 ## Choosing the GUID version
 
-`MongoSequentialGuidGenerator.Instance` emits RFC 9562 **v8 time-based** GUIDs — the
+`MongoSequentialGuidGenerator.Instance` emits RFC 9562 **v8 time-based** GUIDs - the
 historical default, preserving full 100 ns tick precision in the document id. To emit
 **v7** ids instead (the general recommendation elsewhere in this library):
 
@@ -2265,12 +2265,12 @@ Visually inspect the three files (fences balanced, tables intact). Leave the cha
 
 **Files:** none new.
 
-- [ ] **Step 1: Full clean build — all projects, all TFMs**
+- [ ] **Step 1: Full clean build - all projects, all TFMs**
 
 Run: `dotnet build`
 Expected: 0 warnings, 0 errors (warnings are errors repo-wide).
 
-- [ ] **Step 2: Full test suite — all TFMs**
+- [ ] **Step 2: Full test suite - all TFMs**
 
 Run: `dotnet test`
 Expected: all tests pass on every target (net11.0/net10.0/net9.0/net8.0/net472 for core tests; net10/9/8 for EF; check the summary line shows zero failures).
@@ -2289,7 +2289,7 @@ Expected: both print `... PASS` and exit 0. (Skip the second if the Task 10 cont
 Run: `dotnet run -c Release --project benches/Benchmarks -- --filter *BclComparison*`
 Expected: `GuidV7.Fill ×1000 bulk` allocates 0 B beyond the shared buffer and is faster than both loops. If the README table from Task 11 came from a dirty tree, re-paste from this clean run.
 
-- [ ] **Step 5: Hand off to the maintainer — no push**
+- [ ] **Step 5: Hand off to the maintainer - no push**
 
 Do not push. The maintainer reviews the working tree in GitHub Desktop, commits (suggested messages are at each task's checkpoint), and pushes `v6.2/generation-ergonomics` himself.
 
@@ -2304,7 +2304,7 @@ Output exactly this for the maintainer to paste once he has pushed:
 ```markdown
 ## Summary
 
-SemVer **minor** (v6.2.0) — all changes additive. Implements the approved spec at
+SemVer **minor** (v6.2.0) - all changes additive. Implements the approved spec at
 `docs/superpowers/specs/2026-06-09-sequentialguid-v6.2-design.md`.
 
 - **Bulk generation** (`Fill`/`FillSql`/`NewGuids`/`NewSqlGuids` on `GuidV7` and `GuidV8Time`, .NET 6+):
@@ -2312,30 +2312,30 @@ SemVer **minor** (v6.2.0) — all changes additive. Implements the approved spec
   `ArgumentOutOfRangeException` when a batch would exceed the counter space (2^26 v7 / 2^22 v8).
 - **`TimeProvider` overloads** (.NET 8+) on every generation path, single-call and bulk.
 - **EF Core value generation**: four public `ValueGenerator` classes plus
-  `UseSequentialGuidValueGeneration(bool sqlServerByteOrder = false)` — a model-finalizing
+  `UseSequentialGuidValueGeneration(bool sqlServerByteOrder = false)` - a model-finalizing
   convention covering `Guid`, `SequentialGuid`, and `SequentialSqlGuid` primary keys.
   Explicit configuration always wins.
 - **`MongoSequentialGuidGenerator`** gains a `SequentialGuidType` constructor; `Instance`
   default stays v8 (no silent behavior change). Note: the spec's optional type parameter on
-  `RegisterMongoIdGenerator()` was dropped — the instance already carries its type.
+  `RegisterMongoIdGenerator()` was dropped - the instance already carries its type.
 - **Legacy `GetInt32` bias fix**: mask-and-reject sampling replaces `GetNonZeroBytes` + double-modulo.
 - **AOT smoke tests** extended to bulk/TimeProvider/NodaTime; new EF Core AOT smoke project wired into CI.
 - **README**: "Why not `Guid.CreateVersion7`?" section with benchmark table; new feature bullets.
 
 ## Test plan
 
-- [ ] `dotnet build` — 0 warnings across all TFMs
-- [ ] `dotnet test` — full multi-TFM suite green (new: bulk, TimeProvider, EF generator/convention, Mongo type, legacy GetInt32 tests)
+- [ ] `dotnet build` - 0 warnings across all TFMs
+- [ ] `dotnet test` - full multi-TFM suite green (new: bulk, TimeProvider, EF generator/convention, Mongo type, legacy GetInt32 tests)
 - [ ] Both AOT smoke tests publish and exit 0 (CI-enforced)
 - [ ] `BclComparisonBenchmarks` run on Release; README table reflects actual numbers
 
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
+Generated with [Claude Code](https://claude.com/claude-code)
 ```
 
 ---
 
 ## Self-review notes (already applied)
 
-- **Spec coverage:** §1 → Tasks 4–5; §2 → Tasks 1–2; §3 → Task 3; §4 → Tasks 8, 11; §5 riders → Tasks 6, 7, 9, 10; §6 testing → embedded per task; §7 release → Task 12.
-- **Known deviations from spec (both flagged in PR body):** (1) `RegisterMongoIdGenerator()` keeps its parameterless signature — the instance carries the type; (2) the EF AOT smoke test exercises the public generators only — the converters are `internal` and remain covered by build-time analyzers.
+- **Spec coverage:** §1 → Tasks 4-5; §2 → Tasks 1-2; §3 → Task 3; §4 → Tasks 8, 11; §5 riders → Tasks 6, 7, 9, 10; §6 testing → embedded per task; §7 release → Task 12.
+- **Known deviations from spec (both flagged in PR body):** (1) `RegisterMongoIdGenerator()` keeps its parameterless signature - the instance carries the type; (2) the EF AOT smoke test exercises the public generators only - the converters are `internal` and remain covered by build-time analyzers.
 - **Type consistency:** `Fill`/`FillSql`/`NewGuids`/`NewSqlGuids` names identical across `GuidV7`/`GuidV8Time`; generator class names identical between Task 4 (definitions), Task 5 (convention), and Task 10 (smoke test); `0x400_0000`/`0x40_0000` limits consistent between implementations and tests.

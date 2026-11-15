@@ -11,14 +11,14 @@ and supports client-side ID generation without a server round-trip.
 
 | Package | Description |
 |---|---|
-| `SequentialGuid` | Core library — zero dependencies |
+| `SequentialGuid` | Core library - zero dependencies |
 | `SequentialGuid.EntityFrameworkCore` | EF Core value converters and conventions |
 | `SequentialGuid.MongoDB` | MongoDB BSON serializers |
 | `SequentialGuid.NodaTime` | NodaTime `Instant`/`ZonedDateTime` overloads |
 
-## Development Workflow — Use Superpowers
+## Development Workflow - Use Superpowers
 
-This repo has the `superpowers` plugin enabled (`.claude/settings.json`). It's not decorative —
+This repo has the `superpowers` plugin enabled (`.claude/settings.json`). It's not decorative -
 use the skill tree for real work here, and it maps directly onto the spec-first, plan-second,
 code-last workflow:
 
@@ -32,7 +32,7 @@ code-last workflow:
 | Opening/handling a PR | `requesting-code-review` / `receiving-code-review` |
 | Wrapping up a branch | `finishing-a-development-branch` |
 
-If a skill applies to what you're doing, invoke it — don't just read the table and proceed
+If a skill applies to what you're doing, invoke it - don't just read the table and proceed
 manually. The transition points (spec → plan, plan → code) are still explicit human decisions,
 per the global CLAUDE.md; the skills are how each phase gets executed, not a way around the
 hand-off.
@@ -68,7 +68,7 @@ hand-off.
     │   └── Generator/                                     # Emits RFC test-vector [InlineData] lines for GuidV7/GuidV8Time
     ├── benches/
     │   └── Benchmarks/                                    # BenchmarkDotNet benchmarks
-    └── test.sh                                            # Linux/WSL2 test runner — see Testing below
+    └── test.sh                                            # Linux/WSL2 test runner - see Testing below
 
 ## Target Frameworks
 
@@ -77,15 +77,15 @@ hand-off.
 
 Most projects multi-target:
 
-- `net11.0`, `net10.0` (modern .NET — 8 and 9 dropped, both EOL November 10, 2026)
-- `netstandard2.0` (`src/` only) — the single legacy build; it also serves .NET Framework
+- `net11.0`, `net10.0` (modern .NET - 8 and 9 dropped, both EOL November 10, 2026)
+- `netstandard2.0` (`src/` only) - the single legacy build; it also serves .NET Framework
   4.7.2+ consumers. `net462` was dropped ahead of its January 2027 end of support, and there is
   no `NETFRAMEWORK`-specific code in `src/` any more.
-- `net472` (`tests/unit/` only) — this is the **only** test leg that exercises the shipped
+- `net472` (`tests/unit/` only) - this is the **only** test leg that exercises the shipped
   `netstandard2.0` build (modern legs resolve the `net10.0`/`net11.0` assets). Don't drop it.
 
 **Exception:** `SequentialGuid.EntityFrameworkCore` (and its test project) targets only
-`net11.0;net10.0` — no legacy framework leg, no `netstandard2.0`. This is deliberate (EF Core
+`net11.0;net10.0` - no legacy framework leg, no `netstandard2.0`. This is deliberate (EF Core
 doesn't support .NET Framework), not an oversight. Each leg references its matching EF Core major
 (11.x on `net11.0`, 10.x on `net10.0`) via `Condition`ed `PackageReference`s.
 
@@ -95,7 +95,7 @@ singular `<TargetFramework>` does **not** override the plural property inherited
 `netstandard2.0` / `net472` legs and fails restore with `NU1202`.
 
 Use `#if NET6_0_OR_GREATER` (or the appropriate TFM guard) to separate modern and legacy code
-paths. Always provide both paths — do **not** drop legacy support.
+paths. Always provide both paths - do **not** drop legacy support.
 
 ## Key Design Patterns
 
@@ -116,7 +116,7 @@ sort rules.
 - A process-global `static int _counter` is advanced with `Interlocked.Increment`.
 - Seeded at startup with a small random value from `RandomNumberGenerator` to leave headroom
   before wrap.
-- **No CAS loop, no timestamp tracking** — the counter is unconditional and race-free.
+- **No CAS loop, no timestamp tracking** - the counter is unconditional and race-free.
 - `GuidV7`: 26-bit counter (upper 12 bits → `rand_a`, lower 14 bits → start of `rand_b`).
 
 ### Multi-Target Crypto Helpers
@@ -149,13 +149,13 @@ traditional static extension methods. Follow this pattern when adding internal b
 
 ## Testing
 
-Framework: **xUnit v3** on Microsoft.Testing.Platform (MTP) — see `global.json`'s `test.runner`.
+Framework: **xUnit v3** on Microsoft.Testing.Platform (MTP) - see `global.json`'s `test.runner`.
 
 **On Windows:** bare `dotnet test` works fine and runs the full matrix, including the net472 legs.
 
 **On Linux/WSL2:** bare `dotnet test` (and even `dotnet test -f net472`) fails immediately with
 `Unhandled exception: ... Ensure you have a runnable project type ... A runnable project should
-target a runnable TFM` the instant it hits a net472 leg — MTP's orchestrator enumerates every TFM
+target a runnable TFM` the instant it hits a net472 leg - MTP's orchestrator enumerates every TFM
 across every project up front, and net472 isn't launchable through the `dotnet` muxer on Linux.
 Use the repo's `test.sh` instead:
 
@@ -163,9 +163,9 @@ Use the repo's `test.sh` instead:
 
 It runs the modern TFMs one at a time via `dotnet test -f <tfm>` (net11.0/net10.0,
 skipping projects that don't target a given one), then builds each net472 test project and runs
-the resulting `.exe` directly under **Mono** (`sudo dnf install -y mono-complete` or equivalent —
+the resulting `.exe` directly under **Mono** (`sudo dnf install -y mono-complete` or equivalent -
 see `TOOLCHAIN.md` in the `buvinghausen` repo). Verified against the real MTP test host, not a
-build-only stand-in. `set -euo pipefail` — any failure stops the script with a non-zero exit.
+build-only stand-in. `set -euo pipefail` - any failure stops the script with a non-zero exit.
 
 **Coverage:** every test project references `Microsoft.Testing.Extensions.CodeCoverage` (via
 `tests/unit/Directory.Build.props`). CI runs `dotnet test --coverage --coverage-output-format
@@ -206,8 +206,8 @@ Use `[MemoryDiagnoser]` on all benchmark classes.
 
 ## RFC 9562 References
 
-- §5.7 — UUID Version 7 layout
-- §6.2 Method 1 — Fixed Bit-Length Dedicated Counter (implemented in `GuidV7`)
-- Appendix A.6 — v7 test vector (`unix_ts_ms = 0x017F22E279B0`)
+- §5.7 - UUID Version 7 layout
+- §6.2 Method 1 - Fixed Bit-Length Dedicated Counter (implemented in `GuidV7`)
+- Appendix A.6 - v7 test vector (`unix_ts_ms = 0x017F22E279B0`)
 
 When modifying UUID generation logic always cite the relevant RFC section in a comment.

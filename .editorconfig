@@ -1,12 +1,12 @@
-# .editorconfig — opinionated, modern C# style baseline.
+# .editorconfig - opinionated, modern C# style baseline.
 #
 # Severity tiers used below:
-#   error      — enforced at build (with EnforceCodeStyleInBuild + TreatWarningsAsErrors).
-#   suggestion — visible IDE hint, never blocks the build.
-#   silent     — available as an IDE refactor, but never surfaced or enforced.
+#   error      - enforced at build (with EnforceCodeStyleInBuild + TreatWarningsAsErrors).
+#   suggestion - visible IDE hint, never blocks the build.
+#   silent     - available as an IDE refactor, but never surfaced or enforced.
 #
 # Most style options are declared explicitly even where they match the current
-# Roslyn default — so an SDK update can never silently change the house style.
+# Roslyn default - so an SDK update can never silently change the house style.
 #
 # Build enforcement note: the error severities above only fail the build when the
 # project sets <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild> and
@@ -27,7 +27,7 @@ tab_width = 4
 indent_size = 4
 
 ###############################################################################
-# 2. Per-language exceptions — match each ecosystem's standard tooling rather
+# 2. Per-language exceptions - match each ecosystem's standard tooling rather
 #    than fight it (fighting a formatter's fixed convention only churns diffs).
 ###############################################################################
 [*.{yml,yaml}]
@@ -36,7 +36,7 @@ indent_style = space
 indent_size = 2
 
 [*.md]
-# trailing double-space is a hard line break — preserve it
+# trailing double-space is a hard line break - preserve it
 indent_style = space
 indent_size = 2
 trim_trailing_whitespace = false
@@ -62,8 +62,8 @@ end_of_line = crlf
 
 [*.{razor,cshtml}]
 # Spaces, because the Visual Studio Razor formatter reads Tools -> Options, not
-# .editorconfig, for indentation — a long-standing platform limitation
-# (https://github.com/dotnet/razor/issues/4406) — and its default is 4 spaces.
+# .editorconfig, for indentation - a long-standing platform limitation
+# (https://github.com/dotnet/razor/issues/4406) - and its default is 4 spaces.
 # Matching that default keeps stock VS output consistent with no per-machine
 # config. This section still applies in editors that DO honor it (e.g. Rider).
 indent_style = space
@@ -78,7 +78,7 @@ indent_size = 4
 dotnet_sort_system_directives_first = true
 dotnet_separate_import_directive_groups = false
 csharp_using_directive_placement = outside_namespace
-# unnecessary usings are a build error — keeps drive-by/unused imports out
+# unnecessary usings are a build error - keeps drive-by/unused imports out
 dotnet_diagnostic.IDE0005.severity = error
 dotnet_diagnostic.IDE0065.severity = error
 
@@ -88,7 +88,7 @@ dotnet_style_namespace_match_folder = true
 dotnet_diagnostic.IDE0161.severity = error
 dotnet_diagnostic.IDE0130.severity = error
 
-## ── Accessibility — omit modifiers that match the default ─────────────────
+## ── Accessibility - omit modifiers that match the default ─────────────────
 dotnet_style_require_accessibility_modifiers = omit_if_default
 dotnet_diagnostic.IDE0040.severity = error
 
@@ -105,7 +105,7 @@ dotnet_diagnostic.IDE0007.severity = error
 dotnet_diagnostic.IDE0008.severity = error
 dotnet_diagnostic.IDE0090.severity = error
 
-## ── Collection expressions — prefer [] and [.. spread] ────────────────────
+## ── Collection expressions - prefer [] and [.. spread] ────────────────────
 dotnet_style_prefer_collection_expression = when_types_loosely_match
 dotnet_diagnostic.IDE0300.severity = error
 dotnet_diagnostic.IDE0301.severity = error
@@ -173,7 +173,7 @@ dotnet_code_quality_unused_parameters = all
 dotnet_diagnostic.IDE0060.severity = error
 csharp_style_unused_value_assignment_preference = discard_variable
 dotnet_diagnostic.IDE0059.severity = error
-# unconsumed expression-statement values are common with fluent APIs — not enforced
+# unconsumed expression-statement values are common with fluent APIs - not enforced
 csharp_style_unused_value_expression_statement_preference = discard_variable
 dotnet_diagnostic.IDE0058.severity = silent
 dotnet_style_qualification_for_field = false
@@ -198,7 +198,7 @@ csharp_style_prefer_utf8_string_literals = true
 csharp_style_prefer_readonly_struct = true
 csharp_style_prefer_readonly_struct_member = true
 
-## ── Preferred but not enforced — declared values, IDE hint only ───────────
+## ── Preferred but not enforced - declared values, IDE hint only ───────────
 # conditional expressions degrade readability in nontrivial cases
 dotnet_style_prefer_conditional_expression_over_assignment = true
 dotnet_style_prefer_conditional_expression_over_return = true
@@ -210,7 +210,7 @@ dotnet_diagnostic.IDE0066.severity = silent
 # primary constructors are situational (capture semantics)
 csharp_style_prefer_primary_constructors = true
 dotnet_diagnostic.IDE0290.severity = silent
-# pattern matching — preferred idiom, not a correctness issue
+# pattern matching - preferred idiom, not a correctness issue
 csharp_style_pattern_matching_over_as_with_null_check = true
 csharp_style_pattern_matching_over_is_with_cast_check = true
 csharp_style_prefer_pattern_matching = true
@@ -218,21 +218,21 @@ dotnet_diagnostic.IDE0019.severity = silent
 dotnet_diagnostic.IDE0020.severity = silent
 dotnet_diagnostic.IDE0038.severity = silent
 dotnet_diagnostic.IDE0078.severity = silent
-# parentheses for clarity — a preference, not worth enforcing
+# parentheses for clarity - a preference, not worth enforcing
 dotnet_style_parentheses_in_arithmetic_binary_operators = always_for_clarity
 dotnet_style_parentheses_in_relational_binary_operators = always_for_clarity
 dotnet_style_parentheses_in_other_binary_operators = always_for_clarity
 dotnet_style_parentheses_in_other_operators = never_if_unnecessary
 dotnet_diagnostic.IDE0047.severity = silent
 dotnet_diagnostic.IDE0048.severity = silent
-# local functions over anonymous functions — situational
+# local functions over anonymous functions - situational
 csharp_style_prefer_local_over_anonymous_function = true
 dotnet_diagnostic.IDE0039.severity = silent
 csharp_style_prefer_index_operator = true
 csharp_style_prefer_range_operator = true
 dotnet_diagnostic.IDE0056.severity = silent
 dotnet_diagnostic.IDE0057.severity = silent
-# top-level statements — only meaningful for entry-point projects
+# top-level statements - only meaningful for entry-point projects
 csharp_style_prefer_top_level_statements = true
 dotnet_diagnostic.IDE0210.severity = silent
 
@@ -246,7 +246,7 @@ dotnet_diagnostic.CA1727.severity = error
 dotnet_code_quality.CA1852.ignore_internalsvisibleto = true
 
 ###############################################################################
-# 4. C# formatting — stock conventions, declared explicitly
+# 4. C# formatting - stock conventions, declared explicitly
 ###############################################################################
 dotnet_diagnostic.IDE0055.severity = error
 
@@ -292,13 +292,13 @@ csharp_preserve_single_line_statements = false
 csharp_preserve_single_line_blocks = true
 
 ###############################################################################
-# 5. Naming — classic C# conventions, all enforced.
+# 5. Naming - classic C# conventions, all enforced.
 # Rule order matters: first match wins, so constants precede the field rules.
 ###############################################################################
 
 # Naming is enforced at build via the diagnostic-ID severity below. The per-rule
 # severities further down reach the build on current Roslyn but only the IDE on
-# older SDKs (https://github.com/dotnet/roslyn/issues/49439) — this line is the
+# older SDKs (https://github.com/dotnet/roslyn/issues/49439) - this line is the
 # path the build reads reliably across SDK versions.
 dotnet_diagnostic.IDE1006.severity = error
 
@@ -333,7 +333,7 @@ dotnet_naming_symbols.parameters.applicable_accessibilities = *
 dotnet_naming_symbols.locals.applicable_kinds = local
 dotnet_naming_symbols.locals.applicable_accessibilities = *
 
-## Rules (ordered — first match wins)
+## Rules (ordered - first match wins)
 dotnet_naming_rule.interfaces_are_prefixed.symbols = interfaces
 dotnet_naming_rule.interfaces_are_prefixed.style = interface_prefixed
 dotnet_naming_rule.interfaces_are_prefixed.severity = error

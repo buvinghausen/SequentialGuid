@@ -3,7 +3,7 @@ using SequentialGuid.EntityFrameworkCore;
 IList<string> failures = [];
 
 // The four public value generators are the new v6.2 surface; exercising them under ILC
-// verifies our code paths trim cleanly. No DbContext — EF Core's full NativeAOT story is
+// verifies our code paths trim cleanly. No DbContext - EF Core's full NativeAOT story is
 // experimental and out of scope.
 SequentialGuidValueGenerator guidGen = new();
 var v7 = guidGen.Next(null!);

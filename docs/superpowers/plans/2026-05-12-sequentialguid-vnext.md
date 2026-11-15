@@ -56,7 +56,7 @@ git checkout vNext && git merge master --no-edit && git push
 
 ---
 
-## PR1 — Perf: zero-allocation generation paths
+## PR1 - Perf: zero-allocation generation paths
 
 **Branch from `vNext`:** `git checkout -b vNext/perf vNext`
 
@@ -65,7 +65,7 @@ git checkout vNext && git merge master --no-edit && git push
 **Files:**
 - Modify: `src/SequentialGuid/Extensions/ByteArrayExtensions.cs`
 
-**Context:** Currently both setters live only on the `extension(byte[] b)` block. Generators on NET6+ want `stackalloc byte[16]` (a `Span<byte>`), which can't call those. Add equivalent setters on the `extension(Span<byte> b)` block inside the existing `#if NET6_0_OR_GREATER` region. The `ReadOnlySpan<byte>` block stays as-is — it only has read-only helpers.
+**Context:** Currently both setters live only on the `extension(byte[] b)` block. Generators on NET6+ want `stackalloc byte[16]` (a `Span<byte>`), which can't call those. Add equivalent setters on the `extension(Span<byte> b)` block inside the existing `#if NET6_0_OR_GREATER` region. The `ReadOnlySpan<byte>` block stays as-is - it only has read-only helpers.
 
 - [ ] **Step 1: Open `src/SequentialGuid/Extensions/ByteArrayExtensions.cs` and locate the existing `extension(ReadOnlySpan<byte> b)` block at line 105**
 
@@ -108,7 +108,7 @@ git commit -m "perf: add Span<byte> overloads of SetRfc9562 helpers"
 
 **Files:**
 - Modify: `src/SequentialGuid/GuidV4.cs`
-- Test: `test/SequentialGuid.Tests/GuidV4Tests.cs` (already exists — no new tests needed; the existing suite is the regression guard)
+- Test: `test/SequentialGuid.Tests/GuidV4Tests.cs` (already exists - no new tests needed; the existing suite is the regression guard)
 
 - [ ] **Step 1: Run the existing GuidV4 tests as a baseline**
 
@@ -120,7 +120,7 @@ Expected: all green.
 
 - [ ] **Step 2: Replace the body of `GuidV4.NewGuid`**
 
-Open `src/SequentialGuid/GuidV4.cs`. Replace the entire `NewGuid()` method (lines 21–42) with:
+Open `src/SequentialGuid/GuidV4.cs`. Replace the entire `NewGuid()` method (lines 21-42) with:
 
 ```csharp
 	public static Guid NewGuid()
@@ -175,7 +175,7 @@ git commit -m "perf: GuidV4.NewGuid uses stackalloc on NET6+"
 
 - [ ] **Step 1: Open `src/SequentialGuid/GuidV7.cs` and replace the body of `NewGuid(long unixMilliseconds)`**
 
-Replace lines 136–182 (the whole method body, keeping the XML doc comment above):
+Replace lines 136-182 (the whole method body, keeping the XML doc comment above):
 
 ```csharp
 	public static Guid NewGuid(long unixMilliseconds)
@@ -236,7 +236,7 @@ Expected: BUILD SUCCEEDED. No warnings.
 dotnet test test/SequentialGuid.Tests --filter "FullyQualifiedName~GuidV7"
 ```
 
-Expected: all green. Critically, the RFC 9562 §A.6 test vector tests and the monotonic-ordering tests must still pass — they assert byte-level output.
+Expected: all green. Critically, the RFC 9562 §A.6 test vector tests and the monotonic-ordering tests must still pass - they assert byte-level output.
 
 - [ ] **Step 4: Commit**
 
@@ -254,7 +254,7 @@ git commit -m "perf: GuidV7.NewGuid(long) uses stackalloc on NET6+"
 
 - [ ] **Step 1: Replace the body of `internal static Guid NewGuid(long timestamp)`**
 
-Replace lines 164–204:
+Replace lines 164-204:
 
 ```csharp
 	internal static Guid NewGuid(long timestamp)
@@ -330,11 +330,11 @@ git commit -m "perf: GuidV8Time.NewGuid(long) uses stackalloc on NET6+"
 **Files:**
 - Modify: `src/SequentialGuid/GuidV8Time.cs:29-70`
 
-**Context:** The static ctor hashes `Environment.MachineName` to extract a 3-byte machine fingerprint. SHA-512 is wildly oversized for 3 bytes. SHA-1 is enough (this is a fingerprint, not a security property) and faster on cold start. Output bytes change, but `MachinePid` is part of the random/identity field of UUIDv8 custom layout — no test asserts a specific value.
+**Context:** The static ctor hashes `Environment.MachineName` to extract a 3-byte machine fingerprint. SHA-512 is wildly oversized for 3 bytes. SHA-1 is enough (this is a fingerprint, not a security property) and faster on cold start. Output bytes change, but `MachinePid` is part of the random/identity field of UUIDv8 custom layout - no test asserts a specific value.
 
 - [ ] **Step 1: Replace the static constructor body**
 
-Open `src/SequentialGuid/GuidV8Time.cs`. Replace the body of the static constructor (lines 29–70):
+Open `src/SequentialGuid/GuidV8Time.cs`. Replace the body of the static constructor (lines 29-70):
 
 ```csharp
 	static GuidV8Time()
@@ -405,17 +405,17 @@ git commit -m "perf: GuidV8Time uses SHA-1 for machine fingerprint"
 **Files:**
 - Modify: `src/SequentialGuid/GuidNameBased.cs`
 
-**Context:** `IncrementalHash.TryGetHashAndReset(Span<byte>, out int)` is .NET 5+ / .NET Standard 2.1+ only — *not* netstandard2.0. So the Span path applies to NET6+ only. netstandard2.0 keeps `GetHashAndReset()`. NETFRAMEWORK path (uses `HashAlgorithm.Create`) is unchanged.
+**Context:** `IncrementalHash.TryGetHashAndReset(Span<byte>, out int)` is .NET 5+ / .NET Standard 2.1+ only - *not* netstandard2.0. So the Span path applies to NET6+ only. netstandard2.0 keeps `GetHashAndReset()`. NETFRAMEWORK path (uses `HashAlgorithm.Create`) is unchanged.
 
 - [ ] **Step 1: Rewrite `GuidNameBased.Create`**
 
-Replace the entire method body (lines 16–45):
+Replace the entire method body (lines 16-45):
 
 ```csharp
 	internal static Guid Create(Guid namespaceId, byte[] name, HashAlgorithmName algorithmName, byte version)
 	{
 #if NETFRAMEWORK
-		// Legacy .NET Framework — full-blown hash then read .Hash
+		// Legacy .NET Framework - full-blown hash then read .Hash
 		using var hash = HashAlgorithm.Create(algorithmName.Name)!;
 		hash.TransformBlock(namespaceId.ToByteArray().SwapByteOrder(), 0, 16, null, 0);
 		hash.TransformFinalBlock(name, 0, name.Length);
@@ -482,11 +482,11 @@ git commit -m "perf: stackalloc digest in GuidNameBased on NET6+"
 - Modify: `src/SequentialGuid/SequentialGuid.cs:24-39`
 - Modify: `src/SequentialGuid/SequentialSqlGuid.cs:25-40`
 
-**Context:** Both struct constructors currently call `GuidV{7,8}.Timestamp` (a public static property) and pass the truncated value back into `NewGuid(...)`. They then assign `Timestamp` from the static property. Drop the parallel read — decode `Timestamp` from `Value` after construction. This is internal-only refactor; the public `Timestamp` static properties are still alive (they get deleted in PR2).
+**Context:** Both struct constructors currently call `GuidV{7,8}.Timestamp` (a public static property) and pass the truncated value back into `NewGuid(...)`. They then assign `Timestamp` from the static property. Drop the parallel read - decode `Timestamp` from `Value` after construction. This is internal-only refactor; the public `Timestamp` static properties are still alive (they get deleted in PR2).
 
 - [ ] **Step 1: Replace `SequentialGuid(SequentialGuidType type)`**
 
-Open `src/SequentialGuid/SequentialGuid.cs`. Replace lines 24–39:
+Open `src/SequentialGuid/SequentialGuid.cs`. Replace lines 24-39:
 
 ```csharp
 	public SequentialGuid(SequentialGuidType type = SequentialGuidType.Rfc9562V7)
@@ -503,7 +503,7 @@ Open `src/SequentialGuid/SequentialGuid.cs`. Replace lines 24–39:
 
 - [ ] **Step 2: Replace `SequentialSqlGuid(SequentialGuidType type)`**
 
-Open `src/SequentialGuid/SequentialSqlGuid.cs`. Replace lines 25–40:
+Open `src/SequentialGuid/SequentialSqlGuid.cs`. Replace lines 25-40:
 
 ```csharp
 	public SequentialSqlGuid(SequentialGuidType type)
@@ -549,7 +549,7 @@ dotnet run -c Release --project util/Benchmarks -- --filter *Generation*
 
 Expected: in the BenchmarkDotNet output, the `Allocated` column for `GuidV4NewGuid`, `GuidV7NewGuid`, `GuidV7NewSqlGuid`, `GuidV8TimeNewGuid`, `GuidV8TimeNewSqlGuid` is `-` or `0 B`. The `Guid.NewGuid` baseline is also `-`.
 
-If any row shows non-zero allocations, the corresponding generator still has a heap allocation — revisit the prior task that converted it.
+If any row shows non-zero allocations, the corresponding generator still has a heap allocation - revisit the prior task that converted it.
 
 - [ ] **Step 2: Run the name benchmarks**
 
@@ -557,7 +557,7 @@ If any row shows non-zero allocations, the corresponding generator still has a h
 dotnet run -c Release --project util/Benchmarks -- --filter *Name*
 ```
 
-Expected: `GuidV5.Create(byte[])` and `GuidV8Name.Create(byte[])` show zero allocations (the digest path is now on the stack on .NET 10). The `(string)` overloads still allocate — `Encoding.UTF8.GetBytes` is the caller's contribution.
+Expected: `GuidV5.Create(byte[])` and `GuidV8Name.Create(byte[])` show zero allocations (the digest path is now on the stack on .NET 10). The `(string)` overloads still allocate - `Encoding.UTF8.GetBytes` is the caller's contribution.
 
 - [ ] **Step 3: Capture the output**
 
@@ -568,7 +568,7 @@ dotnet run -c Release --project util/Benchmarks -- --filter *Generation* > bench
 dotnet run -c Release --project util/Benchmarks -- --filter *Name* >> bench-perf-pr.txt
 ```
 
-No commit — this is purely for the PR description.
+No commit - this is purely for the PR description.
 
 ---
 
@@ -611,7 +611,7 @@ git checkout vNext && git pull
 
 ---
 
-## PR2 — Cleanup: drop obsolete API and consolidate constructors
+## PR2 - Cleanup: drop obsolete API and consolidate constructors
 
 **Branch from `vNext`:** `git checkout -b vNext/cleanup vNext`
 
@@ -704,7 +704,7 @@ git commit -m "refactor: add SequentialGuidByteOrder.TryDetect helper"
 
 - [ ] **Step 1: Replace `SequentialGuid(Guid value)`**
 
-Open `src/SequentialGuid/SequentialGuid.cs`. Replace the existing `public SequentialGuid(Guid value)` constructor (lines 44–79) with:
+Open `src/SequentialGuid/SequentialGuid.cs`. Replace the existing `public SequentialGuid(Guid value)` constructor (lines 44-79) with:
 
 ```csharp
 	public SequentialGuid(Guid value)
@@ -720,7 +720,7 @@ Open `src/SequentialGuid/SequentialGuid.cs`. Replace the existing `public Sequen
 
 - [ ] **Step 2: Replace `SequentialSqlGuid(Guid value)`**
 
-Open `src/SequentialGuid/SequentialSqlGuid.cs`. Replace lines 45–79 with:
+Open `src/SequentialGuid/SequentialSqlGuid.cs`. Replace lines 45-79 with:
 
 ```csharp
 	public SequentialSqlGuid(Guid value)
@@ -765,7 +765,7 @@ git commit -m "refactor: struct ctors delegate to SequentialGuidByteOrder.TryDet
 - Create: `test/SequentialGuid.Tests/TicksExtensionsTests.cs`
 - Modify: `src/SequentialGuid/Extensions/TicksExtensions.cs:16-18`
 
-**Context:** Currently `value <= DateTime.UtcNow.Ticks` — a near-now timestamp can fail validation if the system clock moves backward between minting and validating. Allow 1 second of forward slack.
+**Context:** Currently `value <= DateTime.UtcNow.Ticks` - a near-now timestamp can fail validation if the system clock moves backward between minting and validating. Allow 1 second of forward slack.
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -811,7 +811,7 @@ public sealed class TicksExtensionsTests
 }
 ```
 
-- [ ] **Step 2: Run the new tests — expect failures**
+- [ ] **Step 2: Run the new tests - expect failures**
 
 ```powershell
 dotnet test test/SequentialGuid.Tests --filter "FullyQualifiedName~TicksExtensionsTests"
@@ -821,7 +821,7 @@ Expected: `HalfSecondInFutureIsValid` FAILS (current code rejects future timesta
 
 - [ ] **Step 3: Update `TicksExtensions.IsDateTime`**
 
-Open `src/SequentialGuid/Extensions/TicksExtensions.cs`. Replace lines 16–18:
+Open `src/SequentialGuid/Extensions/TicksExtensions.cs`. Replace lines 16-18:
 
 ```csharp
 		internal bool IsDateTime =>
@@ -829,7 +829,7 @@ Open `src/SequentialGuid/Extensions/TicksExtensions.cs`. Replace lines 16–18:
 			value <= DateTime.UtcNow.Ticks + TimeSpan.TicksPerSecond;
 ```
 
-- [ ] **Step 4: Run the new tests — expect green**
+- [ ] **Step 4: Run the new tests - expect green**
 
 ```powershell
 dotnet test test/SequentialGuid.Tests --filter "FullyQualifiedName~TicksExtensionsTests"
@@ -843,7 +843,7 @@ Expected: all green.
 dotnet test
 ```
 
-Expected: all green. The pre-existing `GuidV8TimeTests.TestFutureTimestampThrows` and `SequentialGuidTests` tests that assert `+1 second` throws need to still pass — they use `AddSeconds(1)` which is exactly at the slack boundary. **If those tests fail**, bump the test offset to `AddSeconds(2)` in those specific tests (do not weaken the slack — the production behavior is intentional).
+Expected: all green. The pre-existing `GuidV8TimeTests.TestFutureTimestampThrows` and `SequentialGuidTests` tests that assert `+1 second` throws need to still pass - they use `AddSeconds(1)` which is exactly at the slack boundary. **If those tests fail**, bump the test offset to `AddSeconds(2)` in those specific tests (do not weaken the slack - the production behavior is intentional).
 
 Pattern for the test update if needed (in `SequentialGuidTests.cs` line ~296 and `GuidV8TimeTests.cs` line ~172):
 
@@ -896,7 +896,7 @@ git rm src/SequentialGuid/Obsolete/SequentialGuidGeneratorBase.cs
 git rm src/SequentialGuid/Obsolete/SequentialSqlGuidGenerator.cs
 ```
 
-The `Obsolete` folder will be empty after deletion — Git removes it automatically.
+The `Obsolete` folder will be empty after deletion - Git removes it automatically.
 
 - [ ] **Step 3: Build all TFMs**
 
@@ -908,7 +908,7 @@ Expected: BUILD SUCCEEDED. No remaining references in the production assembly. I
 
 - [ ] **Step 4: Remove any test references found in step 1**
 
-If `git grep` in step 1 surfaced test files referencing the obsolete classes, update or delete those tests. Do not preserve obsolete-class test coverage — the behavior is replaced by the static methods on `GuidV8Time`, which have their own tests.
+If `git grep` in step 1 surfaced test files referencing the obsolete classes, update or delete those tests. Do not preserve obsolete-class test coverage - the behavior is replaced by the static methods on `GuidV8Time`, which have their own tests.
 
 ```powershell
 dotnet test
@@ -940,7 +940,7 @@ removed. Use GuidV8Time.NewGuid() / GuidV8Time.NewSqlGuid() instead."
 
 - [ ] **Step 1: Delete `GuidV7.Timestamp`**
 
-Open `src/SequentialGuid/GuidV7.cs`. Delete the property and its XML doc (lines 39–45):
+Open `src/SequentialGuid/GuidV7.cs`. Delete the property and its XML doc (lines 39-45):
 
 ```csharp
 	/// <summary>
@@ -954,7 +954,7 @@ Open `src/SequentialGuid/GuidV7.cs`. Delete the property and its XML doc (lines 
 
 - [ ] **Step 2: Delete `GuidV8Time.Timestamp`**
 
-Open `src/SequentialGuid/GuidV8Time.cs`. Delete the property and its XML doc (lines 72–76):
+Open `src/SequentialGuid/GuidV8Time.cs`. Delete the property and its XML doc (lines 72-76):
 
 ```csharp
 	/// <summary>
@@ -976,7 +976,7 @@ Expected: build fails with `CS0117: 'GuidV7' does not contain a definition for '
 
 Each existing call site falls into one of three patterns. Apply the matching replacement:
 
-**Pattern A — used as a "now" sentinel for bounding tests** (`GuidV7Tests.cs:162,165`, `SequentialGuidStructTests.cs:147,150`, `SequentialSqlGuidStructTests.cs:116,119`):
+**Pattern A - used as a "now" sentinel for bounding tests** (`GuidV7Tests.cs:162,165`, `SequentialGuidStructTests.cs:147,150`, `SequentialSqlGuidStructTests.cs:116,119`):
 
 ```csharp
 // Before
@@ -997,7 +997,7 @@ You'll need a small helper. The test project already has `test/SequentialGuid.Te
 
 Place it directly below the existing `extension(Guid id) { ... }` block, still inside the class braces.
 
-**Pattern B — used as the "expected" value for round-trip assertions** (`GuidV7Tests.cs:236,249,262`):
+**Pattern B - used as the "expected" value for round-trip assertions** (`GuidV7Tests.cs:236,249,262`):
 
 ```csharp
 // Before
@@ -1010,14 +1010,14 @@ Same pattern as A but the variable is named `expected`. Apply identically.
 
 - [ ] **Step 5: Replace `GuidV8Time.Timestamp` references in tests**
 
-Pattern is simpler — GuidV8Time has tick precision, so no truncation is needed. **Pure token-level replacement: every `GuidV8Time.Timestamp` → `DateTime.UtcNow`.** The `.AddSeconds(N)`, `.AddMinutes(N)`, or other surrounding expressions stay as-is (Task 2.3 already adjusted any offsets that needed bumping for the new slack window).
+Pattern is simpler - GuidV8Time has tick precision, so no truncation is needed. **Pure token-level replacement: every `GuidV8Time.Timestamp` → `DateTime.UtcNow`.** The `.AddSeconds(N)`, `.AddMinutes(N)`, or other surrounding expressions stay as-is (Task 2.3 already adjusted any offsets that needed bumping for the new slack window).
 
-Files and lines (offsets approximate — search for the literal `GuidV8Time.Timestamp` to find each occurrence):
+Files and lines (offsets approximate - search for the literal `GuidV8Time.Timestamp` to find each occurrence):
 
-- `test/SequentialGuid.Tests/GuidV8TimeTests.cs` — 5 occurrences (originally lines 97, 100, 110, 160, 172)
-- `test/SequentialGuid.Tests/SequentialGuidTests.cs` — 5 occurrences (originally lines 236, 275, 296, 300, 329)
-- `test/SequentialGuid.Tests/SequentialGuidStructTests.cs` — 2 occurrences (lines 184, 187)
-- `test/SequentialGuid.Tests/SequentialSqlGuidStructTests.cs` — 2 occurrences (lines 154, 157)
+- `test/SequentialGuid.Tests/GuidV8TimeTests.cs` - 5 occurrences (originally lines 97, 100, 110, 160, 172)
+- `test/SequentialGuid.Tests/SequentialGuidTests.cs` - 5 occurrences (originally lines 236, 275, 296, 300, 329)
+- `test/SequentialGuid.Tests/SequentialGuidStructTests.cs` - 2 occurrences (lines 184, 187)
+- `test/SequentialGuid.Tests/SequentialSqlGuidStructTests.cs` - 2 occurrences (lines 154, 157)
 
 Suggested PowerShell to verify zero remaining occurrences after the replace:
 
@@ -1048,14 +1048,14 @@ their Timestamp property from the generated Value."
 
 ---
 
-### Task 2.6: Update README — remove Upgrade Guide section
+### Task 2.6: Update README - remove Upgrade Guide section
 
 **Files:**
 - Modify: `src/SequentialGuid/README.md:266-275`
 
 - [ ] **Step 1: Delete the "Upgrade Guide" section**
 
-Open `src/SequentialGuid/README.md`. Delete the entire `## Upgrade Guide` section (the heading at line ~266 and the paragraph + table + closing note below it, through line ~275). Keep the `## Backwards Compatibility` section that follows it — that's still relevant.
+Open `src/SequentialGuid/README.md`. Delete the entire `## Upgrade Guide` section (the heading at line ~266 and the paragraph + table + closing note below it, through line ~275). Keep the `## Backwards Compatibility` section that follows it - that's still relevant.
 
 After deletion, the file flows: ... `## Performance` block → `## Backwards Compatibility` block.
 
@@ -1110,7 +1110,7 @@ git checkout vNext && git pull
 
 ---
 
-## PR3 — AOT hardening
+## PR3 - AOT hardening
 
 **Branch from `vNext`:** `git checkout -b vNext/aot vNext`
 
@@ -1175,8 +1175,8 @@ dotnet build 2>&1 | Select-String -Pattern "warning IL"
 
 - **Core `SequentialGuid` warnings:** These are bugs. Fix the code path.
 - **`SequentialGuid.MongoDB` warnings:** The MongoDB driver does its own AOT story. Document the limitation in `src/SequentialGuid.MongoDB/README.md` (add a "Native AOT" note explaining that AOT support depends on the underlying MongoDB driver). Do not suppress driver warnings inside our code; if the warning is from our consuming code, suppress with a justified `[UnconditionalSuppressMessage]` and a comment.
-- **`SequentialGuid.EntityFrameworkCore` warnings:** Should be clean — value converters use static abstract `T.Create(v)`, no reflection.
-- **`SequentialGuid.NodaTime` warnings:** Should be clean — pure extension methods.
+- **`SequentialGuid.EntityFrameworkCore` warnings:** Should be clean - value converters use static abstract `T.Create(v)`, no reflection.
+- **`SequentialGuid.NodaTime` warnings:** Should be clean - pure extension methods.
 
 If only the MongoDB package surfaces warnings, this task reduces to a doc edit:
 
@@ -1185,7 +1185,7 @@ If only the MongoDB package surfaces warnings, this task reduces to a doc edit:
 
 `SequentialGuid.MongoDB` declares `<IsAotCompatible>true</IsAotCompatible>` for
 `net8.0+` TFMs. Note however that the MongoDB C# driver has its own AOT
-compatibility story — verify your end-to-end scenario with `dotnet publish -r <rid> -p:PublishAot=true`.
+compatibility story - verify your end-to-end scenario with `dotnet publish -r <rid> -p:PublishAot=true`.
 ```
 
 - [ ] **Step 3: Rebuild and verify clean**
@@ -1236,7 +1236,7 @@ Create `test/SequentialGuid.AotSmokeTest/SequentialGuid.AotSmokeTest.csproj`:
 </Project>
 ```
 
-Note: deliberately excludes the companion packages. The smoke test exercises the *core* surface — that's what we're claiming AOT-compatible.
+Note: deliberately excludes the companion packages. The smoke test exercises the *core* surface - that's what we're claiming AOT-compatible.
 
 - [ ] **Step 2: Create `Program.cs`**
 
@@ -1323,7 +1323,7 @@ foreach (var f in failures) Console.WriteLine($"  - {f}");
 return 1;
 ```
 
-(Note: the smoke test deliberately uses only public API. `ToUnixMs` exists in the test project as an internal extension and is not visible across project boundaries — the timestamp check above goes through `ToDateTime()` instead.)
+(Note: the smoke test deliberately uses only public API. `ToUnixMs` exists in the test project as an internal extension and is not visible across project boundaries - the timestamp check above goes through `ToDateTime()` instead.)
 
 - [ ] **Step 3: Build and run as JIT first (smoke test the smoke test)**
 
@@ -1342,7 +1342,7 @@ dotnet publish test/SequentialGuid.AotSmokeTest -c Release -r win-x64 -o aot-out
 .\aot-out\SequentialGuid.AotSmokeTest.exe
 ```
 
-Expected: `AOT smoke test: PASS` and exit code 0. **And** the `dotnet publish` step must complete without `IL2xxx` / `IL3xxx` warnings — if any surface, fix them before continuing.
+Expected: `AOT smoke test: PASS` and exit code 0. **And** the `dotnet publish` step must complete without `IL2xxx` / `IL3xxx` warnings - if any surface, fix them before continuing.
 
 - [ ] **Step 5: Commit**
 
@@ -1398,7 +1398,7 @@ git commit -m "ci: run AOT smoke test as part of CI"
 Open `src/SequentialGuid/README.md`. Locate the `## Highlights` section. After the existing "**Broad platform support**" bullet, add:
 
 ```markdown
-- **Native AOT compatible** — declares `IsAotCompatible=true` and is verified end-to-end with a published AOT smoke test in CI
+- **Native AOT compatible** - declares `IsAotCompatible=true` and is verified end-to-end with a published AOT smoke test in CI
 ```
 
 - [ ] **Step 2: Update the Blazor WebAssembly mention**
@@ -1468,13 +1468,13 @@ All three commands clean.
 - [ ] **Step 2: Open the integration PR**
 
 ```bash
-gh pr create --base master --head vNext --title "release: vN.0.0 — zero-alloc, drop obsolete API, Native AOT" --body "$(cat <<'EOF'
+gh pr create --base master --head vNext --title "release: vN.0.0 - zero-alloc, drop obsolete API, Native AOT" --body "$(cat <<'EOF'
 ## Summary
 Major release. Three independently-reviewed PRs already landed on `vNext`:
 
-1. **perf** — Zero-allocation generation paths on .NET 6+
-2. **feat!** — Removed obsolete `SequentialGuidGenerator` family and public `GuidV{7,8}.Timestamp` properties; consolidated struct constructors
-3. **build** — Native AOT compatibility with a CI-verified smoke test
+1. **perf** - Zero-allocation generation paths on .NET 6+
+2. **feat!** - Removed obsolete `SequentialGuidGenerator` family and public `GuidV{7,8}.Timestamp` properties; consolidated struct constructors
+3. **build** - Native AOT compatibility with a CI-verified smoke test
 
 ## Breaking changes
 - `SequentialGuidGenerator` and `SequentialSqlGuidGenerator` removed → use `GuidV8Time.NewGuid()` / `GuidV8Time.NewSqlGuid()`
@@ -1497,11 +1497,11 @@ git push origin vN.0.0
 # Release workflow handles NuGet push
 ```
 
-(Replace `vN.0.0` with the actual next major version number — check current `<Version>` in csproj or the latest GitHub release.)
+(Replace `vN.0.0` with the actual next major version number - check current `<Version>` in csproj or the latest GitHub release.)
 
 ---
 
 ## Open questions
 
-None — all scope decisions are locked in by the spec at
+None - all scope decisions are locked in by the spec at
 `docs/superpowers/specs/2026-05-12-sequentialguid-vnext-design.md`.

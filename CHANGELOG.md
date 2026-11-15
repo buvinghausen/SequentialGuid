@@ -21,9 +21,9 @@ Planned as **7.0.0**: removing a target framework is a breaking change.
 - The `netstandard2.0` build is now covered by the full test suite (run on .NET Framework 4.7.2). Previously that build
   shipped untested.
 
-### Using 7.x on .NET Framework 4.6.2–4.7.1
+### Using 7.x on .NET Framework 4.6.2-4.7.1
 These versions resolve the `netstandard2.0` build, which depends on .NET Standard facade assemblies (`netstandard.dll`,
-`System.Runtime.dll`, …) copied next to your app. Those facades need **binding redirects**:
+`System.Runtime.dll`, ...) copied next to your app. Those facades need **binding redirects**:
 
 - **SDK-style or `PackageReference` projects (console, WinForms, WPF, services):** redirects are generated
   automatically. Make sure you haven't turned off `<AutoGenerateBindingRedirects>`.

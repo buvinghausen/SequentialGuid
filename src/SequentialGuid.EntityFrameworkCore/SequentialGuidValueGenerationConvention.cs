@@ -24,7 +24,7 @@ sealed class SequentialGuidValueGenerationConvention(bool sqlServerByteOrder) : 
 	static readonly Func<IProperty, ITypeBase, ValueGenerator> _sqlStruct =
 		static (_, _) => new SequentialSqlGuidStructValueGenerator();
 
-	// Pre-boxed default sentinel values — zero-valued structs used as "not set" sentinels.
+	// Pre-boxed default sentinel values - zero-valued structs used as "not set" sentinels.
 	// EF 8/9 computes DefaultSentinel via Activator.CreateInstance, which calls the parameterless
 	// constructor and produces a live GUID, not the zero default. Explicitly setting the sentinel
 	// here ensures EF recognises an unset property and triggers value generation. (EF 10 fixed this

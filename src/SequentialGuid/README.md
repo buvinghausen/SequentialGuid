@@ -6,37 +6,37 @@
 [![NuGet Downloads](https://img.shields.io/nuget/dt/SequentialGuid.svg)](https://www.nuget.org/packages/SequentialGuid/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/buvinghausen/SequentialGuid/blob/master/LICENSE.txt)
 
-**Generate database-friendly, time-ordered UUIDs anywhere in your stack — no database round-trip required.**
+**Generate database-friendly, time-ordered UUIDs anywhere in your stack - no database round-trip required.**
 
-SequentialGuid is a zero-dependency .NET library that produces [RFC 9562](https://www.rfc-editor.org/rfc/rfc9562.html) compliant UUIDs. Generate IDs in Blazor WebAssembly, MAUI, a background worker, or a REST controller — then pass them through your API and into the database. Because the timestamp is embedded in the value itself, you get **natural sort order** (dramatically reducing clustered index fragmentation), **built-in timestamp extraction** (no extra `CreatedAt` column needed), and **client-side idempotency** (retry-safe inserts without a server round-trip to generate a key).
+SequentialGuid is a zero-dependency .NET library that produces [RFC 9562](https://www.rfc-editor.org/rfc/rfc9562.html) compliant UUIDs. Generate IDs in Blazor WebAssembly, MAUI, a background worker, or a REST controller - then pass them through your API and into the database. Because the timestamp is embedded in the value itself, you get **natural sort order** (dramatically reducing clustered index fragmentation), **built-in timestamp extraction** (no extra `CreatedAt` column needed), and **client-side idempotency** (retry-safe inserts without a server round-trip to generate a key).
 
 ### Why not just use `Guid.NewGuid()`?
 
-`Guid.NewGuid()` produces random version 4 UUIDs. They work, but they **fragment clustered indexes** in SQL Server, PostgreSQL, and other B-tree based stores because every insert lands at a random page. SequentialGuid solves this by putting the timestamp first — new rows always append near the end of the index, just like an auto-increment integer, while still giving you the global uniqueness and merge-safety of a UUID.
+`Guid.NewGuid()` produces random version 4 UUIDs. They work, but they **fragment clustered indexes** in SQL Server, PostgreSQL, and other B-tree based stores because every insert lands at a random page. SequentialGuid solves this by putting the timestamp first - new rows always append near the end of the index, just like an auto-increment integer, while still giving you the global uniqueness and merge-safety of a UUID.
 
 ## UUID Versions at a Glance
 
 | Class | RFC 9562 Section | Purpose |
 |---|---|---|
-| `GuidV4` | §5.4 | Cryptographically random UUID — drop-in replacement for `Guid.NewGuid()` with guaranteed RFC 9562 version & variant bits |
+| `GuidV4` | §5.4 | Cryptographically random UUID - drop-in replacement for `Guid.NewGuid()` with guaranteed RFC 9562 version & variant bits |
 | `GuidV5` | §5.5 | Deterministic, namespace + name UUID using **SHA-1** hashing |
-| `GuidV7` | §5.7 | Time-ordered UUID — **48-bit Unix millisecond** timestamp + **26-bit monotonic counter** ([§6.2 Method 1](https://www.rfc-editor.org/rfc/rfc9562.html#section-6.2)) + 36 bits of cryptographic randomness |
-| `GuidV8Time` | Appendix B.1 | Time-ordered UUID — **60-bit .NET Ticks** (100 ns precision) + machine/process fingerprint + 22-bit monotonic counter |
+| `GuidV7` | §5.7 | Time-ordered UUID - **48-bit Unix millisecond** timestamp + **26-bit monotonic counter** ([§6.2 Method 1](https://www.rfc-editor.org/rfc/rfc9562.html#section-6.2)) + 36 bits of cryptographic randomness |
+| `GuidV8Time` | Appendix B.1 | Time-ordered UUID - **60-bit .NET Ticks** (100 ns precision) + machine/process fingerprint + 22-bit monotonic counter |
 | `GuidV8Name` | Appendix B.2 | Deterministic, namespace + name UUID using **SHA-256** hashing |
 
 ## Highlights
 
-- **RFC 9562 compliant** — correct version nibble and variant bits on every UUID, every time
-- **Monotonically increasing** — `GuidV7` and `GuidV8Time` both use a process-global `Interlocked.Increment` counter so IDs generated on the same timestamp are still strictly ordered, even under heavy concurrency
-- **Zero dependencies** — the core package references nothing outside the BCL
-- **Zero allocations on modern .NET** — `stackalloc`, `Span<T>`, and `[SkipLocalsInit]` eliminate heap allocations on **every** generation path on the package's **.NET 11 / 10** targets, including the deterministic v5/v8 name-based generators
-- **Broad platform support** — targets **.NET 11 / 10**, **.NET Framework 4.7.2+**, and **.NET Standard 2.0**, with explicit `browser` platform support and Native AOT compatibility for Blazor WebAssembly
-- **Native AOT compatible** — declares `IsAotCompatible=true` and is verified end-to-end with a published AOT smoke test in CI
-- **Round-trip timestamp extraction** — call `.ToDateTime()` on any `Guid` (V7, V8, or legacy) to recover the embedded UTC timestamp — works on `SqlGuid` too
-- **SQL Server sort-order aware** — `NewSqlGuid()` and `.ToSqlGuid()` / `.FromSqlGuid()` handle the byte-order shuffle so your UUIDs sort chronologically in `uniqueidentifier` columns — the only production use of `System.Data.SqlTypes.SqlGuid` is inside `SequentialSqlGuid.CompareTo`, where it implements SQL Server's documented sort order
-- **Built-in benchmarks** — a BenchmarkDotNet project is included so you can measure generation and conversion performance on your own hardware
+- **RFC 9562 compliant** - correct version nibble and variant bits on every UUID, every time
+- **Monotonically increasing** - `GuidV7` and `GuidV8Time` both use a process-global `Interlocked.Increment` counter so IDs generated on the same timestamp are still strictly ordered, even under heavy concurrency
+- **Zero dependencies** - the core package references nothing outside the BCL
+- **Zero allocations on modern .NET** - `stackalloc`, `Span<T>`, and `[SkipLocalsInit]` eliminate heap allocations on **every** generation path on the package's **.NET 11 / 10** targets, including the deterministic v5/v8 name-based generators
+- **Broad platform support** - targets **.NET 11 / 10**, **.NET Framework 4.7.2+**, and **.NET Standard 2.0**, with explicit `browser` platform support and Native AOT compatibility for Blazor WebAssembly
+- **Native AOT compatible** - declares `IsAotCompatible=true` and is verified end-to-end with a published AOT smoke test in CI
+- **Round-trip timestamp extraction** - call `.ToDateTime()` on any `Guid` (V7, V8, or legacy) to recover the embedded UTC timestamp - works on `SqlGuid` too
+- **SQL Server sort-order aware** - `NewSqlGuid()` and `.ToSqlGuid()` / `.FromSqlGuid()` handle the byte-order shuffle so your UUIDs sort chronologically in `uniqueidentifier` columns - the only production use of `System.Data.SqlTypes.SqlGuid` is inside `SequentialSqlGuid.CompareTo`, where it implements SQL Server's documented sort order
+- **Built-in benchmarks** - a BenchmarkDotNet project is included so you can measure generation and conversion performance on your own hardware
 
-### GuidV7 vs GuidV8Time — Which Should I Use?
+### GuidV7 vs GuidV8Time - Which Should I Use?
 
 Both generate time-ordered, sortable UUIDs. The difference is **timestamp resolution** and **payload**:
 
@@ -45,7 +45,7 @@ Both generate time-ordered, sortable UUIDs. The difference is **timestamp resolu
 | Timestamp precision | **1 ms** (Unix Epoch millis) | **100 ns** (.NET Ticks) |
 | Counter bits | 26-bit monotonic | 22-bit monotonic |
 | Random / identity bits | 36 bits of crypto-random data | 40-bit machine + process fingerprint |
-| Interoperability | ✅ Standard UUIDv7 — understood by any RFC 9562 implementation | .NET-specific custom layout |
+| Interoperability | Standard UUIDv7 - understood by any RFC 9562 implementation | .NET-specific custom layout |
 | Best for | Cross-platform / polyglot systems, general-purpose use | .NET-only systems that need sub-millisecond ordering or machine traceability |
 
 **Rule of thumb:** Start with `GuidV7`. Reach for `GuidV8Time` only when you need tick-level precision or the machine/process fingerprint.
@@ -54,8 +54,8 @@ Both generate time-ordered, sortable UUIDs. The difference is **timestamp resolu
 
 Both produce deterministic UUIDs from a namespace + name pair. The **only** difference is the hash algorithm:
 
-* **`GuidV5`** — Uses **SHA-1** as required by RFC 9562 §5.5. Choose this when you need interoperability with UUIDv5 implementations in other languages.
-* **`GuidV8Name`** — Uses **SHA-256** as described in RFC 9562 Appendix B.2, providing a stronger hash for .NET-only scenarios.
+* **`GuidV5`** - Uses **SHA-1** as required by RFC 9562 §5.5. Choose this when you need interoperability with UUIDv5 implementations in other languages.
+* **`GuidV8Name`** - Uses **SHA-256** as described in RFC 9562 Appendix B.2, providing a stronger hash for .NET-only scenarios.
 
 ## Quick Start
 
@@ -70,7 +70,7 @@ dotnet add package SequentialGuid
 ```csharp
 using SequentialGuid;
 
-// Millisecond precision (RFC 9562 UUIDv7) — recommended for most applications
+// Millisecond precision (RFC 9562 UUIDv7) - recommended for most applications
 var id = GuidV7.NewGuid();
 
 // Sub-millisecond / tick precision (RFC 9562 UUIDv8)
@@ -97,10 +97,10 @@ var id = GuidV4.NewGuid();
 ### Generate a deterministic UUID from a namespace + name
 
 ```csharp
-// SHA-1 (UUIDv5) — interoperable with other languages
+// SHA-1 (UUIDv5) - interoperable with other languages
 var id = GuidV5.Create(GuidV5.Namespaces.Url, "https://example.com");
 
-// SHA-256 (UUIDv8 name-based) — stronger hash, .NET only
+// SHA-256 (UUIDv8 name-based) - stronger hash, .NET only
 var id = GuidV8Name.Create(GuidV8Name.Namespaces.Url, "https://example.com");
 ```
 
@@ -114,19 +114,19 @@ DateTime? created = id.ToDateTime();
 ### Helpers for common timestamp & predicate scenarios
 
 ```csharp
-// Try-pattern variant — useful when you want to branch without nullable handling
+// Try-pattern variant - useful when you want to branch without nullable handling
 if (id.TryToDateTime(out var created))
 {
     Console.WriteLine($"Created at {created:O}");
 }
 
-// DateTimeOffset variant — explicit UTC offset
+// DateTimeOffset variant - explicit UTC offset
 DateTimeOffset? createdOffset = id.ToDateTimeOffset();
 
-// Predicate — "is this a recognised sequential GUID at all?"
+// Predicate - "is this a recognised sequential GUID at all?"
 bool isOurs = someGuid.IsSequentialGuid();
 
-// RFC 9562 §5.10 max UUID constant — useful for range-scan upper bounds
+// RFC 9562 §5.10 max UUID constant - useful for range-scan upper bounds
 Guid upper = Guid.MaxValue;
 ```
 
@@ -167,10 +167,10 @@ services.AddTransient<IIdGenerator, SequentialIdGenerator>();
 ```csharp
 public abstract class BaseEntity
 {
-    // ID is assigned at construction — no database round-trip needed
+    // ID is assigned at construction - no database round-trip needed
     public Guid Id { get; set; } = GuidV7.NewGuid();
 
-    // Timestamp is always available — no extra column required
+    // Timestamp is always available - no extra column required
     public DateTime? CreatedAt => Id.ToDateTime();
 }
 ```
@@ -182,11 +182,11 @@ SQL Server sorts `uniqueidentifier` values in a [non-obvious byte order](https:/
 * [Comparing GUID and uniqueidentifier Values](https://learn.microsoft.com/en-us/dotnet/framework/data/adonet/sql/comparing-guid-and-uniqueidentifier-values)
 * [How are GUIDs sorted by SQL Server?](https://www.sqlbi.com/blog/alberto/2007/08/31/how-are-guids-sorted-by-sql-server/)
 
-Use the `NewSqlGuid()` methods (or the `.ToSqlGuid()` extension) to produce UUIDs whose byte order aligns with SQL Server's comparison logic. The `.FromSqlGuid()` extension on `Guid` reverses the transformation — the name clearly conveys the intent of converting *from* SQL Server byte order back to the standard layout.
+Use the `NewSqlGuid()` methods (or the `.ToSqlGuid()` extension) to produce UUIDs whose byte order aligns with SQL Server's comparison logic. The `.FromSqlGuid()` extension on `Guid` reverses the transformation - the name clearly conveys the intent of converting *from* SQL Server byte order back to the standard layout.
 
 ## Strongly-Typed Struct Wrappers
 
-The library ships two `readonly record struct` types — `SequentialGuid` and `SequentialSqlGuid` — that wrap a `Guid` and **guarantee at construction time** that the value is a valid sequential UUID. They both implement `ISequentialGuid<TSelf>` which provides `IComparable`, `IComparable<TSelf>`, `IEquatable<TSelf>`, `IFormattable` / `ISpanFormattable` / `ISpanParsable<T>` / `IUtf8SpanFormattable` / `IUtf8SpanParsable<T>` (where available), and comparison operators.
+The library ships two `readonly record struct` types - `SequentialGuid` and `SequentialSqlGuid` - that wrap a `Guid` and **guarantee at construction time** that the value is a valid sequential UUID. They both implement `ISequentialGuid<TSelf>` which provides `IComparable`, `IComparable<TSelf>`, `IEquatable<TSelf>`, `IFormattable` / `ISpanFormattable` / `ISpanParsable<T>` / `IUtf8SpanFormattable` / `IUtf8SpanParsable<T>` (where available), and comparison operators.
 
 | Struct | Byte Order | Use When |
 |---|---|---|
@@ -233,7 +233,7 @@ The structs support `<`, `<=`, `>`, `>=`, `==`, and `!=` operators, plus `Compar
 ```csharp
 var a = new SequentialGuid();
 var b = new SequentialGuid();
-bool isNewer = b > a; // true — b was created after a
+bool isNewer = b > a; // true - b was created after a
 
 // Also comparable directly against Guid
 bool same = a.Equals(a.Value); // true
@@ -272,11 +272,11 @@ if (SequentialGuid.TryParse(input, out var parsed))
 |---|---|---|
 | [**SequentialGuid.EntityFrameworkCore**](https://www.nuget.org/packages/SequentialGuid.EntityFrameworkCore/) | Value converters so EF Core can persist `SequentialGuid` / `SequentialSqlGuid` properties as `Guid` columns | [README](../SequentialGuid.EntityFrameworkCore/README.md) |
 | [**SequentialGuid.MongoDB**](https://www.nuget.org/packages/SequentialGuid.MongoDB/) | Drop-in `IIdGenerator` + BSON serializers for the MongoDB C# driver | [README](../SequentialGuid.MongoDB/README.md) |
-| [**SequentialGuid.NodaTime**](https://www.nuget.org/packages/SequentialGuid.NodaTime/) | Extension methods for `Instant`, `OffsetDateTime`, and `ZonedDateTime` — generate and extract timestamps using NodaTime types | [README](../SequentialGuid.NodaTime/README.md) |
+| [**SequentialGuid.NodaTime**](https://www.nuget.org/packages/SequentialGuid.NodaTime/) | Extension methods for `Instant`, `OffsetDateTime`, and `ZonedDateTime` - generate and extract timestamps using NodaTime types | [README](../SequentialGuid.NodaTime/README.md) |
 
 ## Performance
 
-On modern .NET the hot paths are **zero-allocation** — byte buffers use `stackalloc` and `Span<T>`, and conversion methods are annotated with `[SkipLocalsInit]`. A BenchmarkDotNet project is included under `util/Benchmarks` so you can verify on your own hardware:
+On modern .NET the hot paths are **zero-allocation** - byte buffers use `stackalloc` and `Span<T>`, and conversion methods are annotated with `[SkipLocalsInit]`. A BenchmarkDotNet project is included under `util/Benchmarks` so you can verify on your own hardware:
 
 ```shell
 cd util/Benchmarks
@@ -287,5 +287,5 @@ dotnet run -c Release -- --filter *Generation*
 
 The new RFC 9562 algorithm is **fully backwards compatible** with previously generated Guids:
 
-* **Sort order is preserved** — All UUIDs generated with the legacy algorithm will sort *before* any UUIDs generated with the new algorithm in the database, so existing data ordering is unaffected.
-* **Timestamp extraction still works** — The `ToDateTime()` extension method can extract timestamps from both legacy and new UUIDs, so you do not need to migrate existing data.
+* **Sort order is preserved** - All UUIDs generated with the legacy algorithm will sort *before* any UUIDs generated with the new algorithm in the database, so existing data ordering is unaffected.
+* **Timestamp extraction still works** - The `ToDateTime()` extension method can extract timestamps from both legacy and new UUIDs, so you do not need to migrate existing data.

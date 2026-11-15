@@ -1,4 +1,4 @@
-# SequentialGuid v6.2 — Design
+# SequentialGuid v6.2 - Design
 
 **Status:** Approved
 **Author:** Buvy
@@ -8,35 +8,35 @@
 
 Ship a "generation ergonomics" minor release: EF Core value generation, bulk
 generation, `TimeProvider` overloads, and a head-to-head benchmark answer to
-"why not just use `Guid.CreateVersion7`?" — plus three small riders (Mongo
+"why not just use `Guid.CreateVersion7`?" - plus three small riders (Mongo
 generator type option, legacy `GetInt32` bias fix, satellite AOT smoke tests).
 
-Everything is additive. SemVer minor — v6.2.0. Single PR against `master`.
+Everything is additive. SemVer minor - v6.2.0. Single PR against `master`.
 
 ## Non-goals
 
-- Newtonsoft.Json companion package — permanently out. STJ is in the BCL;
+- Newtonsoft.Json companion package - permanently out. STJ is in the BCL;
   anyone still on Newtonsoft owns that decision themselves. No dependency drift.
 - UUIDv6 (still deferred).
 - Buffered/thread-local CSPRNG pool for single-call generation (benchmark-driven
   decision for a future release; bulk generation covers the high-throughput case).
 - `TimeProvider` parameters on the `SequentialGuid`/`SequentialSqlGuid` struct
-  constructors — deterministic struct construction already exists via
+  constructors - deterministic struct construction already exists via
   `new SequentialGuid(guid)`.
-- Generated values for non-key `Guid` properties in the EF convention — explicit
+- Generated values for non-key `Guid` properties in the EF convention - explicit
   per-property `HasValueGenerator<T>()` covers that.
 - DI helpers (still deferred).
-- `Microsoft.Bcl.TimeProvider` dependency for legacy TFMs — zero-dep stays zero-dep.
+- `Microsoft.Bcl.TimeProvider` dependency for legacy TFMs - zero-dep stays zero-dep.
 
 ---
 
-## Section 1 — EF Core value generation
+## Section 1 - EF Core value generation
 
 The EF package converts today but never generates. EF Core's built-in
 `SequentialGuidValueGenerator` produces a non-RFC, SQL-Server-specific pattern;
 this section gives EF users real RFC 9562 v7 keys with zero ceremony.
 
-The package targets net8.0/net9.0/net10.0 with EF Core 8/9/10 — the convention
+The package targets net8.0/net9.0/net10.0 with EF Core 8/9/10 - the convention
 API (`ModelConfigurationBuilder.Conventions`) is EF 7+, so no TFM gating is
 needed anywhere in this section.
 
@@ -58,7 +58,7 @@ client-generated, retry-safe keys), XML docs on every public member.
 
 ### New convention
 
-`SequentialGuidValueGenerationConvention.cs` — `internal sealed`, implements
+`SequentialGuidValueGenerationConvention.cs` - `internal sealed`, implements
 `IModelFinalizingConvention`. Constructor takes `bool sqlServerByteOrder`.
 
 `ProcessModelFinalizing` walks every entity type and, for each **primary-key**
@@ -75,7 +75,7 @@ The struct types carry their byte order in the type itself, so the
 `sqlServerByteOrder` flag only affects plain `Guid` keys.
 
 All assignments go through the convention builder API (`IConventionPropertyBuilder`)
-so explicit user configuration wins automatically — the convention never
+so explicit user configuration wins automatically - the convention never
 overwrites an explicitly configured generator or `ValueGenerated` setting.
 A property that already has a value generator factory is skipped.
 
@@ -109,11 +109,11 @@ protected override void ConfigureConventions(ModelConfigurationBuilder configura
 
 ---
 
-## Section 2 — Bulk generation
+## Section 2 - Bulk generation
 
 Both time-based generators (`GuidV7`, `GuidV8Time`) gain a zero-alloc span
 primitive and an array convenience, **NET6+ only**. Legacy TFMs
-(net462/netstandard2.0) keep looping `NewGuid()` — `Span<Guid>` there would
+(net462/netstandard2.0) keep looping `NewGuid()` - `Span<Guid>` there would
 require System.Memory, which breaks the zero-dependency story.
 
 ### Surface
@@ -127,14 +127,14 @@ Four methods per class, each in exactly three timestamp forms:
 | `NewGuids(int count, ...)` | `Guid[]` | standard |
 | `NewSqlGuids(int count, ...)` | `Guid[]` | SQL Server |
 
-Timestamp forms (the overload rule — deliberately not the full mirror of the
+Timestamp forms (the overload rule - deliberately not the full mirror of the
 single-call matrix, to keep 24 methods from becoming 60):
 
-1. No-arg — current UTC time, captured **once** for the whole batch.
-2. The deterministic primitive — `long unixMilliseconds` for `GuidV7`
+1. No-arg - current UTC time, captured **once** for the whole batch.
+2. The deterministic primitive - `long unixMilliseconds` for `GuidV7`
    (48-bit validation as today), `DateTime timestamp` for `GuidV8Time`
    (Kind/range validation as today).
-3. `TimeProvider provider` — `#if NET8_0_OR_GREATER` (see Section 3).
+3. `TimeProvider provider` - `#if NET8_0_OR_GREATER` (see Section 3).
 
 `NewGuids`/`NewSqlGuids` allocate only the result array and delegate to
 `Fill`/`FillSql`.
@@ -146,15 +146,15 @@ Per call, regardless of batch size:
 1. **One timestamp capture.** Every UUID in the batch shares it; the counter
    provides intra-batch ordering.
 2. **One counter-block reservation.**
-   `var end = Interlocked.Add(ref _counter, count); var start = end - count;`
-   — item *i* uses slot `(start + i) & mask` (mask `0x3FFFFFF` for V7,
+   `var end = Interlocked.Add(ref _counter, count); var start = end - count;` -
+   item *i* uses slot `(start + i) & mask` (mask `0x3FFFFFF` for V7,
    `0x3FFFFF` for V8Time). Concurrent bulk and single-call generation interleave
    safely because they draw from the same process-global counter.
 3. **One `RandomNumberGenerator.Fill`** over the batch's entire random region
-   (V7 only — 6 bytes per item; V8Time has no per-item random bytes, its tail
+   (V7 only - 6 bytes per item; V8Time has no per-item random bytes, its tail
    is the machine/process fingerprint). Scratch buffer is `stackalloc` up to a
    256-byte threshold (mirroring the `GuidNameBased` pattern), `ArrayPool<byte>.Shared`
-   above it — `Fill` is 0 B steady-state.
+   above it - `Fill` is 0 B steady-state.
 4. **Per-slot assembly** identical to the single-call path: big-endian layout,
    `SetRfc9562Version` / `SetRfc9562Variant`, `new Guid(bytes, bigEndian: true)`,
    with the SQL variants applying `WriteToSqlByteOrder` before construction.
@@ -162,7 +162,7 @@ Per call, regardless of batch size:
 Cite RFC 9562 §6.2 Method 1 in the counter-reservation comment, per repo
 convention.
 
-### Validation — fail loudly
+### Validation - fail loudly
 
 - `count < 0` → `ArgumentOutOfRangeException`.
 - `count` / `destination.Length` greater than the counter space (67,108,864 for
@@ -174,7 +174,7 @@ convention.
 
 ---
 
-## Section 3 — `TimeProvider` overloads
+## Section 3 - `TimeProvider` overloads
 
 All gated `#if NET8_0_OR_GREATER` (`TimeProvider` enters the BCL in .NET 8; no
 new dependencies for older TFMs).
@@ -195,7 +195,7 @@ around an injected clock (and for `FakeTimeProvider` in tests).
 
 ---
 
-## Section 4 — BCL comparison benchmarks + README
+## Section 4 - BCL comparison benchmarks + README
 
 ### Benchmarks
 
@@ -215,15 +215,15 @@ New section "Why not `Guid.CreateVersion7`?" in the root README, with the
 benchmark table (real numbers from a release run, hardware noted) and the
 substantive differences:
 
-1. **No monotonic counter** — BCL v7 IDs generated within the same millisecond
+1. **No monotonic counter** - BCL v7 IDs generated within the same millisecond
    sort randomly relative to each other; under insert load that is exactly the
    index-fragmentation problem v7 adoption is meant to solve. RFC 9562 §6.2
    Method 1 is implemented here, not there.
-2. **No SQL Server byte-order story** — no `NewSqlGuid()`/`ToSqlGuid()`
+2. **No SQL Server byte-order story** - no `NewSqlGuid()`/`ToSqlGuid()`
    equivalent; a BCL v7 in a `uniqueidentifier` clustered index still fragments.
-3. **No round-trip tooling** — no timestamp extraction, no sequential-GUID
+3. **No round-trip tooling** - no timestamp extraction, no sequential-GUID
    detection, no struct wrappers.
-4. **Reach** — `Guid.CreateVersion7` is .NET 9+; this library covers net462
+4. **Reach** - `Guid.CreateVersion7` is .NET 9+; this library covers net462
    and netstandard2.0.
 
 Also: add bullets for bulk generation and EF value generation to Key Features,
@@ -231,13 +231,13 @@ and update the EF package blurb + package README for the new generator surface.
 
 ---
 
-## Section 5 — Riders
+## Section 5 - Riders
 
 ### Mongo configurable generator type
 
 `MongoSequentialGuidGenerator` gains a public constructor taking
 `SequentialGuidType` (existing enum; `Rfc9562V7` or `Rfc9562V8Custom`), wired
-through `GenerateId`. `Instance` keeps emitting `GuidV8Time` — changing the
+through `GenerateId`. `Instance` keeps emitting `GuidV8Time` - changing the
 default in a minor release is a silent behavior change, which this library does
 not do. `RegisterMongoIdGenerator()` gains an optional
 `SequentialGuidType type = SequentialGuidType.Rfc9562V8Custom` parameter.
@@ -284,27 +284,27 @@ initialization, so no measurable cost. No API change.
 - **EF Core:** new minimal console project
   `tests/smoke/SequentialGuid.EntityFrameworkCore.AotSmokeTest`. It instantiates
   the two value converters and four value generators directly and exercises
-  their delegates/`Next` — **no `DbContext`**, because EF Core's full NativeAOT
+  their delegates/`Next` - **no `DbContext`**, because EF Core's full NativeAOT
   support is still experimental and the goal is verifying *our* code under ILC,
   not the framework's. **Contingency:** if ILC warnings from EF internals
   surface even at this scope, drop the EF smoke project, rely on the build-time
   trim/AOT analyzers already enabled via `IsAotCompatible`, and document the
   limitation in the EF package README.
-- **Mongo:** excluded — driver-side concern, unchanged from the vNext decision.
+- **Mongo:** excluded - driver-side concern, unchanged from the vNext decision.
 - **CI:** the existing AOT publish/run step extends to the EF smoke app
   (single platform, same as today).
 
 ---
 
-## Section 6 — Testing
+## Section 6 - Testing
 
 ### EF Core (`tests/unit/SequentialGuid.EntityFrameworkCore.Tests`)
 
-- `ValueGeneratorTests.cs` — each generator's output: correct version nibble
+- `ValueGeneratorTests.cs` - each generator's output: correct version nibble
   and variant bits, correct byte order (SQL variants validate via
   `FromSqlGuid().ToDateTime()`), `GeneratesTemporaryValues == false`,
   struct generators produce non-default values with valid timestamps.
-- `ValueGenerationConventionTests.cs` — using an in-memory model build:
+- `ValueGenerationConventionTests.cs` - using an in-memory model build:
   - `Guid` PK gets `SequentialGuidValueGenerator`; with
     `sqlServerByteOrder: true` gets the SQL variant.
   - `SequentialGuid` / `SequentialSqlGuid` PKs get their struct generators and
@@ -342,23 +342,23 @@ initialization, so no measurable cost. No API change.
 
 ---
 
-## Section 7 — Release shape
+## Section 7 - Release shape
 
-- **SemVer:** minor — v6.2.0. All changes additive; no breaking surface.
+- **SemVer:** minor - v6.2.0. All changes additive; no breaking surface.
 - **PR shape:** single PR against `master` from branch `v6.2/generation-ergonomics`,
   multiple commits for revertability (perf/feat/test/docs split as in v6.1).
-- **Workflow note:** no `gh` CLI on the dev machine — push the branch and output
+- **Workflow note:** no `gh` CLI on the dev machine - push the branch and output
   PR title + raw markdown body for manual paste.
 
 ## Open questions
 
-None — scope locked 2026-06-09.
+None - scope locked 2026-06-09.
 
 ## References
 
 - v6.1 spec: `docs/superpowers/specs/2026-05-12-sequentialguid-v6.1-design.md`
   (deferred-items list that seeded this release)
-- RFC 9562: https://www.rfc-editor.org/rfc/rfc9562.html — §5.7 (UUIDv7),
+- RFC 9562: https://www.rfc-editor.org/rfc/rfc9562.html - §5.7 (UUIDv7),
   §6.2 Method 1 (fixed bit-length dedicated counter), Appendix B.1 (UUIDv8 time)
 - EF Core value generation: https://learn.microsoft.com/en-us/ef/core/modeling/generated-properties
 - `IModelFinalizingConvention`: https://learn.microsoft.com/en-us/dotnet/api/microsoft.entityframeworkcore.metadata.conventions.imodelfinalizingconvention

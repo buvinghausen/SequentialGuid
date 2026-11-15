@@ -1,4 +1,4 @@
-# SequentialGuid vNext — Design
+# SequentialGuid vNext - Design
 
 **Status:** Approved
 **Author:** Buvy
@@ -22,18 +22,18 @@ Native-AOT compatible. Three independently reviewable PRs against a `vNext` bran
 Three sequential PRs against branch `vNext`. Each PR is reviewable and revertable
 on its own.
 
-1. **PR1 — perf.** Internal-only changes. No public API breakage. Benchmarks
+1. **PR1 - perf.** Internal-only changes. No public API breakage. Benchmarks
    prove the win.
-2. **PR2 — cleanup.** Drops obsolete API and the public `Timestamp` static
+2. **PR2 - cleanup.** Drops obsolete API and the public `Timestamp` static
    properties. This is the actual breaking change.
-3. **PR3 — AOT hardening.** csproj flags, analyzers, AOT smoke test, README
+3. **PR3 - AOT hardening.** csproj flags, analyzers, AOT smoke test, README
    update.
 
 After PR3 merges, tag `vN.0.0` and publish.
 
 ---
 
-## PR1 — Perf: zero-allocation generation paths
+## PR1 - Perf: zero-allocation generation paths
 
 ### Problem
 
@@ -47,33 +47,33 @@ The struct wrappers also do redundant work: `SequentialGuid(SequentialGuidType)`
 reads `GuidV7.Timestamp` (which truncates `DateTimeOffset.UtcNow` to milliseconds)
 and passes it to `GuidV7.NewGuid(...)`. The constructor then sets
 `Timestamp = ...` from the static property and `Value` from the result. The
-companion ctor `SequentialGuid(Guid)` calls `Value.ToDateTime()` separately —
+companion ctor `SequentialGuid(Guid)` calls `Value.ToDateTime()` separately -
 a second decode pass through the byte layout.
 
 ### Changes
 
-**`Extensions/ByteArrayExtensions.cs`** — add `Span<byte>` overloads of
+**`Extensions/ByteArrayExtensions.cs`** - add `Span<byte>` overloads of
 `SetRfc9562Version(byte)` and `SetRfc9562Variant()`. Currently both exist only
 on the `byte[]` extension block.
 
-**`GuidV4.NewGuid`** — on NET6+, replace `new byte[16]` with `stackalloc byte[16]`;
+**`GuidV4.NewGuid`** - on NET6+, replace `new byte[16]` with `stackalloc byte[16]`;
 fill via `RandomNumberGenerator.Fill(Span<byte>)`; return
 `new Guid(span, bigEndian: true)`. Legacy path unchanged.
 
-**`GuidV7.NewGuid(long)`** — same pattern. The 6-byte random tail is filled with
+**`GuidV7.NewGuid(long)`** - same pattern. The 6-byte random tail is filled with
 `RandomNumberGenerator.Fill(span[10..])`. Timestamp and counter writes operate
 on the span directly. Legacy path unchanged.
 
-**`GuidV8Time.NewGuid(long)`** — same pattern. The 5-byte `MachinePid` array is
+**`GuidV8Time.NewGuid(long)`** - same pattern. The 5-byte `MachinePid` array is
 copied into the span via `MachinePid.AsSpan().CopyTo(span[11..])`. Legacy path
 unchanged.
 
-**`GuidV8Time` static constructor** — switch the `Environment.MachineName` hash
+**`GuidV8Time` static constructor** - switch the `Environment.MachineName` hash
 from SHA-512 to SHA-1. We use 3 of the digest bytes as a machine fingerprint;
 this is not a security property. SHA-1 is faster on cold start and reduces the
 included algorithm surface.
 
-**`GuidNameBased.Create`** on NET6+ — request a fixed-size digest into a
+**`GuidNameBased.Create`** on NET6+ - request a fixed-size digest into a
 `Span<byte>`:
 
 ```csharp
@@ -88,7 +88,7 @@ netstandard2.0 keeps `GetHashAndReset()` and the heap byte array. The
 `#if NETFRAMEWORK` branch that uses `HashAlgorithm.Create(algorithmName.Name)`
 remains unchanged.
 
-**Struct wrappers** — `SequentialGuid(SequentialGuidType type)` and
+**Struct wrappers** - `SequentialGuid(SequentialGuidType type)` and
 `SequentialSqlGuid(SequentialGuidType type)`:
 
 ```csharp
@@ -119,7 +119,7 @@ Decode timestamp from `Value` once. Drops the parallel-read of
 
 ---
 
-## PR2 — Cleanup: drop obsolete API and consolidate constructors
+## PR2 - Cleanup: drop obsolete API and consolidate constructors
 
 ### Breaking deletions
 
@@ -130,7 +130,7 @@ Decode timestamp from `Value` once. Drops the parallel-read of
 - Public static properties:
   - `GuidV7.Timestamp`
   - `GuidV8Time.Timestamp`
-- `README.md` — delete the "Upgrade Guide" section (it documented the obsolete
+- `README.md` - delete the "Upgrade Guide" section (it documented the obsolete
   classes' replacement; once they're gone, the section is dead weight).
 
 ### Non-breaking consolidation
@@ -149,7 +149,7 @@ internal static class SequentialGuidByteOrder
 ```
 
 Implementation lifts the existing branching from `SequentialGuid(Guid)` and
-`SequentialSqlGuid(Guid)` verbatim — including the SQL-V8 false-positive guard
+`SequentialSqlGuid(Guid)` verbatim - including the SQL-V8 false-positive guard
 that disambiguates by requiring a valid timestamp when both standard and SQL
 detection fire on the same bytes.
 
@@ -169,7 +169,7 @@ public SequentialGuid(Guid value)
 
 **`SequentialSqlGuid(Guid)`** is the mirror: `Value = wasSqlOrder ? value : value.ToSqlGuid()`.
 
-**`TicksExtensions.IsDateTime`** — loosen upper bound:
+**`TicksExtensions.IsDateTime`** - loosen upper bound:
 
 ```csharp
 internal bool IsDateTime =>
@@ -191,7 +191,7 @@ case; verify the consolidation in `TryDetect` preserves that behavior.
 
 ---
 
-## PR3 — AOT hardening
+## PR3 - AOT hardening
 
 ### csproj flags
 
@@ -210,18 +210,18 @@ and `EnableAotAnalyzer`. Single flag is preferred over explicit list.
 
 ### Expected analyzer interactions
 
-- **`SequentialGuid` (core)** — pure byte manipulation. Clean.
-- **`SequentialGuid.EntityFrameworkCore`** — value converters use static
+- **`SequentialGuid` (core)** - pure byte manipulation. Clean.
+- **`SequentialGuid.EntityFrameworkCore`** - value converters use static
   abstract `T.Create(v)` from `ISequentialGuid<T>`. AOT-clean.
-- **`SequentialGuid.NodaTime`** — extension methods on `Instant`/`Guid`,
+- **`SequentialGuid.NodaTime`** - extension methods on `Instant`/`Guid`,
   no reflection. Clean.
-- **`SequentialGuid.MongoDB`** — uses `BsonSerializer.LookupSerializer<Guid>()`.
+- **`SequentialGuid.MongoDB`** - uses `BsonSerializer.LookupSerializer<Guid>()`.
   MongoDB driver has its own AOT story. If analyzer warnings surface from the
   driver, document the limitation in the MongoDB package README; do not attempt
   to fix driver-internal issues.
 
 If the AOT analyzer fires inside the core package, fix the offending code path
-(not expected, but possible — e.g. if `IncrementalHash` has trim attributes that
+(not expected, but possible - e.g. if `IncrementalHash` has trim attributes that
 surface through our usage).
 
 ### AOT smoke test
@@ -256,11 +256,11 @@ Add a job to `.github/workflows/*.yml` that, on the .NET 10 matrix entry only:
     ./aot-out/SequentialGuid.AotSmokeTest
 ```
 
-Single platform is enough — same source code, same result. Reduces CI minutes.
+Single platform is enough - same source code, same result. Reduces CI minutes.
 
 ### README updates
 
-- **Highlights** section: add a bullet "**Native AOT compatible** — verified
+- **Highlights** section: add a bullet "**Native AOT compatible** - verified
   end-to-end with a published AOT smoke test in CI."
 - Update the existing **Blazor WebAssembly** mention to read "explicit `browser`
   platform support and Native AOT compatibility for Blazor WebAssembly."
@@ -269,11 +269,11 @@ Single platform is enough — same source code, same result. Reduces CI minutes.
 
 ## Open questions
 
-None — all scope decisions are locked in.
+None - all scope decisions are locked in.
 
 ## References
 
-- RFC 9562 — https://www.rfc-editor.org/rfc/rfc9562.html
+- RFC 9562 - https://www.rfc-editor.org/rfc/rfc9562.html
 - §5.4 (UUIDv4), §5.5 (UUIDv5), §5.7 (UUIDv7), §6.2 Method 1 (counter), Appendix B.1 (UUIDv8 time), Appendix B.2 (UUIDv8 name)
 - Existing benchmarks: `util/Benchmarks/GenerationBenchmarks.cs`,
   `ConversionBenchmarks.cs`, `NameBenchmarks.cs`

@@ -116,7 +116,7 @@ static class GuidNameBased
 		Justification = "RFC 9562 §A.4 mandates SHA-1 for UUIDv5 name-based identifiers; this is a specification requirement, not a security primitive.")]
 	internal static Guid Create(Guid namespaceId, byte[] name, HashAlgorithmName algorithmName, byte version)
 	{
-		// netstandard2.0 (also serves .NET Framework 4.7.2+) — RFC 9562 §5.5 / §5.8 name-based hashing.
+		// netstandard2.0 (also serves .NET Framework 4.7.2+) - RFC 9562 §5.5 / §5.8 name-based hashing.
 		// TryGetHashAndReset(Span<byte>, out int) is .NET 5+ / netstandard 2.1+, so use GetHashAndReset().
 		using var hash = IncrementalHash.CreateHash(algorithmName);
 		hash.AppendData(namespaceId.ToByteArray().SwapByteOrder());

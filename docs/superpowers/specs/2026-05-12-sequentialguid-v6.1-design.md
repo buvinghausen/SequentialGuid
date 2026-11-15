@@ -1,4 +1,4 @@
-# SequentialGuid v6.1 — Design
+# SequentialGuid v6.1 - Design
 
 **Status:** Approved
 **Author:** Buvy
@@ -16,20 +16,20 @@ Single PR against `master`, SemVer minor (v6.1.0).
 
 - UUIDv6 support (deferred to a future release for RFC 9562 completeness).
 - `TimeProvider` overloads, bulk-generation API, Newtonsoft.Json companion,
-  DI helpers, companion-package AOT smoke tests (deferred — out of scope for
+  DI helpers, companion-package AOT smoke tests (deferred - out of scope for
   this minor).
 - RFC 9562 §6.2 counter-overflow handling (practical impact nil; deferred).
 - `MachinePid` bulk-write micro-optimization (insignificant; deferred).
 
-## Section 1 — Deterministic generator zero-allocation
+## Section 1 - Deterministic generator zero-allocation
 
 ### Problem
 
 `GuidV5.Create(byte[])` and `GuidV8Name.Create(byte[])` allocate ~176 B per call
 on .NET 6+. Sources:
 
-- `IncrementalHash.CreateHash(algorithmName)` — ~120 B for the hash instance + state
-- `namespaceId.ToByteArray(true)` — 16-byte heap array (~40 B with header)
+- `IncrementalHash.CreateHash(algorithmName)` - ~120 B for the hash instance + state
+- `namespaceId.ToByteArray(true)` - 16-byte heap array (~40 B with header)
 
 ### Fix
 
@@ -37,7 +37,7 @@ Rewrite `GuidNameBased.Create` on the NET6+ path to use one-shot static methods
 `SHA1.HashData(ReadOnlySpan<byte>, Span<byte>)` and
 `SHA256.HashData(ReadOnlySpan<byte>, Span<byte>)` (both .NET 5+, zero-alloc),
 with a stack-allocated concat buffer for namespace+name. Names larger than a
-256-byte threshold fall back to `ArrayPool<byte>.Shared.Rent`/`Return` — zero
+256-byte threshold fall back to `ArrayPool<byte>.Shared.Rent`/`Return` - zero
 net allocation after the pool warms up at process startup.
 
 ```csharp
@@ -124,9 +124,9 @@ internal void SwapGuidBytesInPlace()
 | `GuidV5.Create(byte[])` 71-char name | 176 B | 0 B |
 | `GuidV8Name.Create(byte[])` 20-char name | 176 B | 0 B |
 | `GuidV8Name.Create(byte[])` 71-char name | 176 B | 0 B |
-| `GuidV5.Create(string)` | (unchanged — UTF-8 buffer is caller-controlled) | unchanged |
+| `GuidV5.Create(string)` | (unchanged - UTF-8 buffer is caller-controlled) | unchanged |
 
-## Section 2 — Free perf wins
+## Section 2 - Free perf wins
 
 ### `[SkipLocalsInit]` on generator hot paths
 
@@ -137,7 +137,7 @@ Apply to:
 - `GuidNameBased.Create(...)`
 
 Each method's `stackalloc byte[16]` (or `byte[32]` for the digest) buffer is
-fully written before use — every byte index is explicitly assigned or filled
+fully written before use - every byte index is explicitly assigned or filled
 by `RandomNumberGenerator.Fill`. The JIT's automatic zero-init is redundant
 work. The struct wrappers already have the attribute; extending to generators
 is consistent.
@@ -169,9 +169,9 @@ Saves one `DateTimeOffset` struct copy on the no-arg path.
 
 After the Section 1 rewrite the file has three tiers (NETFRAMEWORK,
 netstandard2.0, NET6+). Restructure as a single flat `#if/#elif/#else` chain
-rather than nested conditionals. Pure readability — identical compile output.
+rather than nested conditionals. Pure readability - identical compile output.
 
-## Section 3 — Ergonomic features
+## Section 3 - Ergonomic features
 
 All four members are purely additive and live in
 `src/SequentialGuid/Extensions/GuidExtensions.cs`. They join the existing
@@ -186,7 +186,7 @@ public static class GuidExtensions
 
     extension(Guid)
     {
-        /// <summary>Gets the RFC 9562 §5.10 max UUID — all bits set to 1.</summary>
+        /// <summary>Gets the RFC 9562 §5.10 max UUID - all bits set to 1.</summary>
         public static Guid MaxValue => s_maxValue;
     }
 
@@ -236,45 +236,45 @@ public static class GuidExtensions
   `s_maxValue` so the literal isn't reparsed. (Per RFC 9562 §5.10 / Max UUID.
   Naming follows the BCL convention `int.MaxValue` / `DateTime.MaxValue`.)
 - `IsSequentialGuid()` delegates to the existing internal
-  `SequentialGuidByteOrder.TryDetect` — no new logic.
+  `SequentialGuidByteOrder.TryDetect` - no new logic.
 - `ToDateTimeOffset()` uses `new DateTimeOffset(dt, TimeSpan.Zero)` because
   `ToDateTime()` already returns a `DateTime` with `Kind == Utc`.
 
-## Section 4 — Testing & verification
+## Section 4 - Testing & verification
 
 ### New test file
 
 `test/SequentialGuid.Tests/GuidExtensionsTests.cs` (new):
 
-- `MaxValueIsAllBitsSet` — equals `new Guid("ffffffff-...-ffffffffffff")`.
-- `MaxValueIsNotEmpty` — not equal to `Guid.Empty`.
-- `TryToDateTimeReturnsTrueForSequentialGuid` — V7 input → true + valid DateTime.
-- `TryToDateTimeReturnsFalseForRandomGuid` — RFC §A.4 v4 vector → false + default.
-- `TryToDateTimeReturnsFalseForEmpty` — false + default.
-- `ToDateTimeOffsetReturnsUtcOffset` — non-null + `Offset == TimeSpan.Zero`.
+- `MaxValueIsAllBitsSet` - equals `new Guid("ffffffff-...-ffffffffffff")`.
+- `MaxValueIsNotEmpty` - not equal to `Guid.Empty`.
+- `TryToDateTimeReturnsTrueForSequentialGuid` - V7 input → true + valid DateTime.
+- `TryToDateTimeReturnsFalseForRandomGuid` - RFC §A.4 v4 vector → false + default.
+- `TryToDateTimeReturnsFalseForEmpty` - false + default.
+- `ToDateTimeOffsetReturnsUtcOffset` - non-null + `Offset == TimeSpan.Zero`.
 - `ToDateTimeOffsetReturnsNullForRandomGuid`.
-- `TryToDateTimeOffsetReturnsTrueForSequentialGuid` — true + non-default value.
+- `TryToDateTimeOffsetReturnsTrueForSequentialGuid` - true + non-default value.
 - `TryToDateTimeOffsetReturnsFalseForRandomGuid`.
-- `IsSequentialGuidTrueForV7` — V7 returns true.
-- `IsSequentialGuidTrueForV8Time` — V8 returns true.
-- `IsSequentialGuidTrueForLegacy` — known legacy guid string returns true.
-- `IsSequentialGuidTrueForSqlOrderedV7` — V7 piped through `.ToSqlGuid()` returns true.
-- `IsSequentialGuidFalseForRandomV4` — RFC §A.4 v4 vector returns false.
-- `IsSequentialGuidFalseForEmpty` — `Guid.Empty` returns false.
-- `IsSequentialGuidFalseForMaxValue` — `Guid.MaxValue` returns false.
+- `IsSequentialGuidTrueForV7` - V7 returns true.
+- `IsSequentialGuidTrueForV8Time` - V8 returns true.
+- `IsSequentialGuidTrueForLegacy` - known legacy guid string returns true.
+- `IsSequentialGuidTrueForSqlOrderedV7` - V7 piped through `.ToSqlGuid()` returns true.
+- `IsSequentialGuidFalseForRandomV4` - RFC §A.4 v4 vector returns false.
+- `IsSequentialGuidFalseForEmpty` - `Guid.Empty` returns false.
+- `IsSequentialGuidFalseForMaxValue` - `Guid.MaxValue` returns false.
 
 Existing RFC test vectors in `GuidV5Tests.cs` and `GuidV8NameTests.cs` cover
-deterministic-generator correctness — no new tests needed there. They are the
+deterministic-generator correctness - no new tests needed there. They are the
 regression guard for the `IncrementalHash` → `HashData` swap.
 
 ### Benchmarks
 
-`util/Benchmarks/NameBenchmarks.cs` — no code change. Re-run and confirm 0 B
+`util/Benchmarks/NameBenchmarks.cs` - no code change. Re-run and confirm 0 B
 allocated for both `(byte[])` overloads at both name lengths.
 
 ### AOT smoke test additions
 
-`test/SequentialGuid.AotSmokeTest/Program.cs` — add `Check` lines:
+`test/SequentialGuid.AotSmokeTest/Program.cs` - add `Check` lines:
 
 ```csharp
 Check("Guid.MaxValue non-empty", Guid.MaxValue != Guid.Empty);
@@ -294,14 +294,14 @@ Check("v4 IsSequentialGuid false", !v4.IsSequentialGuid());
 No CI changes. Existing pipeline (Windows runner, .NET 8/9/10 SDK, AOT publish
 on net10) covers the new code. Build expectations:
 
-- `dotnet build` — 0 warnings on all 5 production TFMs.
-- `dotnet test` — total grows by ~16 (one per assertion in
+- `dotnet build` - 0 warnings on all 5 production TFMs.
+- `dotnet test` - total grows by ~16 (one per assertion in
   `GuidExtensionsTests`), all pass.
 - AOT smoke test still exits 0.
 
-## Section 5 — Release shape
+## Section 5 - Release shape
 
-**SemVer:** minor — v6.1.0.
+**SemVer:** minor - v6.1.0.
 
 **PR shape:** single PR against `master` from a feature branch named
 `v6.1/perf-and-ergonomics` (or maintainer's preferred convention).
@@ -317,11 +317,11 @@ on net10) covers the new code. Build expectations:
 7. `feat: add public IsSequentialGuid predicate`
 8. `test: cover new ergonomic extensions`
 9. `test: extend AOT smoke test to new public surface`
-10. `docs: update README — zero-alloc on all generators + new helpers`
+10. `docs: update README - zero-alloc on all generators + new helpers`
 
 ### README updates
 
-- Bump the Highlights bullet: "**Zero allocations on modern .NET** —
+- Bump the Highlights bullet: "**Zero allocations on modern .NET** -
   `stackalloc`, `Span<T>`, and `[SkipLocalsInit]` eliminate heap allocations
   on **every** generation path (.NET 6+), including the deterministic v5/v8
   name-based generators."
@@ -330,7 +330,7 @@ on net10) covers the new code. Build expectations:
 
 ## Open questions
 
-None — scope is locked.
+None - scope is locked.
 
 ## References
 

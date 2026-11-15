@@ -11,7 +11,7 @@ public sealed class MongoSequentialGuidGenerator : IIdGenerator
 	readonly SequentialGuidType _type;
 
 	/// <summary>
-	/// Initializes a generator emitting <see cref="SequentialGuidType.Rfc9562V8Custom"/> GUIDs —
+	/// Initializes a generator emitting <see cref="SequentialGuidType.Rfc9562V8Custom"/> GUIDs -
 	/// the historical default, preserving 100 ns tick precision.
 	/// </summary>
 	public MongoSequentialGuidGenerator() : this(SequentialGuidType.Rfc9562V8Custom) { }

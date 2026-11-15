@@ -60,7 +60,7 @@ Check("SequentialSqlGuid ctor", ssg.Value != Guid.Empty);
 SsgStruct ssg2 = new(v7);
 Check("SequentialSqlGuid wraps v7", ssg2.Value == v7.ToSqlGuid());
 
-// JSON converters — use a source-generated JsonSerializerContext so the round-trip is
+// JSON converters - use a source-generated JsonSerializerContext so the round-trip is
 // trimmer- and AOT-safe. AddSequentialGuidConverters() registers the SequentialGuid converters
 // on top of the generated context's options.
 JsonSerializerOptions opts = new(SmokeJsonContext.Default.Options);

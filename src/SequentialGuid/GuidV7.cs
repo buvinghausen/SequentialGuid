@@ -24,7 +24,7 @@ namespace SequentialGuid;
 /// </remarks>
 public static class GuidV7
 {
-	// Process-global monotonic counter for RFC 9562 §6.2 Method 1 — Fixed Bit-Length Dedicated
+	// Process-global monotonic counter for RFC 9562 §6.2 Method 1 - Fixed Bit-Length Dedicated
 	// Counter. Advanced via Interlocked.Increment; upper 12 bits written to rand_a, lower 14 bits
 	// to the first 14 bits of rand_b (after variant). Masked to 26 bits (0x3FFFFFF).
 	static int _counter;
@@ -218,7 +218,7 @@ public static class GuidV7
 		// RFC 9562 §6.2 Method 1: reserve a contiguous block of counter slots so the
 		// whole batch is ordered and concurrent callers can never collide. The +1 mirrors
 		// Interlocked.Increment semantics on the single-call path, which consumes the
-		// post-increment value — the block is (old, old + count], never reusing old.
+		// post-increment value - the block is (old, old + count], never reusing old.
 		var start = Interlocked.Add(ref _counter, count) - count + 1;
 
 		// One RNG call covers every item's 6-byte random tail.
@@ -234,7 +234,7 @@ public static class GuidV7
 
 			Span<byte> bytes = stackalloc byte[16];
 			// unix_ts_ms: 48-bit big-endian millisecond timestamp (octets 0-5),
-			// identical for every item — written once.
+			// identical for every item - written once.
 			bytes[0] = (byte)(unixMilliseconds >> 40);
 			bytes[1] = (byte)(unixMilliseconds >> 32);
 			bytes[2] = (byte)(unixMilliseconds >> 24);

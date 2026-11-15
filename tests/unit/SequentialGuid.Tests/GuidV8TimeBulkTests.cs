@@ -132,7 +132,7 @@ public sealed class GuidV8TimeBulkTests
 	void BulkAndSingleCallInterleaveStayUnique()
 	{
 		// Single-first then bulk is the order that exposed the off-by-one block
-		// reservation — with no per-item entropy, a reused slot is a byte-for-byte
+		// reservation - with no per-item entropy, a reused slot is a byte-for-byte
 		// duplicate GUID on V8Time. Keep singles on both sides of the bulk call.
 		var before = Enumerable.Range(0, 100).Select(_ => GuidV8Time.NewGuid(_fixedTimestamp)).ToArray();
 		var bulk = GuidV8Time.NewGuids(100, _fixedTimestamp);

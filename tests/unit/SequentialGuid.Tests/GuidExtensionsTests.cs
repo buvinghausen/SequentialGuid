@@ -25,7 +25,7 @@ public sealed class GuidExtensionsTests
 	[Fact]
 	void TryToDateTimeReturnsFalseForRandomV4()
 	{
-		// RFC 9562 §A.4 v4 vector — known not a sequential guid
+		// RFC 9562 §A.4 v4 vector - known not a sequential guid
 		var v4 = new Guid("919108f7-52d1-4320-9bac-f847db4148a8");
 		var success = v4.TryToDateTime(out var timestamp);
 		success.ShouldBeFalse();

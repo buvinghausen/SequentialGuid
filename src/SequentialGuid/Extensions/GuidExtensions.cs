@@ -17,7 +17,7 @@ public static class GuidExtensions
 
 	extension(Guid id)
 	{
-		/// <summary>Gets the RFC 9562 §5.10 max UUID — all bits set to 1.</summary>
+		/// <summary>Gets the RFC 9562 §5.10 max UUID - all bits set to 1.</summary>
 		public static Guid MaxValue => _maxValue;
 
 		/// <summary>

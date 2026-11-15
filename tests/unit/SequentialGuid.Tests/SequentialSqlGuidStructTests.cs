@@ -32,7 +32,7 @@ public sealed class SequentialSqlGuidStructTests
 	[Fact]
 	void GuidConstructorThrowsForRandomGuid()
 	{
-		// Use the RFC 9562 §A.4 v4 test vector — a fixed guid avoids the 1/256 flakiness
+		// Use the RFC 9562 §A.4 v4 test vector - a fixed guid avoids the 1/256 flakiness
 		// where a random v4 guid's b[10] happens to equal 8, accidentally satisfying IsLegacy()
 		// after SQL byte conversion shifts the variant bits out of position.
 		Guid v4 = new("919108f7-52d1-4320-9bac-f847db4148a8");
@@ -58,7 +58,7 @@ public sealed class SequentialSqlGuidStructTests
 	void StringConstructorThrowsForInvalidFormat() =>
 		Should.Throw<FormatException>(() => new SequentialSqlGuid("not-a-guid"));
 
-	// Use the RFC 9562 §A.4 v4 test vector — a fixed guid avoids the 1/256 flakiness
+	// Use the RFC 9562 §A.4 v4 test vector - a fixed guid avoids the 1/256 flakiness
 	// where a random v4 guid's b[10] happens to equal 8, accidentally satisfying IsSqlLegacy()
 	// after SQL byte conversion shifts the variant bits out of position.
 	[Fact]
@@ -171,13 +171,13 @@ public sealed class SequentialSqlGuidStructTests
 	[Fact]
 	void ComparisonOperatorsAreConsistent()
 	{
-		// Arrange — two distinct SQL guids
+		// Arrange - two distinct SQL guids
 		SequentialSqlGuid
 			a = new(),
 			b = new();
-		// Act — determine ordering
+		// Act - determine ordering
 		var cmp = a.CompareTo(b);
-		// Assert — operators agree with CompareTo
+		// Assert - operators agree with CompareTo
 		(a < b).ShouldBe(cmp < 0);
 		(a <= b).ShouldBe(cmp <= 0);
 		(a > b).ShouldBe(cmp > 0);

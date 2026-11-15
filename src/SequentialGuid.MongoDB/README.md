@@ -105,7 +105,7 @@ await orders.InsertOneAsync(new Order { Description = "Widget" });
 
 ## Choosing the GUID version
 
-`MongoSequentialGuidGenerator.Instance` emits RFC 9562 **v8 time-based** GUIDs — the historical default, preserving full 100 ns tick precision in the document id. To emit **v7** ids instead:
+`MongoSequentialGuidGenerator.Instance` emits RFC 9562 **v8 time-based** GUIDs - the historical default, preserving full 100 ns tick precision in the document id. To emit **v7** ids instead:
 
 ```csharp
 new MongoSequentialGuidGenerator(SequentialGuidType.Rfc9562V7).RegisterMongoIdGenerator();

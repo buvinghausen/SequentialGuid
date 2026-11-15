@@ -9,7 +9,7 @@ jobs:
     runs-on: windows-latest
     permissions:
       contents: read
-      # Required for NuGet trusted publishing — lets NuGet/login exchange the
+      # Required for NuGet trusted publishing - lets NuGet/login exchange the
       # workflow's OIDC token for a short-lived nuget.org API key. No rolling
       # secret involved; the trust policy lives on nuget.org.
       id-token: write

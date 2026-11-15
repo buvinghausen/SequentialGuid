@@ -9,7 +9,7 @@ namespace SequentialGuid.EntityFrameworkCore;
 /// </summary>
 public sealed class SequentialGuidStructValueGenerator : ValueGenerator<SeqGuid>
 {
-	/// <summary>Always <see langword="false"/> — generated keys are real, client-generated values.</summary>
+	/// <summary>Always <see langword="false"/> - generated keys are real, client-generated values.</summary>
 	public override bool GeneratesTemporaryValues => false;
 
 	/// <summary>Creates a new <see cref="SeqGuid"/> wrapping a time-ordered version 7 GUID.</summary>

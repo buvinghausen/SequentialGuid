@@ -4,7 +4,7 @@
 ## Get latest from `dotnet new gitattributes`
 
 # Auto detect text files, normalize to LF in the repo, and check out LF
-# everywhere — eol declared here so per-machine core.autocrlf/core.eol
+# everywhere - eol declared here so per-machine core.autocrlf/core.eol
 # settings are irrelevant. CRLF is the declared exception, never a default.
 * text=auto eol=lf
 
@@ -99,7 +99,7 @@
 *.zip      binary
 *.zst      binary
 
-# Fonts (client static assets) — never diff or normalize
+# Fonts (client static assets) - never diff or normalize
 *.woff     binary
 *.woff2    binary
 *.ttf      binary
@@ -108,7 +108,7 @@
 # Text files where line endings should be preserved
 *.patch    -text
 
-# Generated C# — collapse in PR view and language stats.
+# Generated C# - collapse in PR view and language stats.
 # EF migration bodies are deliberately NOT marked: migration diffs are
 # review surface (database self-defense), never collapsed.
 *.Designer.cs    linguist-generated=true

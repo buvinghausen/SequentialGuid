@@ -32,7 +32,7 @@ public static class SequentialGuidJsonOptionsExtensions
 				}
 			}
 
-			return options; // fluent — callers can chain further configuration
+			return options; // fluent - callers can chain further configuration
 		}
 	}
 }

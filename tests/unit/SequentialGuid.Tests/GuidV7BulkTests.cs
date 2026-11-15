@@ -164,7 +164,7 @@ public sealed class GuidV7BulkTests
 	void BulkAndSingleCallInterleaveStayUnique()
 	{
 		// Single-first then bulk is the order that exposed the off-by-one block
-		// reservation (bulk[0] reusing the prior single call's counter slot) — keep
+		// reservation (bulk[0] reusing the prior single call's counter slot) - keep
 		// singles on both sides of the bulk call.
 		var before = Enumerable.Range(0, 100).Select(_ => GuidV7.NewGuid(RfcTestVectorMs)).ToArray();
 		var bulk = GuidV7.NewGuids(100, RfcTestVectorMs);

@@ -389,12 +389,12 @@ public static class GuidV8Time
 		// RFC 9562 §6.2 Method 1: reserve a contiguous block of counter slots so the
 		// whole batch is ordered and concurrent callers can never collide. The +1 mirrors
 		// Interlocked.Increment semantics on the single-call path, which consumes the
-		// post-increment value — the block is (old, old + count], never reusing old.
+		// post-increment value - the block is (old, old + count], never reusing old.
 		var start = Interlocked.Add(ref _increment, count) - count + 1;
 
 		Span<byte> bytes = stackalloc byte[16];
 		// custom_a: timestamp bits [59:12] → octets 0-5; custom_b: bits [11:0] → octets 6-7.
-		// Identical for every item — written once, as is the machine/pid fingerprint.
+		// Identical for every item - written once, as is the machine/pid fingerprint.
 		bytes[0] = (byte)(timestamp >> 52);
 		bytes[1] = (byte)(timestamp >> 44);
 		bytes[2] = (byte)(timestamp >> 36);
